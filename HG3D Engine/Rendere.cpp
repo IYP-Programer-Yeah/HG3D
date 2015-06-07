@@ -1,6 +1,6 @@
 #include "HG3D Engine.h"
-#include "F:\C++\HG3D 2.1\HG3D 2.1\File_HG_FS\File_HG_FS.h"
-#include "F:\C++\HG3D 2.1\HG3D 2.1\Shared Headers\hstring.h"
+#include "..\File_HG_FS\File_HG_FS.h"
+#include "..\Shared Headers\hstring.h"
 #include "GLew.h"
 static unsigned long int renderer_class_nums = 0;
 /******************************************************************/

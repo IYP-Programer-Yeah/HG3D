@@ -1,7 +1,7 @@
 #ifndef _file_HG_fs_h
 #define _file_HG_fs_h
 #include <math.h>
-#include "F:\C++\HG3D 2.1\HG3D 2.1\Shared Headers\hstring.h"
+#include "..\Shared Headers\hstring.h"
 #include <stdio.h>
 namespace File_HG_FS
 {
