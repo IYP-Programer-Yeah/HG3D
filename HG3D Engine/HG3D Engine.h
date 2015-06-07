@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <gl/glew.h>
-#include <GL/gl.h> 
-#include <GL/glu.h>
+#include <gl/gl.h> 
+#include <gl/glu.h>
 #include <math.h>
 
 // load GL libs
