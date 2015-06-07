@@ -141,7 +141,7 @@ namespace HG3D_Engine
 
 
 		Mesh sponza0;
-		sponza0.load_mesh("..\\HG3D 2.1\\horse.obj");
+		sponza0.load_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 		sponza0.clear_last_buff = 0;
 		sponza0.update_vbo();
 

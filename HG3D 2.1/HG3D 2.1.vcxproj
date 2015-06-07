@@ -41,6 +41,11 @@
       <Project>{afe0b35a-e143-49fc-9bc5-28d8945f8b7e}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resource\Models\horse.obj">
+      <FileType>Document</FileType>
+    </Text>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{857E8D8A-D5A8-4665-A5B9-3B70F5911480}</ProjectGuid>
     <RootNamespace>HG3D21</RootNamespace>

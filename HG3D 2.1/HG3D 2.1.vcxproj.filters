@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Models">
+      <UniqueIdentifier>{d37d92f3-3c4b-4bd6-a743-aaf4db11aa60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HG3D main.cpp">
@@ -42,5 +45,10 @@
     <Image Include="Resource\HG3D.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resource\Models\horse.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Text>
   </ItemGroup>
 </Project>
