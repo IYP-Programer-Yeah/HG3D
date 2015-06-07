@@ -47,8 +47,8 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resource\Models\horse.obj">
+    <Media Include="Resource\Models\horse.obj">
       <Filter>Resource Files\Models</Filter>
-    </Text>
+    </Media>
   </ItemGroup>
 </Project>

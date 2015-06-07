@@ -42,9 +42,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resource\Models\horse.obj">
+    <Media Include="Resource\Models\horse.obj">
       <FileType>Document</FileType>
-    </Text>
+    </Media>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{857E8D8A-D5A8-4665-A5B9-3B70F5911480}</ProjectGuid>
