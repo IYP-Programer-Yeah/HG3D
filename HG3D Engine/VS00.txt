@@ -1,0 +1,15 @@
+#version 150
+in vec3 Vertex;
+in vec3 Normal;
+in vec2 Coord;
+
+out vec4 color;
+
+uniform mat4 ProjectionMatrix;
+uniform mat4 ModelViewMatrix;
+
+void main()
+{
+	gl_Position=ProjectionMatrix*ModelViewMatrix*vec4(Vertex.xyz,1);
+	color=vec4(Normal.xyz,0);
+}
