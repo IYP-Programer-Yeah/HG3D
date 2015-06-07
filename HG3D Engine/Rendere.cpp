@@ -141,11 +141,11 @@ namespace HG3D_Engine
 
 
 		Mesh sponza0;
-		sponza0.load_mesh("F:\\C++\\HG3D 2.1\\HG3D 2.1\\HG3D 2.1\\horse.obj");
+		sponza0.load_mesh("..\\HG3D 2.1\\horse.obj");
 		sponza0.clear_last_buff = 0;
 		sponza0.update_vbo();
 
-		GLuint shader=LoadShaders("F:\\C++\\HG3D 2.1\\HG3D 2.1\\HG3D Engine\\VS00.txt", "F:\\C++\\HG3D 2.1\\HG3D 2.1\\HG3D Engine\\FS00.txt");
+		GLuint shader=LoadShaders("..\\HG3D Engine\\VS00.txt", "..\\HG3D Engine\\FS00.txt");
 		WriteConsole(myConsoleHandle, Final_str[0].string1, strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, strlen(Final_str[1].string1), &cCharsWritten, NULL);
 
