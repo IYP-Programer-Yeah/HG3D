@@ -89,6 +89,7 @@ namespace HG3D_Engine
 		ret.build(x * long double(entry), y* long double(entry), z * long double(entry));
 		return ret;
 	}
+
 	vector __fastcall vector::operator /(float entry)//division by float
 	{
 		vector ret;

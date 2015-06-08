@@ -11,7 +11,7 @@ namespace Physics
 		Object();
 		~Object();
 	
-		
+		void DLLEXPORT Update(const long double& Deltatime);
 	public:
 		bool m_Moveable;
 		point m_Position;
@@ -19,5 +19,7 @@ namespace Physics
 		vector m_Force;
 		vector m_Velocity;
 		vector m_Acceleration;
+
+		long double m_Mass;
 	};
 }
