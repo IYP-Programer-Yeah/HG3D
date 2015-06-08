@@ -88,26 +88,53 @@ namespace HG3D_Engine
 		float cx, cy;        //coords
 	};
 	//end of vertex class
+	class Mat//material class
+	{
+	public:
+		int illum;//the illumination method
+
+		float Ambient[3];//ambient color
+		float Specular[3];//specular color
+		float Diffuse[3];//diffuse color
+		float Emission[3];//Emission color
+		float TF[3];//transmision filter color
+		float dissolve;//transparancy 
+		float Spec_Exponent;//specular reflection exponent range 1 to 10000
+		float optical_density;//optical density (light bending throgh the mat) range 0.001 to 1
+		float roughness;//roughness of the surface
+		float sharpness;//sharpness of the reflection 0 to 1000
+
+	};
+	//end of mat class
 	class Mesh//mesh class
 	{
 	public:
+		Mat meshmat;  //mesh material
+
 		unsigned long int vert_nums;      //number of verts
 		unsigned long int faces_nums;     //number of faces
 		unsigned long int total_size;     //total size of the verts data
 
 		unsigned long int *indecies;      //vert indecies
 
-		GLuint text_ID_diff;              //diffuse texture ID
-		GLuint text_ID_spec;              //specular texture ID
-		GLuint text_ID_normal;            //normal map texure ID
-		GLuint text_ID_height;            //height map texture ID
-		GLuint text_ID_mask;              //mask texture ID
+		unsigned long int text_ID_diff;               //diffuse texture ID
+		unsigned long int text_ID_spec;               //specular texture ID
+		unsigned long int text_ID_normal;             //normal map texure ID
+		unsigned long int text_ID_height;             //height map texture ID
+		unsigned long int text_ID_mask;               //mask texture ID
+		unsigned long int text_ID_alphamap;			  //apha map texture ID
+		unsigned long int text_ID_dispmap;			  //displacement map texture ID
+		unsigned long int text_ID_TFmap;			  //transmision filter map texture ID
 
 		bool have_diff_text;              //have diffuse texture? 
 		bool have_spec_text;              //have specular texture? 
 		bool have_NM_text;                //have normals map texture? 
 		bool have_HM_text;                //have height map texture? 
 		bool have_mask_text;              //have mask texture? 
+		bool have_alphamap_text;		  //have alpha mape texture?
+		bool have_dispmap_text;			  //have alpha mape texture?
+		bool have_TFmap_text;			  //have alpha mape texture?
+
 		bool hidden;                      //is mesh hidden?
 		bool clear_last_buff;             //clear last buffer in updat?
 		bool needs_update;                //mesh needs an update
