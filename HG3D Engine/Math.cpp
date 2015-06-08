@@ -131,6 +131,27 @@ namespace HG3D_Engine
 				ret.x[i] += x[int(i / 4) * 4 +j] * input.x[j * 4 + i % 4]; //do the multipliction 
 		return ret;
 	}
+	vector __fastcall _4x4matrix::operator * (vector input)//mat4 multiply
+	{
+		vector ret;
+		ret.x = x[0] * input.x + x[1] * input.y + x[2] * input.z;
+		ret.y = x[4] * input.x + x[5] * input.y + x[6] * input.z;//do the multiplication there is no w its vector
+		ret.z = x[8] * input.x + x[9] * input.y + x[10] * input.z;
+		return ret;
+	}	
+	point __fastcall _4x4matrix::operator * (point input)//mat4 multiply
+	{
+		point ret;
+		double w = 0;
+		ret.x = x[0] * input.x + x[1] * input.y + x[2] * input.z;
+		ret.y = x[4] * input.x + x[5] * input.y + x[6] * input.z;//do the multiplication there is no w its vector
+		ret.z = x[8] * input.x + x[9] * input.y + x[10] * input.z;
+		w += x[12] * input.x + x[13] * input.y + x[14] * input.z + x[15];//calculate w
+		ret.x /= w;//divide by w
+		ret.y /= w;
+		ret.z /= w;
+		return ret;
+	}
 	void __fastcall _4x4matrix::LoadIdentity()//load matric with i
 	{
 		for (register int i = 0; i < 16; i++)
@@ -144,14 +165,33 @@ namespace HG3D_Engine
 		for (register int i = 0; i < 16; i++)
 				x[i] = 0.0;
 	}
-	void __fastcall _4x4matrix::LoadScaler(float sx,float sy,float sz)//load matric with 0
+	void __fastcall _4x4matrix::LoadScaler(float sx,float sy,float sz)//load scaler matrix
 	{
 		LoadIdentity();//w is set to 1 all others are 0
 		x[0] = sx;
 		x[5] = sy;  //set the matrix
 		x[10] = sz;
 	}
-
+	void __fastcall _4x4matrix::LoadTranslate(float sx, float sy, float sz)//load translate matrix
+	{
+		LoadIdentity();//load i
+		x[3] = sx;
+		x[7] = sy;  //set the matrix
+		x[11] = sz;
+	}
+	void __fastcall _4x4matrix::LoadRotation(vector axis, point origin, float theta)//load rotation matrix
+	{
+		axis = normalize(axis);
+		float u = (float)axis.x, v = (float)axis.y, w = (float)axis.z;
+		float u2 = (float)axis.x*axis.x, v2 = (float)axis.y*axis.y, w2 = (float)axis.z*axis.z;
+		float a = (float)origin.x, b = (float)origin.y, c = (float)origin.z;
+		float L=v2+u2+w2;
+		float sqrtL=sqrt(L);
+		x[0] = (float)u2 + (v2 + w2)*cos(theta);				x[1] = (float)u*v*(1 - cos(theta)) - w*sin(theta);	x[2] = (float)w*u*(1 - cos(theta)) + v*sin(theta);	x[3] = (float)(a*(v2 + w2) - u*(b*v + c*w))*(1 - cos(theta)) + (b*w - c*v)*sin(theta);
+		x[4] = (float)u*v*(1 - cos(theta)) + w*sin(theta);		x[5] = (float)v2 + (u2 + w2)*cos(theta);			x[6] = (float)w*v*(1 - cos(theta)) - u*sin(theta);	x[7] = (float)(b*(u2 + w2) - v*(a*u + c*w))*(1 - cos(theta)) + (c*u - a*w)*sin(theta);
+		x[8] = (float)u*w*(1 - cos(theta)) - v*sin(theta);		x[9] = (float)w*v*(1 - cos(theta)) + u*sin(theta);	x[10] = (float)w2 + (v2 + u2)*cos(theta);			x[11] = (float)(c*(u2 + v2) - w*(b*v + a*u))*(1 - cos(theta)) + (a*v - b*u)*sin(theta);
+		x[12] = (float)0.0;										x[13] = (float)0.0;									x[14] = (float)0.0;									x[15] = (float)1;
+	}
 	_4x4matrix LookAt(point cam_pos, vector forward, vector up)
 	{
 		vector xaxis, yaxis, zaxis;//define axises;
@@ -178,10 +218,10 @@ namespace HG3D_Engine
 		float w = right - left;//width
 		float h = top - buttom;//height
 		float d = farz - nearz;//depth
-		return_mat.x[0] = (float)2.0 * nearz / w;    return_mat.x[4] = (float)0.0;                   return_mat.x[8] = (float)0.0;						return_mat.x[12] = 0;
-		return_mat.x[1] = (float)0.0;                return_mat.x[5] = (float)2.0 * nearz / h;       return_mat.x[9] = (float)0.0;						return_mat.x[13] = 0;
-		return_mat.x[2] = (float)(right + left) / w; return_mat.x[6] = (float)(top + buttom) / h;    return_mat.x[10] = (float)-1.0*(farz + nearz) / d;	return_mat.x[14] = -1;
-		return_mat.x[3] = (float)0.0;                return_mat.x[7] = (float)0.0;                   return_mat.x[11] = (float)-1.0*nearz*farz / d;		return_mat.x[15] = 0;
+		return_mat.x[0] = (float)2.0 * nearz / w;    return_mat.x[4] = (float)0.0;                   return_mat.x[8] = (float)0.0;						return_mat.x[12] = (float)0.0;
+		return_mat.x[1] = (float)0.0;                return_mat.x[5] = (float)2.0 * nearz / h;       return_mat.x[9] = (float)0.0;						return_mat.x[13] = (float)0.0;
+		return_mat.x[2] = (float)(right + left) / w; return_mat.x[6] = (float)(top + buttom) / h;    return_mat.x[10] = (float)-1.0*(farz + nearz) / d;	return_mat.x[14] = (float)-1.0;
+		return_mat.x[3] = (float)0.0;                return_mat.x[7] = (float)0.0;                   return_mat.x[11] = (float)-1.0*nearz*farz / d;		return_mat.x[15] = (float)0.0;
 		return return_mat;
 	}
 }

@@ -38,16 +38,16 @@ namespace HG3D_Engine
 	{
 	public:
 		long double x, y, z;
-		void __fastcall build(point start, point end);//point to point vector
-		void __fastcall build(long double ix, long double iy, long double iz);//simpile build
-		void __fastcall build(float ix, float iy, float iz);//simpile build with float
-		void __fastcall operator =(vector intery);//set value
-		vector __fastcall operator +(vector entry);//vector vector sum
-		vector __fastcall operator *(long double entry);//vector number multipliction
-		vector __fastcall operator /(long double entry);//vector number division
-		vector __fastcall operator *(float entry);//vector number multipliction
-		vector __fastcall operator /(float entry);//vector number division
-		long double __fastcall getsize();//get vector size
+		void __declspec(dllexport) __fastcall build(point start, point end);//point to point vector
+		void __declspec(dllexport) __fastcall build(long double ix, long double iy, long double iz);//simpile build
+		void __declspec(dllexport) __fastcall build(float ix, float iy, float iz);//simpile build with float
+		void __declspec(dllexport) __fastcall operator =(vector intery);//set value
+		vector __declspec(dllexport) __fastcall operator +(vector entry);//vector vector sum
+		vector __declspec(dllexport) __fastcall operator *(long double entry);//vector number multipliction
+		vector __declspec(dllexport) __fastcall operator /(long double entry);//vector number division
+		vector __declspec(dllexport) __fastcall operator *(float entry);//vector number multipliction
+		vector __declspec(dllexport) __fastcall operator /(float entry);//vector number division
+		long double __declspec(dllexport) __fastcall getsize();//get vector size
 	};
 	//end of 3d vector class
 	long double __fastcall dot(vector v1, vector v2); //dot product
@@ -61,10 +61,14 @@ namespace HG3D_Engine
 	public:
 		float x[16];
 		_4x4matrix __declspec(dllexport) __fastcall operator * (_4x4matrix input);//mat4 multiply
+		vector __declspec(dllexport) __fastcall operator * (vector input);//mat4 multiply by vector
+		point __declspec(dllexport) __fastcall operator * (point input);//mat4 multiply by point
 		void __declspec(dllexport) __fastcall operator = (_4x4matrix input);//=
 		void __declspec(dllexport) __fastcall LoadIdentity();//load matric with i
 		void __declspec(dllexport) __fastcall LoadZero();//load matric with 0
-		void __declspec(dllexport) __fastcall LoadScaler(float sx, float sy, float sz);//load matric with 0
+		void __declspec(dllexport) __fastcall LoadScaler(float sx, float sy, float sz);//load scaler matrix
+		void __declspec(dllexport) __fastcall LoadTranslate(float sx, float sy, float sz);//load translate matrix
+		void __declspec(dllexport) __fastcall LoadRotation(vector axis, point origin, float theta);//load rotation matrix
 	};
 	//end of rotation class
 	_4x4matrix LookAt(point cam_pos,vector forward,vector up);//get view mat
@@ -78,6 +82,7 @@ namespace HG3D_Engine
 	{
 	public:
 		unsigned long int index[3];   //face indicies
+		void __declspec(dllexport) operator=(face input);//= operator
 	};
 	//end of face class
 	class vertex //vertex class
@@ -86,6 +91,7 @@ namespace HG3D_Engine
 		float x, y, z;       //positions
 		float nx, ny, nz;    //normals
 		float cx, cy;        //coords
+		void __declspec(dllexport) operator=(vertex input);//= operator
 	};
 	//end of vertex class
 	class Mat//material class
@@ -103,6 +109,8 @@ namespace HG3D_Engine
 		float optical_density;//optical density (light bending throgh the mat) range 0.001 to 1
 		float roughness;//roughness of the surface
 		float sharpness;//sharpness of the reflection 0 to 1000
+
+		void __declspec(dllexport) operator=(Mat input);//= operator
 
 	};
 	//end of mat class
@@ -152,10 +160,11 @@ namespace HG3D_Engine
 
 		void __declspec(dllexport) load_mesh(char *path);       //.obj mesh loader 3 verts for each face
 		void __declspec(dllexport) load_optimized(char *path);  //.obj mesh loader reuse the verts (time consumeing process)
-		void __declspec(dllexport) free_mesh();                 //free the mesh memory
+		void __declspec(dllexport) free_mesh();                 //free the mesh memory(cpu+gpu)
 
 		void __declspec(dllexport) update_vbo();				//update mesh vbo
-
+		void __declspec(dllexport) operator=(Mesh input);		//= operator
+		void __declspec(dllexport) clone_NMA(Mesh input);		//clone with the same memory allocation (no new memory is allocated)
 	};
 	//end of mesh class
 	//end of mesh libs
@@ -168,16 +177,16 @@ namespace HG3D_Engine
 		_4x4matrix ProjectionMatrix;//projection
 
 		float Left, Right, Buttom, Top, Near, Far;//projection property
-		float camera_viewpost[4];//view port property
+		float camera_viewport[4];//view port property
 
-		point camer_position;//camera position
+		point camera_position;//camera position
 
 		vector forward;//forwar vector
 		vector up;//up vector
 
 		bool needs_update;//camera needs an update
-
 		void __declspec(dllexport) update_camera();//update camera
+		void __declspec(dllexport) fps_camera(float pitch,float yaw,vector head_up);//pith and yaw the camera in fps mode
 
 	};
 	//end of camera class
@@ -192,7 +201,7 @@ namespace HG3D_Engine
 
 		camera *cameras;						//allow sveral cameras
 
-		unsigned long int current_camera_nums;	//current used camera
+		unsigned long int current_camera_nums;	//number of current used camera
 		unsigned long int cameras_nums;			//number of cameras
 		unsigned long int mesh_nums;			//number of meshs
 		unsigned long int vert_nums;			//total number of verts
@@ -200,15 +209,30 @@ namespace HG3D_Engine
 		unsigned long int rendere_ID;			//will be initialized in init
 
 		unsigned long int *mesh_draw_order;		//the order in which meshs are drawn
-		unsigned long int *current_cameras;		//current used camera
+		unsigned long int *current_cameras;		//current used cameras
 
-		int __declspec(dllexport) add_camera();	//add a camera
-		int __declspec(dllexport) add_mesh();	//add a mesh 
+		GLuint Shaders[100];					//max 100 shaders
+
+		void __declspec(dllexport) add_current_camera(unsigned long int camera_ID);	//add a current camera
+		void __declspec(dllexport) delete_current_camera(unsigned long int camera_ID);	//delete a current camera
+		
+		unsigned long int __declspec(dllexport) add_camera();	//add a camera
+		unsigned long int __declspec(dllexport) add_mesh(char* path);	//add a mesh 
 
 		void __declspec(dllexport) init();		//initialize function
-		void __declspec(dllexport) render();	//render the scene using current camera
+		void __declspec(dllexport) render();	//render the scene using current cameras
 
 
+
+		/******************************************************************/
+		/**************************test functions**************************/
+		/******************************************************************/
+		/******************************************************************/
+		void __declspec(dllexport) test_render();
+		/******************************************************************/
+		/******************************************************************/
+		/**************************test functions**************************/
+		/******************************************************************/
 
 		/******************************************************************/
 		/**************************test console****************************/

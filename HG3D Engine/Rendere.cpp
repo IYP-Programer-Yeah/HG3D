@@ -104,6 +104,25 @@ void SetupPixelFormat_WND_DC(HDC hDC) //setup pixel format
 }
 namespace HG3D_Engine
 {
+	void camera::update_camera()//update camera
+	{
+		ViewMatrix = LookAt(camera_position, forward,up);//update view matrix
+		ProjectionMatrix = Projection(Left, Right, Buttom, Top, Near, Far);//update projection
+		needs_update = 0;
+	}
+	void camera::fps_camera(float pitch, float yaw, vector head_up)//update camera
+	{
+		_4x4matrix rotationP;
+		_4x4matrix rotationY;
+		point o;
+		o.build(0.0f, 0.0f, 0.0f);
+		rotationP.LoadRotation(head_up, o, pitch);//calculate rotaton matrix for pitch
+		rotationY.LoadRotation(cross(head_up, forward), o, yaw);//calculate rotaton matrix for yaw
+		forward = rotationY*(rotationP*forward);//multiply by mats pitch first
+		up = rotationY*(rotationP*up);//multiply by mats pitch first
+		needs_update = 1;
+	}
+
 	void Renderer::init()
 	{
 		mesh_nums = 0;
@@ -111,6 +130,8 @@ namespace HG3D_Engine
 		total_size = 0;            //initialize values
 		cameras_nums = 0;
 		current_camera_nums = 0;
+		meshes =(Mesh*) malloc(0);
+		cameras = (camera*)malloc(0);
 		rendere_ID = renderer_class_nums;//give it an ID
 		renderer_class_nums++;//a renderer added
 		SetupPixelFormat_WND_DC(hdc);//setup the pixel format
@@ -121,7 +142,7 @@ namespace HG3D_Engine
 		glDepthFunc(GL_LEQUAL); //less or equal(closer) z are writen
 		glEnable(GL_CULL_FACE); //cull the back face 
 		glCullFace(GL_BACK);//cull the back face
-
+		Shaders[0] = LoadShaders("..\\HG3D Engine\\VS00.txt", "..\\HG3D Engine\\FS00.txt");//load shaders
 		/******************************************************************/
 		/**************************test console****************************/
 		/******************************************************************/
@@ -133,39 +154,97 @@ namespace HG3D_Engine
 		tempstring = tempstring + inttostring(rendere_ID);
 		tempstring = tempstring + '\n';
 		WriteConsole(myConsoleHandle, tempstring.string1, strlen(tempstring.string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[0].string1, strlen(Final_str[0].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[1].string1, strlen(Final_str[1].string1), &cCharsWritten, NULL);
 		/******************************************************************/
 		/******************************************************************/
 		/**************************test console****************************/
 		/******************************************************************/
+	}
+	unsigned long int Renderer::add_mesh(char* path)	//add a mesh 
+	{
+		mesh_nums++;//add number of meshes by 1
+		Mesh *meshes_the_next = (Mesh *)malloc(sizeof(Mesh)*mesh_nums);//allocate new meshes' memory
 
 
+		for (register unsigned long int i = 0; i < mesh_nums - 1; i++)
+			meshes_the_next[i].clone_NMA(meshes[i]);//clone last data
 
-		Mesh sponza0;
-		sponza0.load_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
-		sponza0.clear_last_buff = 0;
-		sponza0.update_vbo();
 
-		GLuint shader=LoadShaders("..\\HG3D Engine\\VS00.txt", "..\\HG3D Engine\\FS00.txt");
-		WriteConsole(myConsoleHandle, Final_str[0].string1, strlen(Final_str[0].string1), &cCharsWritten, NULL);
-		WriteConsole(myConsoleHandle, Final_str[1].string1, strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		meshes_the_next[mesh_nums - 1].clear_last_buff = 0;//don't clear last buffer this is first run of this mesh
+		meshes_the_next[mesh_nums-1].load_mesh(path);//load mesh from path
 
-		glUseProgram(shader);
-		_4x4matrix proj = Projection(-1.0, 1.0, -1.0, 1.0, 1, 10000);
-		glUniformMatrix4fv(glGetUniformLocation(shader, "ProjectionMatrix"), 1, 0, proj.x);
-		vector up, forward;
-		up.build((long double) 0.0, (long double) 1.0, (long double) 0.0);
-		forward.build((long double)-1.0, (long double) 0.0, (long double) 0.0);
-		point campos;
-		campos.build(sponza0.mesh_center.x + 11.0, 0.0, 0.0);//(float)sponza0.mesh_center.y+0.0, (float)sponza0.mesh_center.z+0.0);
-		_4x4matrix view = LookAt(campos, forward, up);
-		sponza0.model_matrix.LoadScaler(100.0, 100.0, 100.0);
-		_4x4matrix view_X_model = sponza0.model_matrix*view;
-		glUniformMatrix4fv(glGetUniformLocation(shader, "ModelViewMatrix"), 1, 0, view_X_model.x);
+
+		total_size += meshes_the_next[mesh_nums - 1].total_size;//update total size
+		vert_nums += meshes_the_next[mesh_nums - 1].vert_nums;//update total vert nums
+
+
+		free(meshes);//free last data
+		meshes = meshes_the_next;//replace the pointer to new mesh data
+
+		return mesh_nums - 1;//return the added mesh's ID
+	}
+	unsigned long int Renderer::add_camera()//update camera 
+	{
+		cameras_nums++;//add number of cameras by 1
+		camera *cameras_the_next = (camera *)malloc(sizeof(camera)*1/*cameras_num*s*/);//allocate new meshes' memory
+
+
+		for (register unsigned long int i = 0; i < cameras_nums - 1; i++)
+			cameras_the_next[i] = cameras[i];//clone last data
+
+
+		cameras_the_next[cameras_nums - 1].Near=1.0f;//init to default
+		cameras_the_next[cameras_nums - 1].Far = 1000.0f;//init to default
+		cameras_the_next[cameras_nums - 1].Left = -1.0f;//init to default
+		cameras_the_next[cameras_nums - 1].Right = 1.0f;//init to default
+		cameras_the_next[cameras_nums - 1].Top = 1.0f;//init to default
+		cameras_the_next[cameras_nums - 1].Buttom = -1.0f;//init to default
+		cameras_the_next[cameras_nums - 1].forward.build(0.0f, 0.0f, 1.0f);//init to default
+		cameras_the_next[cameras_nums - 1].up.build(0.0f, 1.0f, 0.0f);//init to default
+		cameras_the_next[cameras_nums - 1].camera_position.build(0.0f, 0.0f, 0.0f);//init to default
+		cameras_the_next[cameras_nums - 1].camera_viewport[0] = 0;//init to default
+		cameras_the_next[cameras_nums - 1].camera_viewport[1] = 0;//init to default
+		cameras_the_next[cameras_nums - 1].camera_viewport[2] = 600;//init to default
+		cameras_the_next[cameras_nums - 1].camera_viewport[3] = 600;//init to default
+		cameras_the_next[cameras_nums - 1].update_camera();//update camera
+
+		free(cameras);//free last data
+		cameras = cameras_the_next;//replace the pointer to new camera data
+		return cameras_nums - 1;//return the added camera's ID
+	}
+	/******************************************************************/
+	/**************************test functions**************************/
+	/******************************************************************/
+	/******************************************************************/
+	void Renderer::test_render()
+	{
 		glClearDepth(1);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		glViewport(0,0,1366, 768);
-		glBindVertexArray(sponza0.VAO_ID);
-		glDrawElements(GL_TRIANGLES, sponza0.vert_nums, GL_UNSIGNED_INT, sponza0.indices);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		if (cameras_nums > 0)
+		{
+			if (cameras[0].needs_update)
+				cameras[0].update_camera();
+			_4x4matrix proj = cameras[0].ProjectionMatrix;
+			_4x4matrix view = cameras[0].ViewMatrix;
+
+			glViewport(cameras[0].camera_viewport[0], cameras[0].camera_viewport[1], cameras[0].camera_viewport[2], cameras[0].camera_viewport[3]);
+			glUseProgram(Shaders[0]);
+			glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ProjectionMatrix"), 1, 0, proj.x);
+			for (register unsigned long int i = 0; i < mesh_nums; i++)
+			{
+				if (meshes[i].needs_update)
+					meshes[i].update_vbo();
+				_4x4matrix view_X_model = meshes[i].model_matrix*view;
+				glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ModelViewMatrix"), 1, 0, view_X_model.x);
+				glBindVertexArray(meshes[i].VAO_ID);
+				glDrawElements(GL_TRIANGLES, meshes[i].vert_nums, GL_UNSIGNED_INT, meshes[i].indices);
+			}
+		}
 		SwapBuffers(hdc);
 	}
+	/******************************************************************/
+	/******************************************************************/
+	/**************************test functions**************************/
+	/******************************************************************/
 }

@@ -3,6 +3,41 @@
 #include <allocators>
 namespace HG3D_Engine
 {
+	void face::operator=(face input)//= operator
+	{
+		for (register int i = 0; i < 3; i++)
+			index[i] = input.index[i];//simply copy index
+	}
+
+	void vertex::operator=(vertex input)//= operator
+	{
+		x = input.x;//copy x y z
+		y = input.y;
+		z = input.z;
+		nx = input.nx;//copy normals
+		ny = input.ny;
+		nz = input.nz;
+		cx = input.cx;//copy coords
+		cy = input.cy;
+	}
+
+	void Mat::operator = (Mat input)//= operator
+	{
+		for (register int i = 0; i < 3; i++)
+		{
+			Ambient[i] = input.Ambient[i];
+			Specular[i] = input.Specular[i];//copy colors
+			Diffuse[i] = input.Diffuse[i];
+			Emission[i] = input.Emission[i];
+			TF[i] = input.TF[i];
+		}
+		dissolve = input.dissolve;
+		Spec_Exponent = input.Spec_Exponent;
+		optical_density = input.optical_density;//copy floats
+		roughness = input.roughness;
+		sharpness = input.sharpness;
+	}
+
 	void Mesh::load_mesh(char *path)
 	{
 		objLoader MeshObj;
@@ -35,8 +70,11 @@ namespace HG3D_Engine
 				verts[i * 3 + j].ny = (float)MeshObj.normalList[MeshObj.faceList[i]->normal_index[j]]->e[1];
 				verts[i * 3 + j].nz = (float)MeshObj.normalList[MeshObj.faceList[i]->normal_index[j]]->e[2];
 				//load vert coords
-				//verts[i * 3 + j].cx = (float)MeshObj.textureList[MeshObj.faceList[i]->texture_index[j]]->e[0];
-				//verts[i * 3 + j].cy = (float)MeshObj.textureList[MeshObj.faceList[i]->texture_index[j]]->e[1];
+				if (MeshObj.textureCount > 0)
+				{
+					verts[i * 3 + j].cx = (float)MeshObj.textureList[MeshObj.faceList[i]->texture_index[j]]->e[0];
+					verts[i * 3 + j].cy = (float)MeshObj.textureList[MeshObj.faceList[i]->texture_index[j]]->e[1];
+				}
 			}
 		}
 		float mesh_cube_vals[2][3];
@@ -87,5 +125,96 @@ namespace HG3D_Engine
 		glBindBuffer(GL_ARRAY_BUFFER, 0);//unbinde vbo
 		glBindVertexArray(0);//unbind vao
 		clear_last_buff = 1;//can clear the buffer next time
+	}
+	void Mesh::operator=(Mesh input)//= operator
+	{
+		//copy ints
+		vert_nums = input.vert_nums;
+		faces_nums = input.faces_nums;
+		total_size = input.total_size;
+
+		text_ID_diff = input.text_ID_diff;
+		text_ID_diff = input.text_ID_spec;
+		text_ID_normal = input.text_ID_normal;
+		text_ID_height = input.text_ID_height;
+		text_ID_mask = input.text_ID_mask;
+		text_ID_alphamap = input.text_ID_alphamap;
+		text_ID_dispmap = input.text_ID_dispmap;
+		text_ID_TFmap = input.text_ID_TFmap;
+
+		//copy bools
+		have_diff_text = input.have_diff_text;
+		have_spec_text = input.have_spec_text;
+		have_NM_text = input.have_NM_text;
+		have_HM_text = input.have_HM_text;
+		have_mask_text = input.have_mask_text;
+		have_alphamap_text = input.have_alphamap_text;
+		have_dispmap_text = input.have_dispmap_text;
+		have_TFmap_text = input.have_TFmap_text;
+
+		hidden = input.hidden;
+		clear_last_buff = 1;//can clear last buffers
+		needs_update = 1;//the mesh has just been copied needs update
+
+		//copy mesh cube data
+		for (register int i = 0; i < 8; i++)
+			mesh_cube[i] = input.mesh_cube[i];
+		mesh_center = input.mesh_center;
+		model_matrix = input.model_matrix;
+
+		verts = (vertex*)malloc(total_size);//allocate the vert memory
+		faces = (face*)malloc(faces_nums*face_size);//allocate the faces memory
+		//double the data
+		for (register unsigned long int i = 0; i < faces_nums; i++)
+			faces[i] = input.faces[i];
+		for (register unsigned long int i = 0; i < vert_nums; i++)
+			verts[i] = input.verts[i];
+		indices = (unsigned long int*)faces;
+
+	}
+	void Mesh::clone_NMA(Mesh input)		//clone with the same memory allocation (no new memory is allocated)
+	{
+		//copy ints
+		vert_nums = input.vert_nums;
+		faces_nums = input.faces_nums;
+		total_size = input.total_size;
+
+		text_ID_diff = input.text_ID_diff;
+		text_ID_diff = input.text_ID_spec;
+		text_ID_normal = input.text_ID_normal;
+		text_ID_height = input.text_ID_height;
+		text_ID_mask = input.text_ID_mask;
+		text_ID_alphamap = input.text_ID_alphamap;
+		text_ID_dispmap = input.text_ID_dispmap;
+		text_ID_TFmap = input.text_ID_TFmap;
+
+		//copy bools
+		have_diff_text = input.have_diff_text;
+		have_spec_text = input.have_spec_text;
+		have_NM_text = input.have_NM_text;
+		have_HM_text = input.have_HM_text;
+		have_mask_text = input.have_mask_text;
+		have_alphamap_text = input.have_alphamap_text;
+		have_dispmap_text = input.have_dispmap_text;
+		have_TFmap_text = input.have_TFmap_text;
+
+		hidden = input.hidden;
+		clear_last_buff = input.clear_last_buff;
+		needs_update = input.needs_update;
+
+		//copy mesh cube data
+		for (register int i = 0; i < 8; i++)
+			mesh_cube[i] = input.mesh_cube[i];
+		mesh_center = input.mesh_center;
+		model_matrix = input.model_matrix;
+
+		//copy pointers (using same memoru allocation)
+		faces = input.faces;
+		verts = input.verts;
+
+		//same memory same vbo and same vao
+		VAO_ID = input.VAO_ID;
+		VBO_ID = input.VBO_ID;
+		indices = input.indices;
 	}
 }
