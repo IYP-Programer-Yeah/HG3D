@@ -153,9 +153,9 @@ namespace HG3D_Engine
 		tempstring = "Renderer ID: ";
 		tempstring = tempstring + inttostring(rendere_ID);
 		tempstring = tempstring + '\n';
-		WriteConsole(myConsoleHandle, tempstring.string1, strlen(tempstring.string1), &cCharsWritten, NULL);
-		WriteConsole(myConsoleHandle, Final_str[0].string1, strlen(Final_str[0].string1), &cCharsWritten, NULL);
-		WriteConsole(myConsoleHandle, Final_str[1].string1, strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, tempstring.string1, (DWORD)strlen(tempstring.string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
 		/******************************************************************/
 		/******************************************************************/
 		/**************************test console****************************/

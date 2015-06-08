@@ -177,7 +177,7 @@ namespace HG3D_Engine
 		_4x4matrix ProjectionMatrix;//projection
 
 		float Left, Right, Buttom, Top, Near, Far;//projection property
-		float camera_viewport[4];//view port property
+		GLint camera_viewport[4];//view port property
 
 		point camera_position;//camera position
 
