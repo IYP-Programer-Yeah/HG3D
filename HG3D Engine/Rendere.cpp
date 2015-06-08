@@ -31,16 +31,16 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 			GLint maxLength = 0;
 			string Log;
 			Log = "";
-			glGetShaderInfoLog(VertexShaderID, sizeof(Log.string1), &maxLength, Log.string1);//get the log
-			Final_str[0] = Final_str[0] + Log;//add the log to the string
-			Final_str[0] = Final_str[0] + "\n\n\n";//add triple new lines
+			glGetShaderInfoLog(VertexShaderID, sizeof(Log.string1), &maxLength, Log.string1); //get the log
+			Final_str[0] = Final_str[0] + Log; //add the log to the string
+			Final_str[0] = Final_str[0] + "\n\n\n"; //add triple new lines
 		}
 		else
-			Final_str[0] = Final_str[0] + "well compiled. \n";//every thing went well
+			Final_str[0] = Final_str[0] + "awesomely compiled. \n";  //every thing went well
 		glAttachShader(ProgramID, VertexShaderID);
 	}
 	else
-		Final_str[0] = Final_str[0] + "not found. \n";//no such path idiot
+		Final_str[0] = Final_str[0] + "not found. \n"; //no such path idiot
 	Final_str[1] = "fragment shader log: \n";
 	if (F_Shader_Path != NULL)
 	{
@@ -54,12 +54,12 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 			GLsizei maxLength = 0;
 			string Log;
 			Log = "";
-			glGetShaderInfoLog(FragmentShaderID, sizeof(Log.string1)/2, &maxLength, Log.string1);//get the log
-			Final_str[1] = Final_str[1] + Log;//add the log to the string
-			Final_str[1] = Final_str[1] + "\n\n\n";//add triple new lines
+			glGetShaderInfoLog(FragmentShaderID, sizeof(Log.string1)/2, &maxLength, Log.string1); //get the log
+			Final_str[1] = Final_str[1] + Log; //add the log to the string
+			Final_str[1] = Final_str[1] + "\n\n\n"; //add triple new lines
 		}
 		else
-			Final_str[1] = Final_str[1] + "well compiled. \n";//every thing went well
+			Final_str[1] = Final_str[1] + "well compiled. \n"; //every thing went well
 		glAttachShader(ProgramID, FragmentShaderID);
 	}
 	else
