@@ -115,7 +115,7 @@ namespace HG3D_Engine
 		unsigned long int faces_nums;     //number of faces
 		unsigned long int total_size;     //total size of the verts data
 
-		unsigned long int *indecies;      //vert indecies
+		unsigned long int *indices;      //vert indices
 
 		unsigned long int text_ID_diff;               //diffuse texture ID
 		unsigned long int text_ID_spec;               //specular texture ID
