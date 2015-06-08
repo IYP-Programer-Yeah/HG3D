@@ -49,6 +49,7 @@ namespace HG3D_Engine
 			mesh_cube[i].build(mesh_cube_vals[i % 2][0], mesh_cube_vals[int(i / 2) % 2][1], mesh_cube_vals[int(i / 4)][2]); //build mesh cube
 		model_matrix.LoadIdentity();//initialie model matrix
 		needs_update = 1;//after loading mesh need to update the vbo
+		indices = (unsigned long int*)faces;//get the pointer it'll be used to draw elements
 
 	}
 	void Mesh::load_optimized(char *path)//load the .obj optimize for memory

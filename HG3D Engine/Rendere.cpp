@@ -36,7 +36,7 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 			Final_str[0] = Final_str[0] + "\n\n\n"; //add triple new lines
 		}
 		else
-			Final_str[0] = Final_str[0] + "awesomely compiled. \n";  //every thing went well
+			Final_str[0] = Final_str[0] + "well compiled. \n";  //every thing went well
 		glAttachShader(ProgramID, VertexShaderID);
 	}
 	else
@@ -165,7 +165,7 @@ namespace HG3D_Engine
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glViewport(0,0,1366, 768);
 		glBindVertexArray(sponza0.VAO_ID);
-		glDrawElements(GL_TRIANGLES, sponza0.vert_nums, GL_UNSIGNED_INT, sponza0.faces);
+		glDrawElements(GL_TRIANGLES, sponza0.vert_nums, GL_UNSIGNED_INT, sponza0.indices);
 		SwapBuffers(hdc);
 	}
 }
