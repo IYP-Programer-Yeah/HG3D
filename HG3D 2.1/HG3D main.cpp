@@ -11,6 +11,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.add_camera();
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 	Engine.meshes[0].model_matrix.LoadScaler(100.0f, 100.0f, 100.0f);
+	
 	/*
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 	HG3D_Engine::_4x4matrix temp[2];;
