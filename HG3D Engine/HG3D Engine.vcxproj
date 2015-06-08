@@ -133,7 +133,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="objLoader.cpp" />
     <ClCompile Include="obj_parser.cpp" />
-    <ClCompile Include="Rendere.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="string_extra.cpp" />
   </ItemGroup>
   <ItemGroup>

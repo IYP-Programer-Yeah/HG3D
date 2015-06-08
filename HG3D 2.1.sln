@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Headers", "Shared He
 		Shared Headers\hstring.h = Shared Headers\hstring.h
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics", "Physics\Physics.vcxproj", "{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -56,6 +58,12 @@ Global
 		{1BC64213-E9A2-47C5-B9CF-8FD3BA721C0A}.Release|Win32.Build.0 = Release|Win32
 		{1BC64213-E9A2-47C5-B9CF-8FD3BA721C0A}.Release|x64.ActiveCfg = Release|x64
 		{1BC64213-E9A2-47C5-B9CF-8FD3BA721C0A}.Release|x64.Build.0 = Release|x64
+		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Debug|Win32.Build.0 = Debug|Win32
+		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Debug|x64.ActiveCfg = Debug|Win32
+		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Release|Win32.ActiveCfg = Release|Win32
+		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Release|Win32.Build.0 = Release|Win32
+		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
