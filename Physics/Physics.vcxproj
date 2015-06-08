@@ -66,10 +66,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BasicIncludes.h" />
+    <ClInclude Include="defines.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="Physics.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="Physics.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HG3D Engine\HG3D Engine.vcxproj">
+      <Project>{7be2d072-e987-44ec-9135-48f38d967de9}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

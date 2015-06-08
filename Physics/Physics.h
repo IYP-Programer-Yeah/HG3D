@@ -3,11 +3,7 @@
 
 #include "BasicIncludes.h"
 
-#ifdef _DLLEXPORT
-#define DLLEXPORT __declspec(dllexport)
-#else
-#define DLLEXPORT __declspec(dllimport)
-#endif
+
 
 
 namespace Physics
