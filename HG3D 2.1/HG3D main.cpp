@@ -22,7 +22,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.cameras[0].camera_position.build(12.0f, 0.0f, 0.0f);
 	Engine.cameras[0].forward.build(-1.0f, 0.0f, 0.0f);
 	Engine.cameras[0].needs_update = 1;
-	while (GetMessage(msg, NULL, 0, 0))
+	while (PeekMessage(msg,0,0,0,0))//or use GetMessage(msg, NULL, 0, 0)
 	{
 		DispatchMessage(msg);
 		Engine.cameras[0].fps_camera(0.01f, 0.0f, Engine.cameras[0].up);
