@@ -131,9 +131,9 @@ namespace HG3D_Engine
 		bool have_NM_text;                //have normals map texture? 
 		bool have_HM_text;                //have height map texture? 
 		bool have_mask_text;              //have mask texture? 
-		bool have_alphamap_text;		  //have alpha mape texture?
-		bool have_dispmap_text;			  //have alpha mape texture?
-		bool have_TFmap_text;			  //have alpha mape texture?
+		bool have_alphamap_text;		  //have alpha map texture?
+		bool have_dispmap_text;			  //have displacement map texture?
+		bool have_TFmap_text;			  //have transmision filter map texture?
 
 		bool hidden;                      //is mesh hidden?
 		bool clear_last_buff;             //clear last buffer in updat?
