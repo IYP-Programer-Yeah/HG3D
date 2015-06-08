@@ -177,7 +177,7 @@ namespace HG3D_Engine
 
 		bool needs_update;//camera needs an update
 
-		void __declspec(dllexport) update_camra();//update camera
+		void __declspec(dllexport) update_camera();//update camera
 
 	};
 	//end of camera class
@@ -202,8 +202,8 @@ namespace HG3D_Engine
 		unsigned long int *mesh_draw_order;		//the order in which meshs are drawn
 		unsigned long int *current_cameras;		//current used camera
 
-		int __declspec(dllexport) add_camra();	//add a camera
-		int __declspec(dllexport) add_mesh();	//add a mesh
+		int __declspec(dllexport) add_camera();	//add a camera
+		int __declspec(dllexport) add_mesh();	//add a mesh 
 
 		void __declspec(dllexport) init();		//initialize function
 		void __declspec(dllexport) render();	//render the scene using current camera
