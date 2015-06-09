@@ -8,15 +8,18 @@ LRESULT CALLBACK Main_Window_WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM 
 	case WM_MOVE: //in case of movement update the rect data
 		Main_Windows.WNDx = LOWORD(lParam); //rect's x in lower bit
 		Main_Windows.WNDy = HIWORD(lParam); //rect's y in higher bit
+		Main_Windows.Needs_update = 1;//needs update
 		break;
 	case WM_SIZE: //in case of resize updtae the recs
 		Main_Windows.WNDw = LOWORD(lParam); //rect's width in lower bit
 		Main_Windows.WNDh = HIWORD(lParam); //rect's height in higher bit
+		Main_Windows.Needs_update = 1;//needs update
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(WM_QUIT);           //with no main windows there are no reasons to keep the program running
 		break;
 	default:
+		Main_Windows.Needs_update = 0;//needs update
 		return DefWindowProc(hWnd, Msg, wParam, lParam); //return default reaction
 	}
 	return 1;  //the reaction was done normally
@@ -48,4 +51,16 @@ MSG* GetMSG()
 HDC* GetHDC()
 {
 	return &Main_Windows.hdc; //return hdc adress so i can change the content
+}
+int GetW()//get width
+{
+	return Main_Windows.WNDw;
+}
+int GetH()//get height
+{
+	return Main_Windows.WNDh;
+}
+bool Get_Wind_Update_Stat()//get if needs update
+{
+	return Main_Windows.Needs_update;
 }

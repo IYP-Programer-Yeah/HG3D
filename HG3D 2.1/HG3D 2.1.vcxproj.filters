@@ -51,4 +51,9 @@
       <Filter>Resource Files\Models</Filter>
     </Media>
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="Resource\Models\Cube.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+  </ItemGroup>
 </Project>
