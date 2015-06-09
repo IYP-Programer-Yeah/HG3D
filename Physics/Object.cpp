@@ -3,7 +3,7 @@
 
 namespace Physics
 {
-	Object::Object()
+	PhysicsObject::PhysicsObject()
 	{
 		//Initialize everything to defaults
 
@@ -29,13 +29,13 @@ namespace Physics
 		m_Moveable = true;
 	}
 
-	Object::~Object()
+	PhysicsObject::~PhysicsObject()
 	{
 
 	}
 
 
-	void Object::Update(const long double& dt)
+	void PhysicsObject::Update(const long double& dt)
 	{
 		//Force = Mass * Acceleration
 		//Acceleration = Force / Mass 

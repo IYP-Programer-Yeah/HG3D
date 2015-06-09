@@ -5,12 +5,13 @@ using namespace HG3D_Engine;
 
 namespace Physics
 {
-	class Object
+	class PhysicsObject
 	{
 	public:
-		Object();
-		~Object();
+		PhysicsObject();
+		~PhysicsObject();
 	
+
 		void DLLEXPORT Update(const long double& Deltatime);
 	public:
 		bool m_Moveable;

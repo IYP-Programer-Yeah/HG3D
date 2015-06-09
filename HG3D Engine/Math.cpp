@@ -97,7 +97,12 @@ namespace HG3D_Engine
 	}
 	long double __fastcall vector::getsize()//get vector size
 	{
-		return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+		return sqrt(x*x + y*y + z*z);
+	}
+
+	long double __fastcall vector::getsizeSq()//get vector size squared
+	{
+		return x*x + y*y + z*z;
 	}
 
 	long double __fastcall dot(vector v1, vector v2) //dot product

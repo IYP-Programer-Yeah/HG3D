@@ -48,6 +48,7 @@ namespace HG3D_Engine
 		vector __declspec(dllexport) __fastcall operator *(float entry);//vector number multipliction
 		vector __declspec(dllexport) __fastcall operator /(float entry);//vector number division
 		long double __declspec(dllexport) __fastcall getsize();//get vector size
+		long double __declspec(dllexport) __fastcall getsizeSq();//get vector size squared
 	};
 	//end of 3d vector class
 	long double __fastcall dot(vector v1, vector v2); //dot product
