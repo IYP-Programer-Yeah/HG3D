@@ -23,10 +23,13 @@ namespace Physics
 		m_Force.y = 0.0;
 		m_Force.z = 0.0;
 
+		m_Gravity.build(0.0f, -9.8f, 0.0f);
+
 		//Initialize to 1 to avoid divide by zero accidentally
 		m_Mass = 1.0;
 
 		m_Moveable = true;
+		m_ApplyGravity = true;
 	}
 
 	PhysicsObject::~PhysicsObject()
@@ -40,9 +43,16 @@ namespace Physics
 		//Force = Mass * Acceleration
 		//Acceleration = Force / Mass 
 		m_Acceleration = m_Force / m_Mass;
-		
+
+
 		//Equivalent to m_Velocity += m_Acceleration * dt;
 		m_Velocity = m_Velocity + m_Acceleration * dt;
+
+		if (m_ApplyGravity)
+		{
+			//Equivalent to m_Velocity += m_Gravity * dt;
+			m_Velocity = m_Velocity + m_Gravity * dt;
+		}
 
 		vector NewPos;
 		NewPos = m_Velocity * dt;

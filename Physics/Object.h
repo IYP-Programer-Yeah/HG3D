@@ -15,11 +15,14 @@ namespace Physics
 		void DLLEXPORT Update(const long double& Deltatime);
 	public:
 		bool m_Moveable;
+		bool m_ApplyGravity;
+
 		point m_Position;
 
 		vector m_Force;
 		vector m_Velocity;
 		vector m_Acceleration;
+		vector m_Gravity;
 
 		long double m_Mass;
 	};
