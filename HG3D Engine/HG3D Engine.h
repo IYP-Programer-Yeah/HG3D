@@ -74,7 +74,10 @@ namespace HG3D_Engine
 	_4x4matrix LookAt(point cam_pos,vector forward,vector up);//get view mat
 
 	_4x4matrix Projection(float left, float right, float buttom, float top, float nearz, float farz);//projection matrix
-	
+
+	_4x4matrix __declspec(dllexport) __fastcall InverseTranspose(_4x4matrix input);//invers mat
+
+	_4x4matrix __declspec(dllexport) __fastcall Transpose(_4x4matrix input);//invers mat
 	//end of math libs
 
 	//mesh libs

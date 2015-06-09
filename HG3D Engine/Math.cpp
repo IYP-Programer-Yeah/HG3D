@@ -224,4 +224,140 @@ namespace HG3D_Engine
 		return_mat.x[3] = (float)0.0;                return_mat.x[7] = (float)0.0;                   return_mat.x[11] = (float)-1.0*nearz*farz / d;		return_mat.x[15] = (float)0.0;
 		return return_mat;
 	}
+	_4x4matrix __fastcall InverseTranspose(_4x4matrix input)//invers mat
+	{
+		float det = 0;
+		_4x4matrix return_mat;
+		return_mat.x[0] = input.x[5] * input.x[10] * input.x[15] -
+			input.x[5] * input.x[11] * input.x[14] -
+			input.x[9] * input.x[6] * input.x[15] +
+			input.x[9] * input.x[7] * input.x[14] +
+			input.x[13] * input.x[6] * input.x[11] -
+			input.x[13] * input.x[7] * input.x[10];
+
+		return_mat.x[4] = -input.x[4] * input.x[10] * input.x[15] +
+			input.x[4] * input.x[11] * input.x[14] +
+			input.x[8] * input.x[6] * input.x[15] -
+			input.x[8] * input.x[7] * input.x[14] -
+			input.x[12] * input.x[6] * input.x[11] +
+			input.x[12] * input.x[7] * input.x[10];
+
+		return_mat.x[8] = input.x[4] * input.x[9] * input.x[15] -
+			input.x[4] * input.x[11] * input.x[13] -
+			input.x[8] * input.x[5] * input.x[15] +
+			input.x[8] * input.x[7] * input.x[13] +
+			input.x[12] * input.x[5] * input.x[11] -
+			input.x[12] * input.x[7] * input.x[9];
+
+		return_mat.x[12] = -input.x[4] * input.x[9] * input.x[14] +
+			input.x[4] * input.x[10] * input.x[13] +
+			input.x[8] * input.x[5] * input.x[14] -
+			input.x[8] * input.x[6] * input.x[13] -
+			input.x[12] * input.x[5] * input.x[10] +
+			input.x[12] * input.x[6] * input.x[9];
+
+		return_mat.x[1] = -input.x[1] * input.x[10] * input.x[15] +
+			input.x[1] * input.x[11] * input.x[14] +
+			input.x[9] * input.x[2] * input.x[15] -
+			input.x[9] * input.x[3] * input.x[14] -
+			input.x[13] * input.x[2] * input.x[11] +
+			input.x[13] * input.x[3] * input.x[10];
+
+		return_mat.x[5] = input.x[0] * input.x[10] * input.x[15] -
+			input.x[0] * input.x[11] * input.x[14] -
+			input.x[8] * input.x[2] * input.x[15] +
+			input.x[8] * input.x[3] * input.x[14] +
+			input.x[12] * input.x[2] * input.x[11] -
+			input.x[12] * input.x[3] * input.x[10];
+
+		return_mat.x[9] = -input.x[0] * input.x[9] * input.x[15] +
+			input.x[0] * input.x[11] * input.x[13] +
+			input.x[8] * input.x[1] * input.x[15] -
+			input.x[8] * input.x[3] * input.x[13] -
+			input.x[12] * input.x[1] * input.x[11] +
+			input.x[12] * input.x[3] * input.x[9];
+
+		return_mat.x[13] = input.x[0] * input.x[9] * input.x[14] -
+			input.x[0] * input.x[10] * input.x[13] -
+			input.x[8] * input.x[1] * input.x[14] +
+			input.x[8] * input.x[2] * input.x[13] +
+			input.x[12] * input.x[1] * input.x[10] -
+			input.x[12] * input.x[2] * input.x[9];
+
+		return_mat.x[2] = input.x[1] * input.x[6] * input.x[15] -
+			input.x[1] * input.x[7] * input.x[14] -
+			input.x[5] * input.x[2] * input.x[15] +
+			input.x[5] * input.x[3] * input.x[14] +
+			input.x[13] * input.x[2] * input.x[7] -
+			input.x[13] * input.x[3] * input.x[6];
+
+		return_mat.x[6] = -input.x[0] * input.x[6] * input.x[15] +
+			input.x[0] * input.x[7] * input.x[14] +
+			input.x[4] * input.x[2] * input.x[15] -
+			input.x[4] * input.x[3] * input.x[14] -
+			input.x[12] * input.x[2] * input.x[7] +
+			input.x[12] * input.x[3] * input.x[6];
+
+		return_mat.x[10] = input.x[0] * input.x[5] * input.x[15] -
+			input.x[0] * input.x[7] * input.x[13] -
+			input.x[4] * input.x[1] * input.x[15] +
+			input.x[4] * input.x[3] * input.x[13] +
+			input.x[12] * input.x[1] * input.x[7] -
+			input.x[12] * input.x[3] * input.x[5];
+
+		return_mat.x[14] = -input.x[0] * input.x[5] * input.x[14] +
+			input.x[0] * input.x[6] * input.x[13] +
+			input.x[4] * input.x[1] * input.x[14] -
+			input.x[4] * input.x[2] * input.x[13] -
+			input.x[12] * input.x[1] * input.x[6] +
+			input.x[12] * input.x[2] * input.x[5];
+
+		return_mat.x[3] = -input.x[1] * input.x[6] * input.x[11] +
+			input.x[1] * input.x[7] * input.x[10] +
+			input.x[5] * input.x[2] * input.x[11] -
+			input.x[5] * input.x[3] * input.x[10] -
+			input.x[9] * input.x[2] * input.x[7] +
+			input.x[9] * input.x[3] * input.x[6];
+
+		return_mat.x[7] = input.x[0] * input.x[6] * input.x[11] -
+			input.x[0] * input.x[7] * input.x[10] -
+			input.x[4] * input.x[2] * input.x[11] +
+			input.x[4] * input.x[3] * input.x[10] +
+			input.x[8] * input.x[2] * input.x[7] -
+			input.x[8] * input.x[3] * input.x[6];
+
+		return_mat.x[11] = -input.x[0] * input.x[5] * input.x[11] +
+			input.x[0] * input.x[7] * input.x[9] +
+			input.x[4] * input.x[1] * input.x[11] -
+			input.x[4] * input.x[3] * input.x[9] -
+			input.x[8] * input.x[1] * input.x[7] +
+			input.x[8] * input.x[3] * input.x[5];
+
+		return_mat.x[15] = input.x[0] * input.x[5] * input.x[10] -
+			input.x[0] * input.x[6] * input.x[9] -
+			input.x[4] * input.x[1] * input.x[10] +
+			input.x[4] * input.x[2] * input.x[9] +
+			input.x[8] * input.x[1] * input.x[6] -
+			input.x[8] * input.x[2] * input.x[5];
+
+		det = input.x[0] * return_mat.x[0] + input.x[1] * return_mat.x[4] + input.x[2] * return_mat.x[8] + input.x[3] * return_mat.x[12];
+
+		if (det == 0)
+		{
+			return_mat.LoadZero();
+				return return_mat;//det is zero it's not inversable
+		}
+		for (register int i = 0; i < 16; i++)
+			return_mat.x[i] = return_mat.x[i] / det;
+
+		return return_mat;
+	}
+
+	_4x4matrix __fastcall Transpose(_4x4matrix input)//transpose mat
+	{
+		_4x4matrix return_mat;
+		for (register int i = 0; i < 16; i++)
+			return_mat.x[i] = input.x[(i%4)*4+int(i/4)];
+		return return_mat;
+	}
 }

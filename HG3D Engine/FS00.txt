@@ -1,5 +1,8 @@
 #version 150
-in vec3 Color;
+in vec4 normal;
+in vec4 position;
+in vec4 ligt_position;
+
 out vec4 Output1;
 
 
@@ -7,5 +10,7 @@ in vec4 color;
 
 void main() 
 {
-	Output1=color;
+	vec4 LTP=position-ligt_position;
+	
+	Output1=vec4(1.0)*dot(-normalize(LTP),normalize(normal));
 } 

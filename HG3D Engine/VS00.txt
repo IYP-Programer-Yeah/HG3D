@@ -3,14 +3,21 @@ in vec3 Vertex;
 in vec3 Normal;
 in vec2 Coord;
 
-out vec4 color;
+out vec4 normal;
+out vec4 position;
+out vec4 ligt_position;
 
 uniform mat4 ProjectionMatrix;
-uniform mat4 ModelViewMatrix;
-
+uniform mat4 ViewMatrix;
+uniform mat4 ModelMatrix;
+uniform mat4 NormalMatrix;
 
 void main()
 {
-	gl_Position=ProjectionMatrix *ModelViewMatrix*vec4(Vertex,1);
-	color=vec4(Normal.xyz,0);
+	position=ModelMatrix*vec4(Vertex,1);
+	ligt_position=vec4(12.0,0.0,0.0,1.0);
+
+	gl_Position=ProjectionMatrix*ViewMatrix*position;
+
+	normal=NormalMatrix*vec4(Normal.xyz,0);
 }

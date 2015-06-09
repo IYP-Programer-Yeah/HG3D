@@ -228,11 +228,13 @@ namespace HG3D_Engine
 			glViewport(cameras[0].camera_viewport[0], cameras[0].camera_viewport[1], cameras[0].camera_viewport[2], cameras[0].camera_viewport[3]);
 			glUseProgram(Shaders[0]);
 			glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ProjectionMatrix"), 1, 1, cameras[0].ProjectionMatrix.x);
+			glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ViewMatrix"), 1, 1, cameras[0].ViewMatrix.x);
 			for (register unsigned long int i = 0; i < mesh_nums; i++)
 			{
 				if (meshes[i].needs_update)
 					meshes[i].update_vbo();
-				glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ModelViewMatrix"), 1, 1, (cameras[0].ViewMatrix*meshes[i].model_matrix).x);
+				glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ModelMatrix"), 1, 1, meshes[i].model_matrix.x);
+				glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "NormalMatrix"), 1, 1, InverseTranspose(meshes[i].model_matrix).x);
 				glBindVertexArray(meshes[i].VAO_ID);
 				glDrawElements(GL_TRIANGLES, meshes[i].vert_nums, GL_UNSIGNED_INT, meshes[i].indices);
 			}
