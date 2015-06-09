@@ -16,11 +16,14 @@ namespace Physics
 	public:
 		bool m_Moveable;
 		point m_Position;
+		point m_Last_Position;
 
 		vector m_Force;
 		vector m_Velocity;
+		vector m_Last_Velocity;
 		vector m_Acceleration;
 
 		long double m_Mass;
+		long double m_Last_dt;
 	};
 }
