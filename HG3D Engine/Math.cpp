@@ -185,7 +185,6 @@ namespace HG3D_Engine
 		float u = (float)axis.x, v = (float)axis.y, w = (float)axis.z;
 		float u2 = float(axis.x*axis.x), v2 = float(axis.y*axis.y), w2 = float(axis.z*axis.z);
 		float a = (float)origin.x, b = (float)origin.y, c = (float)origin.z;
-		float L=v2+u2+w2;
 		x[0] = (float)u2 + (v2 + w2)*cos(theta);				x[1] = (float)u*v*(1 - cos(theta)) - w*sin(theta);	x[2] = (float)w*u*(1 - cos(theta)) + v*sin(theta);	x[3] = (float)(a*(v2 + w2) - u*(b*v + c*w))*(1 - cos(theta)) + (b*w - c*v)*sin(theta);
 		x[4] = (float)u*v*(1 - cos(theta)) + w*sin(theta);		x[5] = (float)v2 + (u2 + w2)*cos(theta);			x[6] = (float)w*v*(1 - cos(theta)) - u*sin(theta);	x[7] = (float)(b*(u2 + w2) - v*(a*u + c*w))*(1 - cos(theta)) + (c*u - a*w)*sin(theta);
 		x[8] = (float)u*w*(1 - cos(theta)) - v*sin(theta);		x[9] = (float)w*v*(1 - cos(theta)) + u*sin(theta);	x[10] = (float)w2 + (v2 + u2)*cos(theta);			x[11] = (float)(c*(u2 + v2) - w*(b*v + a*u))*(1 - cos(theta)) + (a*v - b*u)*sin(theta);
