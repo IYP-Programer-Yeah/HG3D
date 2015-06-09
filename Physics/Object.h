@@ -15,6 +15,8 @@ namespace Physics
 		void DLLEXPORT Update(const long double& Deltatime);
 	public:
 		bool m_Moveable;
+		bool m_ApplyGravity;
+
 		point m_Position;
 		point m_Last_Position;
 
@@ -22,6 +24,7 @@ namespace Physics
 		vector m_Velocity;
 		vector m_Last_Velocity;
 		vector m_Acceleration;
+		vector m_Gravity;
 
 		long double m_Mass;
 		long double m_Last_dt;
