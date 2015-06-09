@@ -237,8 +237,10 @@ namespace HG3D_Engine
 				glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "NormalMatrix"), 1, 1, InverseTranspose(meshes[i].model_matrix).x);
 				glBindVertexArray(meshes[i].VAO_ID);
 				glDrawElements(GL_TRIANGLES, meshes[i].vert_nums, GL_UNSIGNED_INT, meshes[i].indices);
+				glBindVertexArray(0);
 			}
 		}
+		glFlush();
 		SwapBuffers(hdc);
 	}
 	/******************************************************************/
