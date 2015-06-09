@@ -89,7 +89,6 @@ namespace HG3D_Engine
 		ret.build(x * long double(entry), y* long double(entry), z * long double(entry));
 		return ret;
 	}
-
 	vector __fastcall vector::operator /(float entry)//division by float
 	{
 		vector ret;
@@ -192,6 +191,7 @@ namespace HG3D_Engine
 		x[8] = (float)u*w*(1 - cos(theta)) - v*sin(theta);		x[9] = (float)w*v*(1 - cos(theta)) + u*sin(theta);	x[10] = (float)w2 + (v2 + u2)*cos(theta);			x[11] = (float)(c*(u2 + v2) - w*(b*v + a*u))*(1 - cos(theta)) + (a*v - b*u)*sin(theta);
 		x[12] = (float)0.0;										x[13] = (float)0.0;									x[14] = (float)0.0;									x[15] = (float)1;
 	}
+
 	_4x4matrix LookAt(point cam_pos, vector forward, vector up)
 	{
 		vector xaxis, yaxis, zaxis;//define axises;
@@ -201,10 +201,10 @@ namespace HG3D_Engine
 		xaxis = normalize(cross(up, zaxis));//get x axis normalized
 		yaxis = cross(zaxis, xaxis); //get y axis (already normalized)
 		_4x4matrix return_mat;
-		return_mat.x[0] = (float)xaxis.x;					return_mat.x[1] = (float)yaxis.x;					return_mat.x[2] = (float)zaxis.x;				return_mat.x[3] = (float)0.0;
-		return_mat.x[4] = (float)xaxis.y;					return_mat.x[5] = (float)yaxis.y;					return_mat.x[6] = (float)zaxis.y;				return_mat.x[7] = (float)0.0;
-		return_mat.x[8] = (float)xaxis.z;					return_mat.x[9] = (float)yaxis.z;					return_mat.x[10] = (float)zaxis.z;				return_mat.x[11] = (float)0.0;
-		return_mat.x[12] = (float)-dot(xaxis, eye);		    return_mat.x[13] = (float)-dot(yaxis, eye);			return_mat.x[14] = (float)-dot(zaxis, eye);		return_mat.x[15] = (float)1.0;
+		return_mat.x[0] = (float)xaxis.x;					return_mat.x[4] = (float)yaxis.x;					return_mat.x[8] = (float)zaxis.x;				return_mat.x[12] = (float)0.0;
+		return_mat.x[1] = (float)xaxis.y;					return_mat.x[5] = (float)yaxis.y;					return_mat.x[9] = (float)zaxis.y;				return_mat.x[13] = (float)0.0;
+		return_mat.x[2] = (float)xaxis.z;					return_mat.x[6] = (float)yaxis.z;					return_mat.x[10] = (float)zaxis.z;				return_mat.x[14] = (float)0.0;
+		return_mat.x[3] = (float)-dot(xaxis, eye);		    return_mat.x[7] = (float)-dot(yaxis, eye);			return_mat.x[11] = (float)-dot(zaxis, eye);		return_mat.x[15] = (float)1.0;
 		/*	xaxis.x           yaxis.x           zaxis.x			     0
 			xaxis.y           yaxis.y           zaxis.y				 0
 			xaxis.z           yaxis.z           zaxis.z				 0

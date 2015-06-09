@@ -12,12 +12,11 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 	Engine.meshes[0].model_matrix.LoadScaler(100.0f, 100.0f, 100.0f);
 	
-	/*
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 	HG3D_Engine::_4x4matrix temp[2];;
-	temp[0].LoadTranslate(-10.0f,0.0f,0.0f);
-	temp[1].LoadScaler(-100.0f, -100.0f, -100.0f);
-	Engine.meshes[1].model_matrix = temp[0] * temp[1]*///not yet done
+	temp[0].LoadTranslate(24.0f,0.0f,0.0f);
+	temp[1].LoadScaler(100.0f, 100.0f, 100.0f);
+	Engine.meshes[1].model_matrix = temp[0]* temp[1];
 
 
 	Engine.cameras[0].camera_position.build(12.0f, 0.0f, 0.0f);
@@ -27,7 +26,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	{
 		DispatchMessage(msg);
 		Engine.cameras[0].fps_camera(0.01f, 0.0f, Engine.cameras[0].up);
-		Engine.cameras[0].needs_update = 1;
 		Engine.test_render();
 	}
 	return 0;
