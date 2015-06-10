@@ -19,39 +19,39 @@
     <Filter Include="Source Files\CollisionShapes">
       <UniqueIdentifier>{b26d1aa7-0e7c-4e96-bb8c-85320efdab15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\PhysicsObject">
+      <UniqueIdentifier>{cf4a5385-7498-4d32-aa89-064583581771}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PhysicsObject">
+      <UniqueIdentifier>{97333444-2769-4634-9275-c1ed438d2e70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Physics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicIncludes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="defines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AABB.h">
       <Filter>Header Files\CollisionShapes</Filter>
     </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Header Files\CollisionShapes</Filter>
     </ClInclude>
+    <ClInclude Include="BasicIncludes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Header Files\PhysicsObject</Filter>
+    </ClInclude>
+    <ClInclude Include="defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Physics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AABB.cpp">
       <Filter>Source Files\CollisionShapes</Filter>
     </ClCompile>
     <ClCompile Include="Sphere.cpp">
       <Filter>Source Files\CollisionShapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files\PhysicsObject</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

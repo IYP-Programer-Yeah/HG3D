@@ -13,20 +13,33 @@ namespace Physics
 	
 
 		void DLLEXPORT Update(const long double& Deltatime);
+
+		//Set Object's properties
+		void DLLEXPORT AddForce(float x, float y, float z);
+		void DLLEXPORT SetForce(float x, float y, float z);
+		void DLLEXPORT SetGravity(float x, float y, float z);
+		void DLLEXPORT SetMass(long double Mass);
+
 	public:
-		bool m_Moveable;
 		bool m_ApplyGravity;
+		bool m_Moveable;
 
 		point m_Position;
 		point m_Last_Position;
 
-		vector m_Force;
 		vector m_Velocity;
 		vector m_Last_Velocity;
 		vector m_Acceleration;
+
+		long double m_Last_dt;
+
+	private:
+		bool m_LastFrameDataInitialized;
+
+		//This stuff is now set by it's functions
+		vector m_Force;
 		vector m_Gravity;
 
 		long double m_Mass;
-		long double m_Last_dt;
 	};
 }

@@ -22,7 +22,11 @@ namespace Physics
 		m_Force.x = 0.0;
 		m_Force.y = 0.0;
 		m_Force.z = 0.0;
-		//dont initialize the m_last_** values its waste of time
+
+		//We DO need to initialize this... 
+		m_Last_dt = 0.0;
+		m_Last_Position = m_Position;
+		m_Last_Velocity = m_Velocity;
 
 		m_Gravity.build(0.0f, -9.8f, 0.0f);
 
@@ -31,6 +35,8 @@ namespace Physics
 
 		m_Moveable = true;
 		m_ApplyGravity = true;
+
+		m_LastFrameDataInitialized = false;
 	}
 
 	PhysicsObject::~PhysicsObject()
@@ -38,17 +44,58 @@ namespace Physics
 
 	}
 
+	//This is AddForce, not SetForce
+	//So, Something like:
+	//AddForce(0.0f, 1.0f, 0.0f);
+	//AddForce(0.0f, 2.0f, 0.0f);
+	//is equivalent to
+	//SetForce(0.0f, 3.0f, 0.0f); 
+	void PhysicsObject::AddForce(float x, float y, float z)
+	{
+		m_Force.x += x;
+		m_Force.y += y;
+		m_Force.z += z;
+	}
+
+	//This will overwrite anything done by AddForce() function
+	void PhysicsObject::SetForce(float x, float y, float z)
+	{
+		m_Force.build(x, y, z);
+	}
+
+	void PhysicsObject::SetMass(long double Mass)
+	{
+		m_Mass = Mass;
+	}
+
+	//If gravity need's to be changed for this object
+	//Gravity is enabled by default at 9.8 m/s in negative y-axis
+	void PhysicsObject::SetGravity(float x, float y, float z)
+	{
+		m_Gravity.build(x, y, z);
+	}
 
 	void PhysicsObject::Update(const long double& dt)
 	{
-		m_Last_dt = dt;//save last dt
+
 		//Force = Mass * Acceleration
 		//Acceleration = Force / Mass 
 		m_Acceleration = m_Force / m_Mass;
 		
-		m_Last_Velocity = m_Velocity;//save the last velosity
+	
 		//Equivalent to m_Velocity += m_Acceleration * dt;
 		m_Velocity = m_Velocity + m_Acceleration * dt;
+
+
+		//Initialize for first frame
+		if (!m_LastFrameDataInitialized)
+		{
+			m_Last_dt = dt;
+			m_Last_Position = m_Position;
+			m_Last_Velocity = m_Velocity;
+
+			m_LastFrameDataInitialized = true;
+		}
 
 		if (m_ApplyGravity)
 		{
@@ -56,15 +103,25 @@ namespace Physics
 			m_Velocity = m_Velocity + m_Gravity * dt;
 		}
 
+		//Update position with our physics code
 		vector NewPos;
 		NewPos = m_Velocity * dt;
 
-		m_Last_Position = m_Position;//save last position
-
+	
 		m_Position.x += NewPos.x;
 		m_Position.y += NewPos.y;
 		m_Position.z += NewPos.z;
 
 
+		//=========== SAVE FOR NEXT FRAME ====================//
+
+		//save last position
+		m_Last_Position = m_Position;
+
+		//save last dt
+		m_Last_dt = dt;
+
+		//save the last velosity
+		m_Last_Velocity = m_Velocity;
 	}
 }
