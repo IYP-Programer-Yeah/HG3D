@@ -59,7 +59,9 @@ namespace Physics
 				vector Object_Object;
 
 				//Get the object to object vector
-				Object_Object.build(m_Objects[i].m_Position, m_Objects[j].m_Position);
+				point a = m_Objects[i].GetPosition();
+				point b = m_Objects[j].GetPosition();
+				Object_Object.build(a, b);
 
 				//Power is 3 to normalize the vector too
 				long double r_P3 = pow(Object_Object.getsize(), 3.0);

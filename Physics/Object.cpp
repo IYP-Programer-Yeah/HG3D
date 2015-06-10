@@ -60,6 +60,15 @@ namespace Physics
 	{
 		m_Position = &PointerAddress;
 	}
+	
+	point PhysicsObject::GetPosition()
+	{
+#ifdef NT_IS_DEBUGGING
+		//make sure m_Position points to a valid address
+		assert(m_Position);
+#endif
+		return *m_Position;
+	}
 
 	//Vector over loaded
 	void PhysicsObject::AddForce(const vector& Force)

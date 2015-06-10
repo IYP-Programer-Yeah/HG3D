@@ -30,10 +30,11 @@ namespace Physics
 		//So, if we update position with our physics code, then the actual position of the object
 		//will be updated too
 		void DLLEXPORT SetPositionPointer(point& PointerAddress);
+		point DLLEXPORT GetPosition();
+
 	public:
 		bool m_ApplyGravity;
 		bool m_Moveable;
-
 
 		point m_Last_Position;
 
@@ -42,7 +43,6 @@ namespace Physics
 		vector m_Acceleration;
 
 		long double m_Last_dt;
-	
 		long double m_Mass;
 
 	private:
