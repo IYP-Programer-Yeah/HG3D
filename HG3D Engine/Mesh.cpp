@@ -124,6 +124,7 @@ namespace HG3D_Engine
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertex_size, (void*)(Vert_Pos_Size + Vert_Normal_Size));//set position first pos: Vert_Normal_Size + Vert_Pos_Size -Vert_Normal_Size + Vert_Pos_Size + Vert_Coord_Size
 		glBindBuffer(GL_ARRAY_BUFFER, 0);//unbinde vbo
 		glBindVertexArray(0);//unbind vao
+		needs_update = 0;
 		clear_last_buff = 1;//can clear the buffer next time
 	}
 	void Mesh::operator=(Mesh input)//= operator

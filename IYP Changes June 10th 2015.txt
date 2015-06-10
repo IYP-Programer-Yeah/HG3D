@@ -1,0 +1,34 @@
+June 10th 2015
+changes made on files :
+Object.h
+Object.cpp
+PhysicsWorld.cpp
+
+changes made on Object.h
+replaces:
+#1 floats in AddForce, SetForce and SetGravity function prototypes were replaced with long double
+#2 m_Mass was moved to class public members
+
+adds: 
+#1 2 overloaded prototypes of AddForce and SetForce functions with vector input 
+
+removes: none
+
+changes made on Object.cpp
+replaces:
+#1 floats in AddForce, SetForce and SetGravity function were replaced with long double
+
+adds: 
+#1 2 overloaded of AddForce and SetForce functions with vector input 
+
+removes: none
+
+changes made on PhysicsWorld.cpp
+replaces: 
+#1 UINT on the update loop was changed to register unsigned int
+
+adds:
+#1 2 constants for gravity constant were difined as G and GE
+#2 a loop is added to calculate gravitational force between 2 objrcts
+
+removes: none
