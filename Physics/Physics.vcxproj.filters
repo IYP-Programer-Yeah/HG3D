@@ -25,6 +25,12 @@
     <Filter Include="Header Files\PhysicsObject">
       <UniqueIdentifier>{97333444-2769-4634-9275-c1ed438d2e70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PhysicsWorld">
+      <UniqueIdentifier>{92bf9811-5618-4f10-acd2-ebbbaf25c0e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PhysicsWorld">
+      <UniqueIdentifier>{bc099d8d-41f8-4b80-bee9-5fe9bcec2428}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABB.h">
@@ -42,6 +48,9 @@
     <ClInclude Include="defines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsWorld.h">
+      <Filter>Header Files\PhysicsWorld</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AABB.cpp">
@@ -52,6 +61,9 @@
     </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>Source Files\PhysicsObject</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsWorld.cpp">
+      <Filter>Source Files\PhysicsWorld</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

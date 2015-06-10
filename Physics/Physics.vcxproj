@@ -69,11 +69,13 @@
     <ClInclude Include="BasicIncludes.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="PhysicsWorld.h" />
     <ClInclude Include="Sphere.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="PhysicsWorld.cpp" />
     <ClCompile Include="Sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
