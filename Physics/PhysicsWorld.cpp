@@ -1,7 +1,6 @@
 #include "PhysicsWorld.h"
 
-#define G  6.67384 //gravitational constant
-#define GE -11 //gravitational constant exponent
+
 namespace Physics
 {
 	PhysicsWorld::PhysicsWorld()
@@ -23,39 +22,64 @@ namespace Physics
 		m_Objects.pop_back();
 	}
 
+	PhysicsObject& PhysicsWorld::GetPhysicsObject(UINT Index)
+	{
+#ifdef NT_IS_DEBUGGING
+		if (Index > m_Objects.size() || m_Objects.empty())
+		{
+			OutputDebugString("Come here, something is wrong.");
+		}
+#endif
+
+		return m_Objects[Index];
+	}
+
 	void PhysicsWorld::Update(const long double& dt)
 	{
 #ifdef NT_IS_DEBUGGING
 		if (m_Objects.empty())
 		{
-
 			OutputDebugString("PhysicsWorld::m_Objects is empty.");
 
 			return;
 		}
 #endif
 
-		//IYP code
+		//Calculate gravitational force and add it to objects
 
-		//calculate gravitational force and add it to objects
 		//TODO : do this on a multi threaded way
-		for (unsigned long int i = 0; i < m_Objects.size(); i++)
-			for (unsigned long int j = i; j < m_Objects.size(); j++)//this is optimised
+		for (register long int i = 0; i < m_Objects.size(); i++)
+		{
+			for (register long int j = i; j < m_Objects.size(); j++)
 			{
-				vector gravitational_force;//final force containor
-				vector object_object;//object to object vector
-				object_object.build(m_Objects[i].m_Position, m_Objects[j].m_Position);//get the object to object vector
-				long double r_P3 = pow(object_object.getsize(), 3.0);//power is 3 to normalize the vector too
-				gravitational_force = object_object*(m_Objects[i].m_Mass*m_Objects[j].m_Mass*G*pow(10.0, GE) / r_P3);//calculate gravitational force
-				m_Objects[i].AddForce(gravitational_force.x, gravitational_force.y, gravitational_force.z);//apply force
-				m_Objects[j].AddForce(-gravitational_force.x, -gravitational_force.y, -gravitational_force.z);//apply force the second object gets the force in opposite direction  
+				//Final force containor
+				vector GravitationalForce;
+
+				//Object to object vector
+				vector Object_Object;
+
+				//Get the object to object vector
+				Object_Object.build(m_Objects[i].m_Position, m_Objects[j].m_Position);
+
+				//Power is 3 to normalize the vector too
+				long double r_P3 = pow(Object_Object.getsize(), 3.0);
+
+				//Calculate gravitational force
+				GravitationalForce = Object_Object * (m_Objects[i].m_Mass * m_Objects[j].m_Mass * G *pow(10.0, GE) / r_P3);
+
+				//Apply force
+				m_Objects[i].AddForce(GravitationalForce.x, GravitationalForce.y, GravitationalForce.z);
+
+				//Apply force the second object gets the force in opposite direction  
+				m_Objects[j].AddForce(-GravitationalForce.x, -GravitationalForce.y, -GravitationalForce.z);
 			}
-		//IYP code
-		/*NOTE : use register unsigned long int not uint for 3 reasons :
-		#1 uint is not register (slower loop) 
-		#2 our ogject number may excced the range 
-		#3 dont waste memory both uint and unsigned long int are the same size (32bit) */
-		for (unsigned long int i = 0; i < m_Objects.size(); ++i)//TODO : #1 find the best number of threads for multi threading #2 make a class for threads #3 do updates on threads 
+
+			
+		}
+
+		//TODO : #1 find the best number of threads for multi threading #2 make a class for threads #3 do updates on threads 
+
+		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
 		{
 			if (m_Objects[i].m_Moveable)
 			{

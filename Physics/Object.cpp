@@ -50,27 +50,28 @@ namespace Physics
 	//AddForce(0.0f, 2.0f, 0.0f);
 	//is equivalent to
 	//SetForce(0.0f, 3.0f, 0.0f); 
-	//IYP code
-	/*Tips (for the next two functions):
-	#1 i changed floats to long double (it was already a type mismatch)
-	#2 i added vector overloaded function for this all forces are calculated in vctor
-	*/
+
 	void PhysicsObject::AddForce(long double x, long double y, long double z)
 	{
 		m_Force.x += x;
 		m_Force.y += y;
 		m_Force.z += z;
 	}
-	void PhysicsObject::AddForce(vector Force)//vector over loaded
+
+	//Vector over loaded
+	void PhysicsObject::AddForce(const vector& Force)
 	{
 		m_Force = m_Force + Force;
 	}
+
 	//This will overwrite anything done by AddForce() function
 	void PhysicsObject::SetForce(long double x, long double y, long double z)
 	{
 		m_Force.build(x, y, z);
 	}
-	void PhysicsObject::SetForce(vector Force)//vector over loaded
+
+	//Vector over loaded
+	void PhysicsObject::SetForce(const vector& Force)
 	{
 		m_Force = Force;
 	}
@@ -82,8 +83,7 @@ namespace Physics
 
 	//If gravity need's to be changed for this object
 	//Gravity is enabled by default at 9.8 m/s in negative y-axis
-	//IYP code
-	//we didnt need this though it wouldnt hurt to have it there
+
 	void PhysicsObject::SetGravity(long double x, long double y, long double z)
 	{
 		m_Gravity.build(x, y, z);

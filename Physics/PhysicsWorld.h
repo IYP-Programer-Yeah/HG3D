@@ -15,10 +15,11 @@ namespace Physics
 		~PhysicsWorld();
 
 		void DLLEXPORT Update(const long double& Deltatime);
+	
 		void DLLEXPORT AddObject(PhysicsObject& Object);
 		void DLLEXPORT RemoveLastObject();
 
-
+		PhysicsObject& GetPhysicsObject(UINT Index);
 	private:
 		std::vector<PhysicsObject> m_Objects;
 	};

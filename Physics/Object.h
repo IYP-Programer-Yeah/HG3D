@@ -14,14 +14,12 @@ namespace Physics
 		//This function is to be called by a PhysicsWorld
 		//Not available to user
 		void Update(const long double& Deltatime);
-		//IYP code
-		//changed floats to long double
-		//added vector over loads
+
 		//Set Object's properties
 		void DLLEXPORT AddForce(long double x, long double y, long double z);
 		void DLLEXPORT SetForce(long double x, long double y, long double z);
-		void DLLEXPORT AddForce(vector Force);
-		void DLLEXPORT SetForce(vector Force);
+		void DLLEXPORT AddForce(const vector& Force);
+		void DLLEXPORT SetForce(const vector& Force);
 		void DLLEXPORT SetGravity(long double x, long double y, long double z);
 		void DLLEXPORT SetMass(long double Mass);
 
@@ -37,8 +35,8 @@ namespace Physics
 		vector m_Acceleration;
 
 		long double m_Last_dt;
-		//IYP code
-		long double m_Mass;//mas is used every where dont make it private
+	
+		long double m_Mass;
 
 	private:
 		bool m_LastFrameDataInitialized;
