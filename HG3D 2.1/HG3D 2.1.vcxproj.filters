@@ -50,10 +50,8 @@
     <Media Include="Resource\Models\horse.obj">
       <Filter>Resource Files\Models</Filter>
     </Media>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Resource\Models\Cube.obj">
+    <Media Include="Resource\Models\Cube.obj">
       <Filter>Resource Files\Models</Filter>
-    </Object>
+    </Media>
   </ItemGroup>
 </Project>

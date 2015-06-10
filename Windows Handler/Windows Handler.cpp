@@ -25,10 +25,14 @@ namespace Windows_Handler
 		ShowWindow(hwnd, nCmdShow); //show the wnd
 		UpdateWindow(hwnd); //update wnd
 		hdc=GetDC(hwnd);
-		WNDx = x;
-		WNDy = y;
-		WNDw = w;
-		WNDh = h;
+		RECT Temp_Wind_Rect;
+		if (GetWindowRect(hwnd, &Temp_Wind_Rect))
+		{
+			WNDx = Temp_Wind_Rect.right;
+			WNDy = Temp_Wind_Rect.left;;
+			WNDw = Temp_Wind_Rect.right - Temp_Wind_Rect.left;
+			WNDh = Temp_Wind_Rect.bottom - Temp_Wind_Rect.top;
+		}
 		return 1;//every thing done well
 	}
 }
