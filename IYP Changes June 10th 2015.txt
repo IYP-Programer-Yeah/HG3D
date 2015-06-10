@@ -29,6 +29,6 @@ replaces:
 
 adds:
 #1 2 constants for gravity constant were difined as G and GE
-#2 a loop is added to calculate gravitational force between 2 objrcts
+#2 a loop is added to calculate gravitational force between 2 objects
 
 removes: none
