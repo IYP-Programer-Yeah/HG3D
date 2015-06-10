@@ -11,8 +11,9 @@ namespace Physics
 		PhysicsObject();
 		~PhysicsObject();
 	
-
-		void DLLEXPORT Update(const long double& Deltatime);
+		//This function is to be called by a PhysicsWorld
+		//Not available to user
+		void Update(const long double& Deltatime);
 
 		//Set Object's properties
 		void DLLEXPORT AddForce(float x, float y, float z);
