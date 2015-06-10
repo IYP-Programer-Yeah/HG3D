@@ -36,7 +36,7 @@ namespace Physics
 		{
 			if (m_Objects[i].m_Moveable)
 			{
-
+				m_Objects[i].Update(dt);
 			}
 		}
 	}
