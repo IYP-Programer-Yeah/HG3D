@@ -1,6 +1,8 @@
 #include "BasicIncludes.h"
 #include "..\HG3D Engine\HG3D Engine.h"
 
+#include <assert.h>
+
 using namespace HG3D_Engine;
 
 namespace Physics
@@ -23,11 +25,16 @@ namespace Physics
 		void DLLEXPORT SetGravity(long double x, long double y, long double z);
 		void DLLEXPORT SetMass(long double Mass);
 
+		//our m_Position vector will point to this address
+		//This PointerAddress must be ACTUAL Object's position
+		//So, if we update position with our physics code, then the actual position of the object
+		//will be updated too
+		void DLLEXPORT SetPositionPointer(point& PointerAddress);
 	public:
 		bool m_ApplyGravity;
 		bool m_Moveable;
 
-		point m_Position;
+
 		point m_Last_Position;
 
 		vector m_Velocity;
@@ -45,5 +52,8 @@ namespace Physics
 		vector m_Force;
 		vector m_Gravity;
 
+		//Pointer because actual position of the object too needs be updated
+		//So, this needs to be private
+		point* m_Position;
 	};
 }

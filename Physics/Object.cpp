@@ -7,9 +7,7 @@ namespace Physics
 	{
 		//Initialize everything to defaults
 
-		m_Position.x = 0.0;
-		m_Position.y = 0.0;
-		m_Position.z = 0.0;
+		m_Position = nullptr;
 
 		m_Acceleration.x = 0.0;
 		m_Acceleration.y = 0.0;
@@ -25,7 +23,7 @@ namespace Physics
 
 		//We DO need to initialize this... 
 		m_Last_dt = 0.0;
-		m_Last_Position = m_Position;
+		m_Last_Position = *m_Position;
 		m_Last_Velocity = m_Velocity;
 
 		m_Gravity.build(0.0f, -9.8f, 0.0f);
@@ -58,6 +56,11 @@ namespace Physics
 		m_Force.z += z;
 	}
 
+	void PhysicsObject::SetPositionPointer(point& PointerAddress)
+	{
+		m_Position = &PointerAddress;
+	}
+
 	//Vector over loaded
 	void PhysicsObject::AddForce(const vector& Force)
 	{
@@ -78,6 +81,15 @@ namespace Physics
 
 	void PhysicsObject::SetMass(long double Mass)
 	{
+#ifdef NT_IS_DEBUGGING
+		//avoid divide by zero
+		if (Mass == 0.0)
+		{
+			OutputDebugString("Mass cannot be null, you idiot.");
+			return;
+		}
+#endif
+
 		m_Mass = Mass;
 	}
 
@@ -91,6 +103,15 @@ namespace Physics
 
 	void PhysicsObject::Update(const long double& dt)
 	{
+#ifdef NT_IS_DEBUGGING
+
+		//assuming that m_Position points to a valid location
+		assert(m_Position);
+
+		//double-check
+		//We assume that mass is always greater than zero
+		assert(m_Mass > 0);
+#endif	
 
 		//Force = Mass * Acceleration
 		//Acceleration = Force / Mass 
@@ -105,7 +126,7 @@ namespace Physics
 		if (!m_LastFrameDataInitialized)
 		{
 			m_Last_dt = dt;
-			m_Last_Position = m_Position;
+			m_Last_Position = *m_Position;
 			m_Last_Velocity = m_Velocity;
 
 			m_LastFrameDataInitialized = true;
@@ -122,15 +143,14 @@ namespace Physics
 		NewPos = m_Velocity * dt;
 
 	
-		m_Position.x += NewPos.x;
-		m_Position.y += NewPos.y;
-		m_Position.z += NewPos.z;
-
+		m_Position->x += NewPos.x;
+		m_Position->y += NewPos.y;
+		m_Position->z += NewPos.z;
 
 		//=========== SAVE FOR NEXT FRAME ====================//
 
 		//save last position
-		m_Last_Position = m_Position;
+		m_Last_Position = *m_Position;
 
 		//save last dt
 		m_Last_dt = dt;

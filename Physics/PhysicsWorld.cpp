@@ -77,7 +77,8 @@ namespace Physics
 			
 		}
 
-		//TODO : #1 find the best number of threads for multi threading #2 make a class for threads #3 do updates on threads 
+		//TODO : #1 find the best number of threads for multi threading 
+		//       #2 make a class for threads #3 do updates on threads 
 
 		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
 		{
