@@ -106,7 +106,7 @@ void Update_Wnd()
 void CheckSystemInformation()
 {
 #ifdef NT_IS_DEBUGGING
-	OutputDebugString("Created SystemInformation::_instance.");
+	OutputDebugString("\nCreated SystemInformation::_instance.\n");
 #endif
 	SystemInformation::Instance()->Initialize();
 }
@@ -115,7 +115,7 @@ void DestroyCachedSystemInformation()
 {
 #ifdef NT_IS_DEBUGGING
 	//If you don't see this in the output window, then something is wrong
-	OutputDebugString("Deleted SystemInformation::_instance.");
+	OutputDebugString("\nDeleted SystemInformation::_instance.\n");
 #endif
 	SystemInformation::Instance()->Destroy();
 }
