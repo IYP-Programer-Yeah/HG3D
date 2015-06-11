@@ -135,9 +135,11 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="SystemInformation.h" />
     <ClInclude Include="Windows Handler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SystemInformation.cpp" />
     <ClCompile Include="Windows Handler.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

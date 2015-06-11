@@ -40,5 +40,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		PeekMessage(msg, 0, 0, 0, 1);//get msg
 		//GetMessage(msg, NULL, 1, 0);
 	}
+
+	DestroyCachedSystemInformation();
+
 	return 0;
 }

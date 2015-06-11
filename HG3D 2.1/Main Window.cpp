@@ -26,6 +26,8 @@ LRESULT CALLBACK Main_Window_WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM 
 }
 bool init_main_window(HINSTANCE hInstance)
 {
+	CheckSystemInformation();
+
 	//setting wnd class
 	Main_Windows.WndClass.style = CS_HREDRAW | CS_VREDRAW;
 	Main_Windows.WndClass.lpfnWndProc = Main_Window_WndProc; //set the wndproc of the window
@@ -42,6 +44,7 @@ bool init_main_window(HINSTANCE hInstance)
 	Main_Windows.WndClass.hIcon = LoadIcon(hInstance, (LPCSTR)MAKEINTRESOURCEA(IDI_ICON1)); //set the icon 64bit
 #endif
 	return Main_Windows.init_window(hInstance, "HG3D", SW_SHOWMAXIMIZED); //make a maximized window
+
 
 }
 MSG* GetMSG()
@@ -63,4 +66,16 @@ int GetH()//get height
 bool Get_Wind_Update_Stat()//get if needs update
 {
 	return Main_Windows.Needs_update;
+}
+
+
+void CheckSystemInformation()
+{
+	SystemInformation::Instance()->Initialize();
+
+}
+
+void DestroyCachedSystemInformation()
+{
+	SystemInformation::Instance()->Destroy();
 }

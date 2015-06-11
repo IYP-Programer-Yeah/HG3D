@@ -18,9 +18,15 @@
     <ClInclude Include="Windows Handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SystemInformation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Windows Handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemInformation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
