@@ -106,7 +106,7 @@ namespace HG3D_Engine
 {
 	void camera::update_camera()//update camera
 	{
-		ViewMatrix = LookAt(camera_position, forward,up);//update view matrix
+		ViewMatrix = LookAt(camera_position, forward, up);//update view matrix
 		ProjectionMatrix = Projection(Left, Right, Buttom, Top, Near, Far);//update projection
 		needs_update = 0;
 	}
@@ -121,6 +121,90 @@ namespace HG3D_Engine
 		forward = rotationY*(rotationP*forward);//multiply by mats pitch first
 		up = rotationY*(rotationP*up);//multiply by mats pitch first
 		needs_update = 1;
+	}
+
+	void texture::build(unsigned short int *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
+	{
+		width = w;
+		height = h;//set the input
+		number_of_components = NOC;
+		total_size = width*height*number_of_components;//get the total memory size
+		rgba = (unsigned short int*)malloc(total_size);//allocate memory
+		for (register unsigned long int i = 0; i < total_size; i++)//copy the data
+			rgba[i] = irgba[i];
+		needs_update = true;//this will need updat after building
+		generate_mipmaps = true;//yes you probaly want them
+		Repeat_X = false;
+		Repeat_Y = false;
+		glGenTextures(1, &texture_name);//generate the texture so you can free it
+	}
+	void texture::free_data()
+	{
+		free(rgba);//free allocation
+		glDeleteTextures(1, &texture_name);//delete the texture
+	}
+	void texture::update()
+	{
+		glBindTexture(GL_TEXTURE_2D, texture_name);//bind the texture to update the data
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Repeat_X ? GL_REPEAT : GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Repeat_Y ? GL_REPEAT : GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		if (generate_mipmaps)//set min filter to use the mipmap if it was wanted
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		else
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba);//set the data
+		if (generate_mipmaps)//creat the miomaps if wanted
+			gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+		glBindTexture(GL_TEXTURE_2D, 0);//unbind the texture 
+		needs_update = false;//just updated no need to redo it
+	}
+	void texture::clone_NMA(texture input)
+	{
+		texture_name = input.texture_name;//clone  every thing dont reallocate new memory
+		Repeat_X = input.Repeat_X;
+		needs_update = input.needs_update;
+		generate_mipmaps = input.generate_mipmaps;
+		number_of_components = input.number_of_components;
+		width = input.width;
+		height = input.height;
+		total_size = input.total_size;
+		rgba = input.rgba;//get the pointer the data is still usefull
+	}
+
+	void light::build()//initialize the way that the light be instantly usable
+	{
+		for (register int i = 0; i < 3; i++)
+		{
+			light_position[i] = 0;
+			light_color[i] = 1;
+			Attenuation[i] = 0;
+			direction[i] = 0;
+		}
+		Attenuation[0] = 1;
+		max_radius = 10000;
+		cut_off_cos = -1;
+		light_enabled = 1;
+	}
+	void light::calculate_max_radius()
+	{
+		if (Attenuation[2] == 0 && Attenuation[1] == 0)
+			max_radius = 10000;
+		else
+			max_radius = (256.0f - Attenuation[0]) / (Attenuation[2] * Attenuation[2] + Attenuation[1]);//what ever the color after this atinoution the light contribution is 0
+	}
+	void light::operator=(light input)//needed in add light to duplicate the light data
+	{
+		for (register int i = 0; i < 3; i++)
+		{
+			light_position[i] = input.light_position[i];
+			light_color[i] = input.light_color[i];
+			Attenuation[i] = input.Attenuation[i];
+			direction[i] = input.direction[i];
+		}
+		max_radius = input.max_radius;
+		cut_off_cos = input.cut_off_cos;
+		light_enabled = input.light_enabled;
 	}
 
 	void Renderer::init()

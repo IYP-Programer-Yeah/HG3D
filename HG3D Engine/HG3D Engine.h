@@ -194,6 +194,49 @@ namespace HG3D_Engine
 
 	};
 	//end of camera class
+	//texture class
+	class texture
+	{
+	public:
+		GLuint texture_name;//texture name given by the gl
+
+		bool Repeat_X, Repeat_Y;//does it repeat over the face or it's clamped to edgs?
+		bool needs_update;// check if needs update
+		bool generate_mipmaps;//do you nrrd mipmaps
+
+		unsigned short int number_of_components;// number of components
+
+		unsigned short int *rgba;//the rgba better exist for later change
+
+		unsigned int width, height;//width and height
+
+		unsigned long int total_size;
+		
+		void __declspec(dllexport) build(unsigned short int *irgba, unsigned int w, unsigned int h, unsigned short int NOC);//will copy the irgba to rgb free your own allocation
+		void __declspec(dllexport) free_data();//free all alloction as well as gpu memory
+		void __declspec(dllexport) update(); //update the data
+		void __declspec(dllexport) clone_NMA(texture input);//clone with the same memory allocation (no new memory is allocated)
+	};
+	//end of texture
+	//light class
+	class light
+	{
+	public:
+		float light_position[3];//light pos
+		float light_color[3];//light color
+		float Attenuation[3];//attenuation values
+		float direction[3];//the direction of light
+
+		float max_radius;//the maximum radius of light contribution
+		float cut_off_cos;//cosine of the the the cut of angle 
+
+		bool light_enabled;//is the light enabled
+		
+		void __declspec(dllexport) build();//just initializes the data
+		void __declspec(dllexport) calculate_max_radius();//calculate the max radius of contribution
+		void __declspec(dllexport) operator=(light input);//copy the data to and other light
+	};
+	//end of light class
 	class Renderer //renderer class
 	{
 	public:
