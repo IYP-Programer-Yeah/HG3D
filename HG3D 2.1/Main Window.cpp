@@ -1,5 +1,6 @@
 #include "Main Window.h"
-#include "resource.h"//RESOURCES DEFS
+#include "resource.h"  //RESOURCES DEFS
+
 Windows Main_Windows;
 LRESULT CALLBACK Main_Window_WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) //wnd proc to check messages
 {
@@ -71,11 +72,17 @@ bool Get_Wind_Update_Stat()//get if needs update
 
 void CheckSystemInformation()
 {
+#ifdef NT_IS_DEBUGGING
+	OutputDebugString("Created SystemInformation::_instance.");
+#endif
 	SystemInformation::Instance()->Initialize();
-
 }
 
 void DestroyCachedSystemInformation()
 {
+#ifdef NT_IS_DEBUGGING
+	//If you don't see this in the output window, then something is wrong
+	OutputDebugString("Deleted SystemInformation::_instance.");
+#endif
 	SystemInformation::Instance()->Destroy();
 }

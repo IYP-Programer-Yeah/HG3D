@@ -26,22 +26,40 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.cameras[0].Right = float(GetW()) / float(GetH());//update projection
 	Engine.cameras[0].Left = -1.0f*float(GetW()) / float(GetH());//update projection
 	Engine.cameras[0].update_camera();//updtae camera
-	while (1)//or use GetMessage(msg, NULL, 0, 0)
-	{
-		DispatchMessage(msg);
-		//update camera data
-		Engine.cameras[0].camera_viewport[2] = GetW();
-		Engine.cameras[0].camera_viewport[3] = GetH();
-		Engine.cameras[0].Right = float(GetW()) / float(GetH());//update projection
-		Engine.cameras[0].Left = -1.0f*float(GetW()) / float(GetH());//update projection
-		Engine.cameras[0].fps_camera(0.01f, 0.0f, Engine.cameras[0].up);//a simple fps camera
 
-		Engine.test_render();//render scene
-		PeekMessage(msg, 0, 0, 0, 1);//get msg
-		//GetMessage(msg, NULL, 1, 0);
+	while (msg->message != WM_QUIT)  
+	{
+		if (PeekMessage(msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(msg);
+			DispatchMessage(msg);
+
+		}
+		else
+		{
+			//Update camera data
+			Engine.cameras[0].camera_viewport[2] = GetW();
+
+			Engine.cameras[0].camera_viewport[3] = GetH();
+
+			Engine.cameras[0].Right = float(GetW()) / float(GetH());         //update projection
+			Engine.cameras[0].Left = -1.0f * float(GetW()) / float(GetH());    //update projection
+
+			Engine.cameras[0].fps_camera(0.01f, 0.0f, Engine.cameras[0].up); //a simple fps camera
+
+			Engine.test_render(); //render scene
+
+		}
+
 	}
 
+	//LEARN WINDOWS PROGRAMMING! -_-
+	//YOU HAVE coded it in such a way that the code NEVER REACHES HERE
+	//SO, IT WAS CAUSING A MEMORY LEAK HERE BECAUSE THIS FUNCTION WAS NOT BEING CALLED:
 	DestroyCachedSystemInformation();
 
-	return 0;
+	//I FIXED IT
+	//DON'T DO ANY OTHER SHIT NOW
+
+	return msg->wParam;
 }

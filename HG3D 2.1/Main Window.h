@@ -1,4 +1,5 @@
 #include "..\Windows Handler\Windows Handler.h"
+#include "..\Windows Handler\SystemInformation.h"
 #include "..\HG3D Engine\HG3D Engine.h"
 using namespace Windows_Handler;
 bool init_main_window(HINSTANCE hInstance); //initialize main window
