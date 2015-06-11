@@ -29,6 +29,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	while (msg->message != WM_QUIT)  
 	{
+		Update_Wnd();
 		if (PeekMessage(msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(msg);
@@ -43,9 +44,29 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			Engine.cameras[0].camera_viewport[3] = GetH();
 
 			Engine.cameras[0].Right = float(GetW()) / float(GetH());         //update projection
+
 			Engine.cameras[0].Left = -1.0f * float(GetW()) / float(GetH());    //update projection
 
-			Engine.cameras[0].fps_camera(0.01f, 0.0f, Engine.cameras[0].up); //a simple fps camera
+			int MWD = Get_Mouse_Wheel_Delta();
+
+			if (MWD != 0)//check if mouse will moved
+			{
+				HG3D_Engine::point LastPos;//last pos
+
+				LastPos = Engine.cameras[0].camera_position;//set the value
+
+				HG3D_Engine::vector Movement;//set movement
+
+				Movement = normalize(Engine.cameras[0].forward)*long double(MWD) / long double(480.0);//get the movement
+
+				Engine.cameras[0].camera_position.build(LastPos.x + Movement.x, LastPos.y + Movement.y, LastPos.z + Movement.z);//move
+
+				Engine.cameras[0].needs_update = 1;//need update
+			}
+			if (Get_Mouse_Stat(Mouse_Middle_Stat))///check if the mddile button is pressed
+			{
+				Engine.cameras[0].fps_camera(float(Get_Mouse_X() - Get_Mouse_Last_X()) / 180.0f, float(Get_Mouse_Last_Y() - Get_Mouse_Y()) / 180.0f, Engine.cameras[0].up); //a simple fps camera
+			}
 
 			Engine.test_render(); //render scene
 
@@ -61,5 +82,5 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//I FIXED IT
 	//DON'T DO ANY OTHER SHIT NOW
 
-	return msg->wParam;
+	return (int)msg->wParam;
 }

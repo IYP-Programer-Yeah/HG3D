@@ -51,11 +51,11 @@ namespace HG3D_Engine
 		long double __declspec(dllexport) __fastcall getsizeSq();//get vector size squared
 	};
 	//end of 3d vector class
-	long double __fastcall dot(vector v1, vector v2); //dot product
+	long double __declspec(dllexport) __fastcall dot(vector v1, vector v2); //dot product
 
-	vector __fastcall cross(vector v1, vector v2); //cross product
+	vector __declspec(dllexport) __fastcall cross(vector v1, vector v2); //cross product
 
-	vector __fastcall normalize(vector v1); //normalize
+	vector __declspec(dllexport) __fastcall normalize(vector v1); //normalize
 
 	class _4x4matrix //4*4 matrix
 	{

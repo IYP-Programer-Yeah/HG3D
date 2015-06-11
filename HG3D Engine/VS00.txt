@@ -15,7 +15,7 @@ uniform mat4 NormalMatrix;
 void main()
 {
 	position=ModelMatrix*vec4(Vertex,1);
-	ligt_position=vec4(12.0,0.0,0.0,1.0);
+	ligt_position=vec4(12.0,12.0,12.0,1.0);
 
 	gl_Position=ProjectionMatrix*ViewMatrix*position;
 

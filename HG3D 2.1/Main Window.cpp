@@ -68,7 +68,40 @@ bool Get_Wind_Update_Stat()//get if needs update
 {
 	return Main_Windows.Needs_update;
 }
-
+int Get_Mouse_X()
+{
+	return Main_Windows.Mouse_X;
+}
+int Get_Mouse_Y()
+{
+	return Main_Windows.Mouse_Y;
+}
+int Get_Mouse_Last_X()
+{
+	return Main_Windows.Last_Mouse_X;
+}
+int Get_Mouse_Last_Y()
+{
+	return Main_Windows.Last_Mouse_Y;
+}
+int Get_Mouse_Wheel_Delta()
+{
+	return Main_Windows.Mouse_Wheel_Delta;
+}
+bool Get_Mouse_Stat(int Stat_ID)//get mouse stats
+{
+	if (Stat_ID == Mouse_Left_Stat)
+		return Main_Windows.Mouse_Left;
+	if (Stat_ID == Mouse_Right_Stat)
+		return Main_Windows.Mouse_Right;
+	if (Stat_ID == Mouse_Middle_Stat)
+		return Main_Windows.Mouse_Middle;
+	return false;
+}
+void Update_Wnd()
+{
+	Main_Windows.update_mouse();//update mouse
+}
 
 void CheckSystemInformation()
 {
