@@ -6,7 +6,8 @@ PhysicsWorld.h
 PhysicsWorld.cpp
 
 changes made on Object.h
-replaces: none
+replaces: 
+#1 sphere declirations moved to public part
 
 adds: 
 #1 added unsigned long int m_Mesh_ID; and bool m_MeshPtr_is_valid;
@@ -17,6 +18,7 @@ changes made on Object.cpp
 replaces:
 #1 v max and min initilized by the mesh data not by Max and Min points (they are already removed)
 #2 m_ColBox.Center is geting loaded from the mesh
+#3 last position's initialization
 
 adds:
 #1 check for mesh pointer's validitation set to false
@@ -26,6 +28,7 @@ removes:
 #1 the Min Max point declaration and initialization
 #2 the infinite constant
 #3 the min max point calculater int the loop
+#4 the limiter of multiple mesh pointer set up the mesh pointer will be reset by the rendrer class so it will need update
 
 changes made on PhysicsWorld.h
 replaces: none
@@ -33,10 +36,15 @@ replaces: none
 adds:
 #1 Renderer *m_RendererPtr; added a rendrer pointer
 #2 void DLLEXPORT Load_World(Renderer *world); to set the object outo maticly base on the renderer world
+#3 DLLEXPORT to decliration of constructor and distructor functions
 
 removes: none
 
 changes made on PhysicsWorld.cpp
 replaces: none
 
-adds: Load_World function
+adds: 
+#1 Load_World function
+#2 seting up the object for calcualtion
+
+removes: none

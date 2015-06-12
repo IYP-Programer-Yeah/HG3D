@@ -24,7 +24,7 @@ namespace Physics
 
 		//We DO need to initialize this... 
 		m_Last_dt = 0.0;
-		m_Last_Position = *m_Position;
+		m_Last_Position.build(0.0f,0.0f,0.0f);
 		m_Last_Velocity = m_Velocity;
 
 		m_Gravity.build(0.0f, -9.8f, 0.0f);
@@ -173,16 +173,7 @@ namespace Physics
 
 	void PhysicsObject::SetMesh(Mesh& mesh)
 	{
-		if (!m_MeshPtr)
-		{
-			m_MeshPtr = &mesh;
-		}
-#ifdef NT_IS_DEBUGGING
-		else
-		{
-			OutputDebugString("Warning: Setting the PhysicsObject::SetMesh() more than one time.\n");
-		}
-#endif
+		m_MeshPtr = &mesh;
 	}
 
 	void PhysicsObject::CalculateCollisionShapes()

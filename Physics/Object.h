@@ -61,6 +61,9 @@ namespace Physics
 
 		unsigned long int m_Mesh_ID;//the id of the mesh in hg3d class
 
+		CollisionSphere m_ColSphere;
+		CollisionBox m_ColBox;
+
 	private:
 		bool m_LastFrameDataInitialized;
 
@@ -71,9 +74,6 @@ namespace Physics
 		//Pointer because actual position of the object too needs be updated
 		//So, this needs to be private
 		point* m_Position;
-
-		CollisionSphere m_ColSphere;
-		CollisionBox m_ColBox;
 
 		Mesh* m_MeshPtr;
 	};

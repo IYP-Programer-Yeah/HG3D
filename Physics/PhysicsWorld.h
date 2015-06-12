@@ -11,8 +11,8 @@ namespace Physics
 	class PhysicsWorld
 	{
 	public:
-		PhysicsWorld();
-		~PhysicsWorld();
+		DLLEXPORT PhysicsWorld();
+		DLLEXPORT ~PhysicsWorld();
 
 		void DLLEXPORT Update(const long double& Deltatime);
 	

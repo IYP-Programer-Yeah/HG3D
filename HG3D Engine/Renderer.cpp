@@ -285,7 +285,7 @@ namespace HG3D_Engine
 
 
 		cameras_the_next[cameras_nums - 1].Near=1.0f;//init to default
-		cameras_the_next[cameras_nums - 1].Far = 1000.0f;//init to default
+		cameras_the_next[cameras_nums - 1].Far = 100000.0f;//init to default
 		cameras_the_next[cameras_nums - 1].Left = -1.0f;//init to default
 		cameras_the_next[cameras_nums - 1].Right = 1.0f;//init to default
 		cameras_the_next[cameras_nums - 1].Top = 1.0f;//init to default
