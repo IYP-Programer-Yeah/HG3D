@@ -11,7 +11,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.add_camera();//add a camera to ebgine
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");//add the mesh to engine
 	Engine.meshes[0].model_matrix.LoadScaler(100.0f, 100.0f, 100.0f);//the mesh needs to be 100 times larger
-	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\cube.obj");//add the other mesh
+	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");//add the other mesh
 
 	HG3D_Engine::_4x4matrix temp[2];;
 	temp[0].LoadTranslate(24.0f,0.0f,0.0f);//move it 24 in direction of x

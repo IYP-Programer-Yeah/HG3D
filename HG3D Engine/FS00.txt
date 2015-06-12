@@ -1,7 +1,7 @@
 #version 150
 in vec4 normal;
 in vec4 position;
-in vec4 ligt_position;
+in vec4 ligt_position[2];
 
 out vec4 Output1;
 
@@ -10,7 +10,15 @@ in vec4 color;
 
 void main() 
 {
-	vec4 LTP=position-ligt_position;
-	
-	Output1=vec4(1.0)*dot(-normalize(LTP),normalize(normal));
+	Output1=vec4(0,0,0,0);
+	vec4 LTP=position-ligt_position[0];
+	float dist=length(LTP);
+	float dotv=dot(LTP,normalize(normal))*-1.0/dist/dist*10;
+	if (dotv>0)
+		Output1=vec4(1.0,1.0,1.0,1.0)*dotv;
+	LTP=position-ligt_position[1];
+	dist=length(LTP);
+	dotv=dot(LTP,normalize(normal))*-1.0/dist/dist*10;
+	if (dotv>0)
+		Output1+=vec4(0.0,1.0,1.0,1.0)*dotv;
 } 

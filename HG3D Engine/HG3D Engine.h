@@ -231,6 +231,8 @@ namespace HG3D_Engine
 		float cut_off_cos;//cosine of the the the cut of angle 
 
 		bool light_enabled;//is the light enabled
+		bool shadow_map;//does it use shadow maps?
+		bool update_shadow_maps;//does the shadow map need update
 		
 		void __declspec(dllexport) build();//just initializes the data
 		void __declspec(dllexport) calculate_max_radius();//calculate the max radius of contribution
@@ -248,22 +250,29 @@ namespace HG3D_Engine
 
 		camera *cameras;						//allow sveral cameras
 
+		texture *textures;						//stack of textures and 
+
+		light lights[100];						//no more than 12 ligts at a scene will be rendered
+
 		unsigned long int current_camera_nums;	//number of current used camera
 		unsigned long int cameras_nums;			//number of cameras
 		unsigned long int mesh_nums;			//number of meshs
 		unsigned long int vert_nums;			//total number of verts
 		unsigned long int total_size;			//total size of the verts data
 		unsigned long int rendere_ID;			//will be initialized in init
+		unsigned long int texture_nums;         //number of textures
+		unsigned long int last_light_ID;        //last light id
 
 		unsigned long int *mesh_draw_order;		//the order in which meshs are drawn
 		unsigned long int *current_cameras;		//current used cameras
 
-		GLuint Shaders[100];					//max 100 shaders
+		GLuint Shaders[100];					//max 100 shaders 20 is rendered in the scene
 
 		void __declspec(dllexport) add_current_camera(unsigned long int camera_ID);	//add a current camera
 		void __declspec(dllexport) delete_current_camera(unsigned long int camera_ID);	//delete a current camera
 		
 		unsigned long int __declspec(dllexport) add_camera();	//add a camera
+		unsigned long int __declspec(dllexport) add_texture(unsigned short int *irgba, unsigned int w, unsigned int h, unsigned short int NOC);	//add a texture
 		unsigned long int __declspec(dllexport) add_mesh(char* path);	//add a mesh 
 
 		void __declspec(dllexport) init();		//initialize function

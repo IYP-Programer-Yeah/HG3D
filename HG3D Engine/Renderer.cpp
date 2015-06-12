@@ -132,10 +132,10 @@ namespace HG3D_Engine
 		rgba = (unsigned short int*)malloc(total_size);//allocate memory
 		for (register unsigned long int i = 0; i < total_size; i++)//copy the data
 			rgba[i] = irgba[i];
-		needs_update = true;//this will need updat after building
-		generate_mipmaps = true;//yes you probaly want them
-		Repeat_X = false;
-		Repeat_Y = false;
+		needs_update = 1;//this will need updat after building
+		generate_mipmaps = 1;//yes you probaly want them
+		Repeat_X = 0;
+		Repeat_Y = 0;
 		glGenTextures(1, &texture_name);//generate the texture so you can free it
 	}
 	void texture::free_data()
@@ -185,6 +185,8 @@ namespace HG3D_Engine
 		max_radius = 10000;
 		cut_off_cos = -1;
 		light_enabled = 1;
+		update_shadow_maps = 1;
+		shadow_map = 1;
 	}
 	void light::calculate_max_radius()
 	{
@@ -214,8 +216,11 @@ namespace HG3D_Engine
 		total_size = 0;            //initialize values
 		cameras_nums = 0;
 		current_camera_nums = 0;
+		last_light_ID = 0;
+		texture_nums = 0;
 		meshes =(Mesh*) malloc(0);
-		cameras = (camera*)malloc(0);
+		cameras = (camera*)malloc(0);//so they can be freed
+		textures = (texture*)malloc(0);
 		rendere_ID = renderer_class_nums;//give it an ID
 		renderer_class_nums++;//a renderer added
 		SetupPixelFormat_WND_DC(hdc);//setup the pixel format
@@ -227,6 +232,7 @@ namespace HG3D_Engine
 		glEnable(GL_CULL_FACE); //cull the back face 
 		glCullFace(GL_BACK);//cull the back face
 		Shaders[0] = LoadShaders("..\\HG3D Engine\\VS00.txt", "..\\HG3D Engine\\FS00.txt");//load shaders
+		wglMakeCurrent(hdc, 0);//make the rc current
 		/******************************************************************/
 		/**************************test console****************************/
 		/******************************************************************/
@@ -270,8 +276,8 @@ namespace HG3D_Engine
 	}
 	unsigned long int Renderer::add_camera()//update camera 
 	{
-		cameras_nums++;//add number of cameras by 1
-		camera *cameras_the_next = (camera *)malloc(sizeof(camera)*1/*cameras_num*s*/);//allocate new meshes' memory
+		cameras_nums++;//add number of textures by 1
+		camera *cameras_the_next = (camera *)malloc(sizeof(camera)*cameras_nums);//allocate new meshes' memory
 
 
 		for (register unsigned long int i = 0; i < cameras_nums - 1; i++)
@@ -297,12 +303,30 @@ namespace HG3D_Engine
 		cameras = cameras_the_next;//replace the pointer to new camera data
 		return cameras_nums - 1;//return the added camera's ID
 	}
+	unsigned long int Renderer::add_texture(unsigned short int *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
+	{
+		texture_nums++;//add number of cameras by 1
+		texture *textures_the_next = (texture *)malloc(sizeof(texture) * 1/*cameras_num*s*/);//allocate new meshes' memory
+
+
+		for (register unsigned long int i = 0; i < texture_nums - 1; i++)
+			textures_the_next[i].clone_NMA(textures[i]);//clone last data with no new memory allocation
+
+
+		textures_the_next[texture_nums - 1].build(irgba, w, h, NOC);//build the texture
+
+
+		free(textures);//free last data
+		textures = textures_the_next;//replace the pointer to new camera data
+		return texture_nums - 1;//return the added camera's ID
+	}
 	/******************************************************************/
 	/**************************test functions**************************/
 	/******************************************************************/
 	/******************************************************************/
 	void Renderer::test_render()
 	{
+		wglMakeCurrent(hdc, hrc);//make the rc current
 		glClearDepth(1);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		if (cameras_nums > 0)
@@ -326,6 +350,7 @@ namespace HG3D_Engine
 		}
 		glFlush();
 		SwapBuffers(hdc);
+		wglMakeCurrent(hdc, 0);//make the rc current
 	}
 	/******************************************************************/
 	/******************************************************************/
