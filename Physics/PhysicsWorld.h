@@ -16,7 +16,7 @@ namespace Physics
 
 		void DLLEXPORT Update(const long double& Deltatime);
 	
-		void DLLEXPORT AddObject(PhysicsObject& Object);
+		void DLLEXPORT AddObject(PhysicsObject& Object, Mesh& mesh);
 		void DLLEXPORT RemoveLastObject();
 
 		PhysicsObject& GetPhysicsObject(UINT Index);

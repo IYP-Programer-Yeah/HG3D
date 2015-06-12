@@ -8,6 +8,7 @@ namespace Physics
 		//Initialize everything to defaults
 
 		m_Position = nullptr;
+		m_MeshPtr = nullptr;
 
 		m_Acceleration.x = 0.0;
 		m_Acceleration.y = 0.0;
@@ -168,12 +169,27 @@ namespace Physics
 		m_Last_Velocity = m_Velocity;
 	}
 
-	void PhysicsObject::CalculateCollisionShapes(vertex* vertices, unsigned long int VertexCount)
+	void PhysicsObject::SetMesh(Mesh& mesh)
+	{
+		if (!m_MeshPtr)
+		{
+			m_MeshPtr = &mesh;
+		}
+#ifdef NT_IS_DEBUGGING
+		else
+		{
+			OutputDebugString("Warning: Setting the PhysicsObject::SetMesh() more than one time.\n");
+		}
+#endif
+	}
+
+	void PhysicsObject::CalculateCollisionShapes()
 	{
 		point Min;
 		point Max;
 
 		point SphereCenter;
+		SphereCenter.build(0.0f, 0.0f, 0.0f);
 
 		const static float Infinite = FLT_MAX;
 
@@ -186,8 +202,11 @@ namespace Physics
 		vMin = Min;
 		vMax = Max;
 
-		for (register unsigned long int i = 0; i < VertexCount; ++i)
+		vertex* vertices = m_MeshPtr->verts;
+
+		for (register unsigned long int i = 0; i < m_MeshPtr->vert_nums; ++i)
 		{
+
 			SphereCenter.x += vertices[i].x;
 			SphereCenter.y += vertices[i].y;
 			SphereCenter.z += vertices[i].z;
@@ -204,9 +223,9 @@ namespace Physics
 
 		}
 
-		SphereCenter.x /= VertexCount;
-		SphereCenter.y /= VertexCount;
-		SphereCenter.z /= VertexCount;
+		SphereCenter.x /= m_MeshPtr->vert_nums;
+		SphereCenter.y /= m_MeshPtr->vert_nums;
+		SphereCenter.z /= m_MeshPtr->vert_nums;
 		
 		//Now we know the mesh's approximate center for the sphere collision shape
 		m_ColSphere.Center = SphereCenter;
@@ -230,7 +249,7 @@ namespace Physics
 		point VertexPos;
 		vector DistanceVector;
 
-		for (register unsigned long int i = 0; i < VertexCount; ++i)
+		for (register unsigned long int i = 0; i < m_MeshPtr->vert_nums; ++i)
 		{
 			//for each vertex in the mesh
 			VertexPos.build(vertices[i].x, vertices[i].y, vertices[i].z);
@@ -241,7 +260,7 @@ namespace Physics
 			DistanceVector.z = SphereCenter.z - VertexPos.z;
 
 			//Use squared distance for comparision to avoid the square root function
-			CurrentRadius = DistanceVector.getsizeSq();
+			CurrentRadius = static_cast<float>(DistanceVector.getsizeSq());
 
 			FinalRadius = (CurrentRadius > PreviousRadius) ? CurrentRadius : PreviousRadius;
 
@@ -250,7 +269,7 @@ namespace Physics
 
 		}
 
-		//Save the final value of sphere's radius
+		//Save the final value of sphere's radius which is the greatest value
 		m_ColSphere.Radius = FinalRadius;
 
  	}

@@ -24,7 +24,7 @@ namespace Physics
 		
 		//It's called by the PhysicalWorld class
 		//This function calculates 
-		void CalculateCollisionShapes(vertex* vertices, unsigned long int VertexCount);
+		void CalculateCollisionShapes();
 
 		//Set Object's properties
 		void DLLEXPORT AddForce(long double x, long double y, long double z);
@@ -34,6 +34,8 @@ namespace Physics
 		void DLLEXPORT SetGravity(long double x, long double y, long double z);
 		void DLLEXPORT SetMass(long double Mass);
 
+		//To be called by PhysicalWorld
+		void SetMesh(Mesh& mesh);
 
 
 		//our m_Position vector will point to this address
@@ -69,5 +71,7 @@ namespace Physics
 
 		CollisionSphere m_ColSphere;
 		CollisionBox m_ColBox;
+
+		Mesh* m_MeshPtr;
 	};
 }
