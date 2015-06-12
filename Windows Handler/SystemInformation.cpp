@@ -12,12 +12,6 @@ namespace Windows_Handler
 
 		m_CPUCores = static_cast<BYTE>(sysInfo.dwNumberOfProcessors);
 
-#ifdef NT_IS_DEBUGGING
-		char s[50];
-		sprintf_s(s, "Number of CPU Cores: %d\n", m_CPUCores);
-
-		MessageBox(NULL, s, NULL, NULL);
-#endif
 
 	}
 
@@ -35,7 +29,6 @@ namespace Windows_Handler
 #ifdef NT_IS_DEBUGGING
 		assert(m_CPUCores > 0);
 #endif
-
 		return m_CPUCores;
 	}
 

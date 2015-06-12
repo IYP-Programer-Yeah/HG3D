@@ -170,7 +170,7 @@ namespace HG3D_Engine
 			faces[i] = input.faces[i];
 		for (register unsigned long int i = 0; i < vert_nums; i++)
 			verts[i] = input.verts[i];
-		indices = (unsigned long int*)faces;
+		indices = (unsigned long int*)faces; 
 
 	}
 	void Mesh::clone_NMA(Mesh input)		//clone with the same memory allocation (no new memory is allocated)

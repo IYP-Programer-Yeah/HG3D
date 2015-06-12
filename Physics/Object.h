@@ -1,9 +1,14 @@
 #include "BasicIncludes.h"
 #include "..\HG3D Engine\HG3D Engine.h"
+#include "Sphere.h"
+#include "AABB.h"
 
+#include <float.h>
 #include <assert.h>
 
 using namespace HG3D_Engine;
+
+
 
 namespace Physics
 {
@@ -16,6 +21,9 @@ namespace Physics
 		//This function is to be called by a PhysicsWorld
 		//Not available to user
 		void Update(const long double& Deltatime);
+		
+		//It's calculated by the PhysicalWorld class
+		void CalculateCollisionShapes(vertex* vertices, unsigned long int VertexCount);
 
 		//Set Object's properties
 		void DLLEXPORT AddForce(long double x, long double y, long double z);
@@ -24,6 +32,8 @@ namespace Physics
 		void DLLEXPORT SetForce(const vector& Force);
 		void DLLEXPORT SetGravity(long double x, long double y, long double z);
 		void DLLEXPORT SetMass(long double Mass);
+
+
 
 		//our m_Position vector will point to this address
 		//This PointerAddress must be ACTUAL Object's position
@@ -55,5 +65,8 @@ namespace Physics
 		//Pointer because actual position of the object too needs be updated
 		//So, this needs to be private
 		point* m_Position;
+
+		CollisionSphere m_ColSphere;
+		CollisionBox m_ColBox;
 	};
 }

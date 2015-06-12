@@ -167,4 +167,63 @@ namespace Physics
 		//save the last velosity
 		m_Last_Velocity = m_Velocity;
 	}
+
+	void PhysicsObject::CalculateCollisionShapes(vertex* vertices, unsigned long int VertexCount)
+	{
+		point Min;
+		point Max;
+
+		point SphereCenter;
+
+		const static float Infinite = FLT_MAX;
+
+		Min.build(Infinite, Infinite, Infinite);
+		Max.build(-Infinite, -Infinite, -Infinite);
+
+		point vMin;
+		point vMax;
+
+		vMin = Min;
+		vMax = Max;
+
+		for (register unsigned long int i = 0; i < VertexCount; ++i)
+		{
+			SphereCenter.x += vertices[i].x;
+			SphereCenter.y += vertices[i].y;
+			SphereCenter.z += vertices[i].z;
+
+			//calculate the farthest vertex
+			vMax.x = (vMax.x > vertices[i].x) ? vMax.x : vertices[i].x;
+			vMax.y = (vMax.y > vertices[i].y) ? vMax.x : vertices[i].y;
+			vMax.z = (vMax.z > vertices[i].z) ? vMax.x : vertices[i].z;
+
+			//calculate the nearest vertex
+			vMin.x = (vMin.x < vertices[i].x) ? vMin.x : vertices[i].x;
+			vMin.y = (vMin.y < vertices[i].y) ? vMin.y : vertices[i].y;
+			vMin.z = (vMin.z < vertices[i].z) ? vMin.z : vertices[i].z;
+
+		}
+
+		SphereCenter.x /= VertexCount;
+		SphereCenter.y /= VertexCount;
+		SphereCenter.z /= VertexCount;
+		
+		//Now we know the mesh's approximate center for the sphere collision shape
+		m_ColSphere.Center = SphereCenter;
+
+		//Calculate the sphere's radius
+		//Distance between the center and the farthest vertex
+
+		vector SphereRadiusVector;
+
+		SphereRadiusVector.x = SphereCenter.x - vMax.x;
+		SphereRadiusVector.y = SphereCenter.y - vMax.y;
+		SphereRadiusVector.z = SphereCenter.z - vMax.z;
+
+		long double MagSphereRadiusVector = SphereRadiusVector.getsize();
+
+		m_ColSphere.Radius = static_cast<float>(MagSphereRadiusVector);
+
+
+	}
 }

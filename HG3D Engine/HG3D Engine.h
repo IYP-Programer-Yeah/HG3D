@@ -169,6 +169,8 @@ namespace HG3D_Engine
 		void __declspec(dllexport) update_vbo();				//update mesh vbo
 		void __declspec(dllexport) operator=(Mesh input);		//= operator
 		void __declspec(dllexport) clone_NMA(Mesh input);		//clone with the same memory allocation (no new memory is allocated)
+
+		
 	};
 	//end of mesh class
 	//end of mesh libs
