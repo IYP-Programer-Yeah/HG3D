@@ -23,7 +23,7 @@ LRESULT CALLBACK Main_Window_WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM 
 		Main_Windows.Needs_update = 0;//needs update
 		return DefWindowProc(hWnd, Msg, wParam, lParam); //return default reaction
 	}
-	return 1;  //the reaction was done normally
+	return false;  //the reaction was done normally
 }
 bool init_main_window(HINSTANCE hInstance)
 {
@@ -98,9 +98,9 @@ bool Get_Mouse_Stat(int Stat_ID)//get mouse stats
 		return Main_Windows.Mouse_Middle;
 	return false;
 }
-void Update_Wnd()
+bool Update_Wnd()
 {
-	Main_Windows.update_mouse();//update mouse
+	return Main_Windows.update_mouse();//update mouse
 }
 
 void CheckSystemInformation()

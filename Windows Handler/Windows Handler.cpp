@@ -48,31 +48,33 @@ namespace Windows_Handler
 		Mouse_Left = false;
 		return true;//every thing done well
 	}
-	void Windows::update_mouse()
+	bool Windows::update_mouse()
 	{
 		Last_Mouse_X = Mouse_X;//set the last positions
 		Last_Mouse_Y = Mouse_Y;
+		Mouse_Wheel_Delta = 0;
 		if (msg.message == WM_MOUSEMOVE)
 		{
 			//get new postions
 			Mouse_X = GET_X_LPARAM(msg.lParam);
 			Mouse_Y = GET_Y_LPARAM(msg.lParam);
+			return true;
 		}
-		if (msg.message ==WM_MOUSEWHEEL)
+		if (msg.message == WM_MOUSEWHEEL)
 		{
 			//get new postions
 			Mouse_X = GET_X_LPARAM(msg.lParam);
 			Mouse_Y = GET_Y_LPARAM(msg.lParam);
 			Mouse_Wheel_Delta = GET_WHEEL_DELTA_WPARAM(msg.wParam);//get the delta v
+			return true;
 		}
-		else
-			Mouse_Wheel_Delta = 0;
 		if (msg.message == WM_LBUTTONDOWN)
 		{
 			//get new postions
 			Mouse_X = GET_X_LPARAM(msg.lParam);
 			Mouse_Y = GET_Y_LPARAM(msg.lParam);
 			Mouse_Left = true;
+			return true;
 		}
 		if (msg.message == WM_LBUTTONUP)
 		{
@@ -80,6 +82,7 @@ namespace Windows_Handler
 			Mouse_X = GET_X_LPARAM(msg.lParam);
 			Mouse_Y = GET_Y_LPARAM(msg.lParam);
 			Mouse_Left = false;
+			return true;
 		}
 		if (msg.message == WM_RBUTTONDOWN)
 		{
@@ -87,6 +90,7 @@ namespace Windows_Handler
 			Mouse_X = GET_X_LPARAM(msg.lParam);
 			Mouse_Y = GET_Y_LPARAM(msg.lParam);
 			Mouse_Right = true;
+			return true;
 		}
 		if (msg.message == WM_RBUTTONUP)
 		{
@@ -94,6 +98,7 @@ namespace Windows_Handler
 			Mouse_X = GET_X_LPARAM(msg.lParam);
 			Mouse_Y = GET_Y_LPARAM(msg.lParam);
 			Mouse_Right = false;
+			return true;
 		}
 		if (msg.message == WM_MBUTTONDOWN)
 		{
@@ -101,6 +106,7 @@ namespace Windows_Handler
 			Mouse_X = GET_X_LPARAM(msg.lParam);
 			Mouse_Y = GET_Y_LPARAM(msg.lParam);
 			Mouse_Middle = true;
+			return true;
 		}
 		if (msg.message == WM_MBUTTONUP)
 		{
@@ -108,7 +114,9 @@ namespace Windows_Handler
 			Mouse_X = GET_X_LPARAM(msg.lParam);
 			Mouse_Y = GET_Y_LPARAM(msg.lParam);
 			Mouse_Middle = false;
+			return true;
 		}
+		return false;
 
 	}
 }

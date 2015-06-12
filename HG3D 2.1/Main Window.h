@@ -24,4 +24,4 @@ int Get_Mouse_Y();//get y
 int Get_Mouse_Last_X();//get last x
 int Get_Mouse_Last_Y();//get last y
 int Get_Mouse_Wheel_Delta();//get mouse wheel's movment
-void Update_Wnd();
+bool Update_Wnd();
