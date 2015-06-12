@@ -211,19 +211,47 @@ namespace Physics
 		//Now we know the mesh's approximate center for the sphere collision shape
 		m_ColSphere.Center = SphereCenter;
 
-		//Calculate the sphere's radius
-		//Distance between the center and the farthest vertex
 
-		vector SphereRadiusVector;
+		//Calculate AABB's final values
+		m_ColBox.Center.x = (vMin.x + vMax.x) * 0.5;
+		m_ColBox.Center.y = (vMin.y + vMax.y) * 0.5;
+		m_ColBox.Center.z = (vMin.z + vMax.z) * 0.5;
 
-		SphereRadiusVector.x = SphereCenter.x - vMax.x;
-		SphereRadiusVector.y = SphereCenter.y - vMax.y;
-		SphereRadiusVector.z = SphereCenter.z - vMax.z;
-
-		long double MagSphereRadiusVector = SphereRadiusVector.getsize();
-
-		m_ColSphere.Radius = static_cast<float>(MagSphereRadiusVector);
+		m_ColBox.Extends.x = (vMax.x - vMin.x) * 0.5;
+		m_ColBox.Extends.y = (vMax.y - vMin.y) * 0.5;
+		m_ColBox.Extends.z = (vMax.z - vMin.z) * 0.5;
 
 
-	}
+		//Calculate the radius of sphere
+
+		float PreviousRadius = 0;
+		float FinalRadius = 0;
+		float CurrentRadius = 0;
+		point VertexPos;
+		vector DistanceVector;
+
+		for (register unsigned long int i = 0; i < VertexCount; ++i)
+		{
+			//for each vertex in the mesh
+			VertexPos.build(vertices[i].x, vertices[i].y, vertices[i].z);
+
+			//calculate the distance from the sphere center to the current vertex
+			DistanceVector.x = SphereCenter.x - VertexPos.x;
+			DistanceVector.y = SphereCenter.y - VertexPos.y;
+			DistanceVector.z = SphereCenter.z - VertexPos.z;
+
+			//Use squared distance for comparision to avoid the square root function
+			CurrentRadius = DistanceVector.getsizeSq();
+
+			FinalRadius = (CurrentRadius > PreviousRadius) ? CurrentRadius : PreviousRadius;
+
+			//SAVE for NEXT LOOP
+			PreviousRadius = CurrentRadius;
+
+		}
+
+		//Save the final value of sphere's radius
+		m_ColSphere.Radius = FinalRadius;
+
+ 	}
 }

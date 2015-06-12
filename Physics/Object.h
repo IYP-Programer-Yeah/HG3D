@@ -22,7 +22,8 @@ namespace Physics
 		//Not available to user
 		void Update(const long double& Deltatime);
 		
-		//It's calculated by the PhysicalWorld class
+		//It's called by the PhysicalWorld class
+		//This function calculates 
 		void CalculateCollisionShapes(vertex* vertices, unsigned long int VertexCount);
 
 		//Set Object's properties
