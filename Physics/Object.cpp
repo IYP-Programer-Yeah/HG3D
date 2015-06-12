@@ -36,6 +36,8 @@ namespace Physics
 		m_ApplyGravity = true;
 
 		m_LastFrameDataInitialized = false;
+		m_MeshPtr_is_valid = false;//its not yed validated
+		m_Mesh_ID = 0;
 	}
 
 	PhysicsObject::~PhysicsObject()

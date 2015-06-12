@@ -2,6 +2,8 @@ June 12th 2015
 changes made on files :
 Object.h
 Object.cpp
+PhysicsWorld.h
+PhysicsWorld.cpp
 
 changes made on Object.h
 replaces: none
@@ -17,9 +19,24 @@ replaces:
 #2 m_ColBox.Center is geting loaded from the mesh
 
 adds:
-#1 check for mesh pointer's validitation
+#1 check for mesh pointer's validitation set to false
+#2 mesh ID set to 0
 
 removes: 
 #1 the Min Max point declaration and initialization
 #2 the infinite constant
 #3 the min max point calculater int the loop
+
+changes made on PhysicsWorld.h
+replaces: none
+
+adds:
+#1 Renderer *m_RendererPtr; added a rendrer pointer
+#2 void DLLEXPORT Load_World(Renderer *world); to set the object outo maticly base on the renderer world
+
+removes: none
+
+changes made on PhysicsWorld.cpp
+replaces: none
+
+adds: Load_World function

@@ -93,4 +93,15 @@ namespace Physics
 			}
 		}
 	}
+	void PhysicsWorld::Load_World(Renderer *world, long double *Masses)
+	{ 
+		PhysicsObject temp_object;
+		for (register unsigned long int i = 0; i < world->mesh_nums; i++)
+		{
+			temp_object.SetMass(Masses[i]);//set the damned mass
+			temp_object.SetMesh(world->meshes[i]);//the mesh handed to object
+			temp_object.m_MeshPtr_is_valid = true;//now its valid
+			m_Objects.push_back(temp_object);
+		}
+	}
 }
