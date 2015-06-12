@@ -1,0 +1,25 @@
+June 12th 2015
+changes made on files :
+Object.h
+Object.cpp
+
+changes made on Object.h
+replaces: none
+
+adds: 
+#1 added unsigned long int m_Mesh_ID; and bool m_MeshPtr_is_valid;
+
+removes: none
+
+changes made on Object.cpp
+replaces:
+#1 v max and min initilized by the mesh data not by Max and Min points (they are already removed)
+#2 m_ColBox.Center is geting loaded from the mesh
+
+adds:
+#1 check for mesh pointer's validitation
+
+removes: 
+#1 the Min Max point declaration and initialization
+#2 the infinite constant
+#3 the min max point calculater int the loop

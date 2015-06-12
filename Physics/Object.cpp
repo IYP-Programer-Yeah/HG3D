@@ -185,42 +185,24 @@ namespace Physics
 
 	void PhysicsObject::CalculateCollisionShapes()
 	{
-		point Min;
-		point Max;
-
+		if (!m_MeshPtr_is_valid)//dont allow access violation
+			return;
 		point SphereCenter;
 		SphereCenter.build(0.0f, 0.0f, 0.0f);
-
-		const static float Infinite = FLT_MAX;
-
-		Min.build(Infinite, Infinite, Infinite);
-		Max.build(-Infinite, -Infinite, -Infinite);
 
 		point vMin;
 		point vMax;
 
-		vMin = Min;
-		vMax = Max;
+		vMin = m_MeshPtr->mesh_cube[0];//already calculated in mesh
+		vMax = m_MeshPtr->mesh_cube[7];//already calculated in mesh
 
 		vertex* vertices = m_MeshPtr->verts;
 
 		for (register unsigned long int i = 0; i < m_MeshPtr->vert_nums; ++i)
 		{
-
 			SphereCenter.x += vertices[i].x;
 			SphereCenter.y += vertices[i].y;
 			SphereCenter.z += vertices[i].z;
-
-			//calculate the farthest vertex
-			vMax.x = (vMax.x > vertices[i].x) ? vMax.x : vertices[i].x;
-			vMax.y = (vMax.y > vertices[i].y) ? vMax.x : vertices[i].y;
-			vMax.z = (vMax.z > vertices[i].z) ? vMax.x : vertices[i].z;
-
-			//calculate the nearest vertex
-			vMin.x = (vMin.x < vertices[i].x) ? vMin.x : vertices[i].x;
-			vMin.y = (vMin.y < vertices[i].y) ? vMin.y : vertices[i].y;
-			vMin.z = (vMin.z < vertices[i].z) ? vMin.z : vertices[i].z;
-
 		}
 
 		SphereCenter.x /= m_MeshPtr->vert_nums;
@@ -232,9 +214,7 @@ namespace Physics
 
 
 		//Calculate AABB's final values
-		m_ColBox.Center.x = (vMin.x + vMax.x) * 0.5;
-		m_ColBox.Center.y = (vMin.y + vMax.y) * 0.5;
-		m_ColBox.Center.z = (vMin.z + vMax.z) * 0.5;
+		m_ColBox.Center = m_MeshPtr->mesh_center;
 
 		m_ColBox.Extends.x = (vMax.x - vMin.x) * 0.5;
 		m_ColBox.Extends.y = (vMax.y - vMin.y) * 0.5;

@@ -21,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation of Changes", "Documentation of Changes", "{74B5393D-6571-4E46-B02C-998CAC60140F}"
 	ProjectSection(SolutionItems) = preProject
 		IYP Changes June 10th 2015.txt = IYP Changes June 10th 2015.txt
+		IYP changes June 12th 2015.txt = IYP changes June 12th 2015.txt
 	EndProjectSection
 EndProject
 Global
