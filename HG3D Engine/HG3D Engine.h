@@ -121,6 +121,7 @@ namespace HG3D_Engine
 	class Mesh//mesh class
 	{
 	public:
+
 		Mat meshmat;  //mesh material
 
 		unsigned long int vert_nums;      //number of verts

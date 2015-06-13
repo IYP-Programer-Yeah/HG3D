@@ -175,6 +175,7 @@ namespace HG3D_Engine
 			MeshID[i] = input.MeshID[i];
 
 	}
+
 	void Mesh::clone_NMA(Mesh input)		//clone with the same memory allocation (no new memory is allocated)
 	{
 		//copy ints
