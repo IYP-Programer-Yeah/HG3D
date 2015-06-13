@@ -120,11 +120,10 @@ namespace Physics
 		for (register unsigned long int i = 0; i < world->mesh_nums; i++)
 		{
 			temp_object.SetMass(Masses[i]);//set the damned mass
-			temp_object.SetMesh(world->meshes[i]);//the mesh handed to object
 			temp_object.m_MeshPtr_is_valid = true;//now its valid
 			temp_object.m_Moveable = 1;
-			m_Objects.push_back(temp_object);//add the object
-			m_Objects[i].CalculateCollisionShapes();
+			temp_object.m_Mesh_ID = i;
+			AddObject(temp_object, world->meshes[i]);//add the object
 		}
 	}
 }

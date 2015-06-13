@@ -18,10 +18,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	temp[1].LoadScaler(5.0f, 5.0f, 5.0f);//largen 5 times
 	Engine.meshes[1].model_matrix = temp[0]* temp[1];//multiply the scale from the right (always do this) and translate from right
 
-	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");//add the other mesh
+	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");//add the other mesh (this is earth)
 
-	temp[0].LoadTranslate(0.0f, -6370850.0f, 0.0f);//move it 24 in direction of x
-	temp[1].LoadScaler(6371000.0f, 6371000.0f, 6371000.0f);//largen 5 times
+	temp[0].LoadTranslate(0.0f, -6370850.0f, 0.0f);//this is earth
+	temp[1].LoadScaler(6371000.0f, 6371000.0f, 6371000.0f);//earth radius
 	Engine.meshes[2].model_matrix = temp[0] * temp[1];//multiply the scale from the right (always do this) and translate from right
 
 	Engine.cameras[0].camera_position.build(12.0f, 0.0f, 0.0f);//put the camera to x=12
@@ -33,7 +33,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.cameras[0].update_camera();//update camera
 
 	Physics::PhysicsWorld PH_Engine;
-	long double masses[3] = { 10.0, 10.0, pow(10.0, 23.0)*5.972 };
+	long double masses[3] = { 10.0*0.0, 10.0*0.0, pow(10.0, 24.0)*5.972 };
 	PH_Engine.Load_World(&Engine, masses);
 	
 

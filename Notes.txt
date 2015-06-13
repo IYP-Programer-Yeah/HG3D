@@ -1,0 +1,2 @@
+the earth and two other objects are made, exept the earth other object are givven a mass of zero, debug your program NT
+also note that the pointers and vectors when they are added the constructor function is not called also why is the position in object class a pointer?
