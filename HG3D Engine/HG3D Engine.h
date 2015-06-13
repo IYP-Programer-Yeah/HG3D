@@ -138,6 +138,8 @@ namespace HG3D_Engine
 		unsigned long int text_ID_dispmap;			  //displacement map texture ID
 		unsigned long int text_ID_TFmap;			  //transmision filter map texture ID
 
+		unsigned char MeshID[4];             //mesh id for defered shading
+
 		bool have_diff_text;              //have diffuse texture? 
 		bool have_spec_text;              //have specular texture? 
 		bool have_NM_text;                //have normals map texture? 

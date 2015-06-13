@@ -171,6 +171,8 @@ namespace HG3D_Engine
 		for (register unsigned long int i = 0; i < vert_nums; i++)
 			verts[i] = input.verts[i];
 		indices = (unsigned long int*)faces; 
+		for (register int i = 0; i < 4; i++)
+			MeshID[i] = input.MeshID[i];
 
 	}
 	void Mesh::clone_NMA(Mesh input)		//clone with the same memory allocation (no new memory is allocated)
@@ -217,5 +219,7 @@ namespace HG3D_Engine
 		VAO_ID = input.VAO_ID;
 		VBO_ID = input.VBO_ID;
 		indices = input.indices;
+		for (register int i = 0; i < 4; i++)
+			MeshID[i] = input.MeshID[i];
 	}
 }
