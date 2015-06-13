@@ -34,7 +34,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Physics::PhysicsWorld PH_Engine;
 	long double masses[3] = { 10.0*0.0, 10.0*0.0, pow(10.0, 24.0)*5.972 };
-	PH_Engine.Load_World(&Engine, masses);
+	PH_Engine.LoadWorld(&Engine, masses);
 	
 
 	long double last_time = clock(), current_time = clock();
