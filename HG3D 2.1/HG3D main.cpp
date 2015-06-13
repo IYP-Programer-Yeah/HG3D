@@ -1,5 +1,7 @@
 #include "Main Window.h"
 #include <iostream>
+
+
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	init_main_window(hInstance);//init the wondpw
@@ -57,9 +59,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 				Movement = normalize(Engine.cameras[0].forward)*long double(MWD) / long double(20.0);//get the movement
 
+
 				Engine.cameras[0].camera_position.build(LastPos.x + Movement.x, LastPos.y + Movement.y, LastPos.z + Movement.z);//move
 
-				Engine.cameras[0].needs_update = 1;//need update
+				Engine.cameras[0].needs_update = true;//need update
 			}
 			//Update camera data
 			Engine.cameras[0].camera_viewport[2] = GetW();
@@ -72,7 +75,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			if (Get_Mouse_Stat(Mouse_Middle_Stat))///check if the mddile button is pressed
 			{
-				Engine.cameras[0].fps_camera(float(Get_Mouse_X() - Get_Mouse_Last_X()) / 180.0f, float(Get_Mouse_Last_Y() - Get_Mouse_Y()) / 180.0f, Engine.cameras[0].up); //a simple fps camera
+				Engine.cameras[0].fps_camera(float(Get_Mouse_X() - Get_Mouse_Last_X()) / 180.0f, 
+					float(Get_Mouse_Last_Y() - Get_Mouse_Y()) / 180.0f, 
+					Engine.cameras[0].up); //a simple fps camera
 			}
 		}
 		else

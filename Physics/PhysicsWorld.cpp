@@ -76,7 +76,7 @@ namespace Physics
 		//Calculate gravitational force and add it to objects
 
 		//TODO : do this on a multi threaded way
-		for (register unsigned long int i = 0; i < m_Objects.size(); i++)
+	/*	for (register unsigned long int i = 0; i < m_Objects.size(); i++)
 		{
 			for (register unsigned long int j = i; j < m_Objects.size(); j++)
 			{
@@ -104,9 +104,10 @@ namespace Physics
 				//Apply force the second object gets the force in opposite direction  
 				m_Objects[j].AddForce(-GravitationalForce.x, -GravitationalForce.y, -GravitationalForce.z);
 			}
-
+			
 			
 		}
+		*/
 
 		//TODO : #1 find the best number of threads for multi threading 
 		//       #2 make a class for threads #3 do updates on threads 
