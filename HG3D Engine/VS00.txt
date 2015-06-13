@@ -5,7 +5,7 @@ in vec2 Coord;
 
 out vec4 normal;
 out vec4 position;
-out vec4 ligt_position[2];
+out vec4 ligt_position[3];
 
 uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
@@ -17,6 +17,7 @@ void main()
 	position=ModelMatrix*vec4(Vertex,1);
 	ligt_position[0]=vec4(12.0,12.0,12.0,1.0);
 	ligt_position[1]=vec4(-12.0,12.0,-12.0,1.0);
+	ligt_position[2]=vec4(105700000000.0,-6370850.0+105700000000.0,0.0,1.0);
 	gl_Position=ProjectionMatrix*ViewMatrix*position;
 
 	normal=NormalMatrix*vec4(Normal.xyz,0);

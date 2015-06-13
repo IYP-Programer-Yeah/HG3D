@@ -1,7 +1,7 @@
 #version 150
 in vec4 normal;
 in vec4 position;
-in vec4 ligt_position[2];
+in vec4 ligt_position[3];
 
 out vec4 Output1;
 
@@ -21,4 +21,10 @@ void main()
 	dotv=dot(LTP,normalize(normal))*-1.0/dist/dist*10;
 	if (dotv>0)
 		Output1+=vec4(0.0,1.0,1.0,1.0)*dotv;
+
+	LTP=position-ligt_position[2];
+	dist=length(LTP);
+	dotv=dot(LTP,normalize(normal))*-1.0/dist;
+	if (dotv>0)
+		Output1+=vec4(1.0,1.0,0.8,1.0)*dotv/2;
 } 

@@ -123,13 +123,13 @@ namespace HG3D_Engine
 		needs_update = 1;
 	}
 
-	void texture::build(unsigned short int *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
+	void texture::build(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
 	{
 		width = w;
 		height = h;//set the input
 		number_of_components = NOC;
 		total_size = width*height*number_of_components;//get the total memory size
-		rgba = (unsigned short int*)malloc(total_size);//allocate memory
+		rgba = (unsigned char*)malloc(total_size);//allocate memory
 		for (register unsigned long int i = 0; i < total_size; i++)//copy the data
 			rgba[i] = irgba[i];
 		needs_update = 1;//this will need updat after building
@@ -303,10 +303,10 @@ namespace HG3D_Engine
 		cameras = cameras_the_next;//replace the pointer to new camera data
 		return cameras_nums - 1;//return the added camera's ID
 	}
-	unsigned long int Renderer::add_texture(unsigned short int *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
+	unsigned long int Renderer::add_texture(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
 	{
 		texture_nums++;//add number of cameras by 1
-		texture *textures_the_next = (texture *)malloc(sizeof(texture) * 1/*cameras_num*s*/);//allocate new meshes' memory
+		texture *textures_the_next = (texture *)malloc(sizeof(texture) * texture_nums);//allocate new meshes' memory
 
 
 		for (register unsigned long int i = 0; i < texture_nums - 1; i++)
