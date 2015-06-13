@@ -152,6 +152,7 @@ namespace HG3D_Engine
 		bool hidden;                      //is mesh hidden?
 		bool clear_last_buff;             //clear last buffer in updat?
 		bool needs_update;                //mesh needs an update
+		bool subdata_changed;			  //a part of data is changed by user
 
 		point mesh_cube[8];               //mesh's container cube
 		point mesh_center;                //mesh-cube's center
@@ -169,6 +170,7 @@ namespace HG3D_Engine
 		void __declspec(dllexport) free_mesh();                 //free the mesh memory(cpu+gpu)
 
 		void __declspec(dllexport) update_vbo();				//update mesh vbo
+		void __declspec(dllexport) remap_vbo();					//update the subdata
 		void __declspec(dllexport) operator=(Mesh input);		//= operator
 		void __declspec(dllexport) clone_NMA(Mesh input);		//clone with the same memory allocation (no new memory is allocated)
 

@@ -87,6 +87,7 @@ namespace HG3D_Engine
 			mesh_cube[i].build(mesh_cube_vals[i % 2][0], mesh_cube_vals[int(i / 2) % 2][1], mesh_cube_vals[int(i / 4)][2]); //build mesh cube
 		model_matrix.LoadIdentity();//initialie model matrix
 		needs_update = 1;//after loading mesh need to update the vbo
+		subdata_changed = 0;//the whole data gonna get updated no need for this
 		indices = (unsigned long int*)faces;//get the pointer it'll be used to draw elements
 
 	}
@@ -126,6 +127,16 @@ namespace HG3D_Engine
 		glBindVertexArray(0);//unbind vao
 		needs_update = 0;
 		clear_last_buff = 1;//can clear the buffer next time
+		subdata_changed = 0;//the whole data updated no need for this
+	}
+	void Mesh::remap_vbo()//update the mesh vbo
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_ID);//bind the vbo
+		GLvoid* VBO_Temp = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);//map buffer
+		memcpy(VBO_Temp, verts, total_size);//copy data to vbo
+		glUnmapBuffer(GL_ARRAY_BUFFER);//unmap buffer
+		glBindBuffer(GL_ARRAY_BUFFER, 0);//unbind
+		subdata_changed = 0;//jsut updated it
 	}
 	void Mesh::operator=(Mesh input)//= operator
 	{
@@ -156,6 +167,7 @@ namespace HG3D_Engine
 		hidden = input.hidden;
 		clear_last_buff = 1;//can clear last buffers
 		needs_update = 1;//the mesh has just been copied needs update
+		subdata_changed = 0;//the whole data gonna get updated no need for this
 
 		//copy mesh cube data
 		for (register int i = 0; i < 8; i++)
@@ -204,7 +216,7 @@ namespace HG3D_Engine
 		hidden = input.hidden;
 		clear_last_buff = input.clear_last_buff;
 		needs_update = input.needs_update;
-
+		subdata_changed = input.subdata_changed;
 		//copy mesh cube data
 		for (register int i = 0; i < 8; i++)
 			mesh_cube[i] = input.mesh_cube[i];

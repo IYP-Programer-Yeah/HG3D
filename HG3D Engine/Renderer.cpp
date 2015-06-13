@@ -349,6 +349,8 @@ namespace HG3D_Engine
 			{
 				if (meshes[i].needs_update)
 					meshes[i].update_vbo();
+				if (meshes[i].subdata_changed)
+					meshes[i].remap_vbo();
 				glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ModelMatrix"), 1, 1, meshes[i].model_matrix.x);
 				glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "NormalMatrix"), 1, 1, InverseTranspose(meshes[i].model_matrix).x);
 				glBindVertexArray(meshes[i].VAO_ID);
