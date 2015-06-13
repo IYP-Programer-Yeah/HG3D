@@ -47,21 +47,32 @@ namespace Physics
 			return;
 		}
 #endif
-		for (register unsigned long int i = 0; i < m_Objects.size(); i++)
+		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
 		{
-			if (m_Objects[i].m_MeshPtr_is_valid)//the pointer is valid
+			if (m_Objects[i].m_MeshPtrIsValid)
 			{
-				m_Objects[i].SetPositionPointer(m_RendererPtr->meshes[m_Objects[i].m_Mesh_ID].model_matrix*m_Objects[i].m_ColSphere.Center);//set the position
+				//Set the position
+				m_Objects[i].SetPositionPointer(m_RendererPtr->meshes[m_Objects[i].m_MeshID].model_matrix * m_Objects[i].m_ColSphere.Center);
 			}
-			else//the pointer is not valid any more
+			else 
 			{
-				m_Objects[i].SetMesh(m_RendererPtr->meshes[m_Objects[i].m_Mesh_ID]);//set the mesh adress
-				m_Objects[i].SetPositionPointer(m_RendererPtr->meshes[m_Objects[i].m_Mesh_ID].model_matrix*m_Objects[i].m_ColSphere.Center);//set the position
-				m_Objects[i].m_MeshPtr_is_valid = true;//the pointer is valid now
+				//Set the mesh pointer
+				m_Objects[i].SetMesh(m_RendererPtr->meshes[m_Objects[i].m_MeshID]);
+
+				//Set the position
+				m_Objects[i].SetPositionPointer(m_RendererPtr->meshes[m_Objects[i].m_MeshID].model_matrix * m_Objects[i].m_ColSphere.Center);
+				
+				//The pointer is valid now
+				m_Objects[i].m_MeshPtrIsValid = true;
 			}
-			if(m_RendererPtr->meshes[m_Objects[i].m_Mesh_ID].needs_update)//mesh data must have been changed we need to update our collision shapes
+
+			//Mesh data must have been changed, so we need to update our collision shapes
+			if (m_RendererPtr->meshes[m_Objects[i].m_MeshID].needs_update)
+			{
 				m_Objects[i].CalculateCollisionShapes();
+			}
 		}
+
 		//Calculate gravitational force and add it to objects
 
 		//TODO : do this on a multi threaded way
@@ -78,6 +89,7 @@ namespace Physics
 				//Get the object to object vector
 				point a = m_Objects[i].GetPosition();
 				point b = m_Objects[j].GetPosition();
+
 				Object_Object.build(a, b);
 
 				//Power is 3 to normalize the vector too
@@ -104,26 +116,41 @@ namespace Physics
 			if (m_Objects[i].m_Moveable)
 			{
 				m_Objects[i].Update(dt);
-				vector movement;
-				movement.build(m_Objects[i].m_Last_Position, m_Objects[i].GetPosition());
-				_4x4matrix movemet_matrix;//the translate matrix
-				movemet_matrix.LoadTranslate(float(movement.x), float(movement.y), float(movement.z));//make the translate matrix
-				m_RendererPtr->meshes[m_Objects[i].m_Mesh_ID].model_matrix = movemet_matrix* m_RendererPtr->meshes[m_Objects[i].m_Mesh_ID].model_matrix;//tramslate the model
+
+				vector Movement;
+				Movement.build(m_Objects[i].m_Last_Position, m_Objects[i].GetPosition());
+
+				//The translation matrix
+				_4x4matrix MovementMatrix;
+
+				MovementMatrix.LoadTranslate(float(Movement.x), float(Movement.y), float(Movement.z));
+
+				m_RendererPtr->meshes[m_Objects[i].m_MeshID].model_matrix = MovementMatrix * m_RendererPtr->meshes[m_Objects[i].m_MeshID].model_matrix;
 			}
 		}
 
 	}
-	void PhysicsWorld::Load_World(Renderer *world, long double *Masses)
+	void PhysicsWorld::LoadWorld(Renderer* World, long double* Masses)
 	{ 
-		m_RendererPtr = world;
-		PhysicsObject temp_object;
-		for (register unsigned long int i = 0; i < world->mesh_nums; i++)
-		{
-			temp_object.SetMass(Masses[i]);//set the damned mass
-			temp_object.SetMesh(world->meshes[i]);//the mesh handed to object
-			temp_object.m_MeshPtr_is_valid = true;//now its valid
-			temp_object.m_Moveable = 1;
-			m_Objects.push_back(temp_object);//add the object
+		m_RendererPtr = World;
+
+		PhysicsObject TempObject;
+
+		for (register unsigned long int i = 0; i < World->mesh_nums; ++i)
+		{ 
+			//Set the mass
+			TempObject.SetMass(Masses[i]);
+
+			//The mesh handed to object
+			TempObject.SetMesh(World->meshes[i]);
+
+			//Now its valid
+			TempObject.m_MeshPtrIsValid = true;
+			TempObject.m_Moveable = true;
+
+			//Add the object
+			m_Objects.push_back(TempObject);
+
 			m_Objects[i].CalculateCollisionShapes();
 		}
 	}

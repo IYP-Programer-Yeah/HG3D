@@ -48,7 +48,7 @@ namespace Physics
 	public:
 		bool m_ApplyGravity;
 		bool m_Moveable;
-		bool m_MeshPtr_is_valid;//will check if the mesh pointer is valid if not physics world will validate it
+		bool m_MeshPtrIsValid;
 
 		point m_Last_Position;
 
@@ -59,7 +59,7 @@ namespace Physics
 		long double m_Last_dt;
 		long double m_Mass;
 
-		unsigned long int m_Mesh_ID;//the id of the mesh in hg3d class
+		unsigned long int m_MeshID;
 
 		CollisionSphere m_ColSphere;
 		CollisionBox m_ColBox;

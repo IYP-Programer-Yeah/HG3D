@@ -36,8 +36,8 @@ namespace Physics
 		m_ApplyGravity = true;
 
 		m_LastFrameDataInitialized = false;
-		m_MeshPtr_is_valid = false;//its not yed validated
-		m_Mesh_ID = 0;
+		m_MeshPtrIsValid = false;
+		m_MeshID = 0;
 	}
 
 	PhysicsObject::~PhysicsObject()
@@ -169,6 +169,8 @@ namespace Physics
 
 		//save the last velosity
 		m_Last_Velocity = m_Velocity;
+
+		//====================================================//
 	}
 
 	void PhysicsObject::SetMesh(Mesh& mesh)
@@ -178,16 +180,17 @@ namespace Physics
 
 	void PhysicsObject::CalculateCollisionShapes()
 	{
-		if (!m_MeshPtr_is_valid)//dont allow access violation
+		if (!m_MeshPtrIsValid)
 			return;
+
 		point SphereCenter;
 		SphereCenter.build(0.0f, 0.0f, 0.0f);
 
 		point vMin;
 		point vMax;
 
-		vMin = m_MeshPtr->mesh_cube[0];//already calculated in mesh
-		vMax = m_MeshPtr->mesh_cube[7];//already calculated in mesh
+		vMin = m_MeshPtr->mesh_cube[0];
+		vMax = m_MeshPtr->mesh_cube[7];
 
 		vertex* vertices = m_MeshPtr->verts;
 
@@ -219,6 +222,7 @@ namespace Physics
 		float PreviousRadius = 0;
 		float FinalRadius = 0;
 		float CurrentRadius = 0;
+
 		point VertexPos;
 		vector DistanceVector;
 
