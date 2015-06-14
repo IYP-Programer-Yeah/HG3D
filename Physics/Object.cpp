@@ -36,7 +36,6 @@ namespace Physics
 		m_ApplyGravity = true;
 
 		m_LastFrameDataInitialized = false;
-		m_MeshPtrIsValid = false;
 		m_MeshID = 0;
 	}
 
@@ -180,7 +179,7 @@ namespace Physics
 
 	void PhysicsObject::CalculateCollisionShapes()
 	{
-		if (!m_MeshPtrIsValid)
+		if (!m_MeshPtr)
 			return;
 
 		point SphereCenter;

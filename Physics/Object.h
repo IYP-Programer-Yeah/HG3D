@@ -15,8 +15,8 @@ namespace Physics
 	class PhysicsObject
 	{
 	public:
-		PhysicsObject();
-		~PhysicsObject();
+		DLLEXPORT PhysicsObject();
+		DLLEXPORT ~PhysicsObject();
 	
 		//This function is to be called by a PhysicsWorld
 		//Not available to user
@@ -48,7 +48,6 @@ namespace Physics
 	public:
 		bool m_ApplyGravity;
 		bool m_Moveable;
-		bool m_MeshPtrIsValid;
 
 		point m_Last_Position;
 

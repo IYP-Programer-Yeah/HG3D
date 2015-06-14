@@ -47,31 +47,6 @@ namespace Physics
 			return;
 		}
 #endif
-		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
-		{
-			if (m_Objects[i].m_MeshPtrIsValid)
-			{
-				//Set the position
-				m_Objects[i].SetPositionPointer(m_RendererPtr->meshes[m_Objects[i].m_MeshID].model_matrix * m_Objects[i].m_ColSphere.Center);
-			}
-			else 
-			{
-				//Set the mesh pointer
-				m_Objects[i].SetMesh(m_RendererPtr->meshes[m_Objects[i].m_MeshID]);
-
-				//Set the position
-				m_Objects[i].SetPositionPointer(m_RendererPtr->meshes[m_Objects[i].m_MeshID].model_matrix * m_Objects[i].m_ColSphere.Center);
-				
-				//The pointer is valid now
-				m_Objects[i].m_MeshPtrIsValid = true;
-			}
-
-			//Mesh data must have been changed, so we need to update our collision shapes
-			if (m_RendererPtr->meshes[m_Objects[i].m_MeshID].needs_update)
-			{
-				m_Objects[i].CalculateCollisionShapes();
-		}
-		}
 
 		//Calculate gravitational force and add it to objects
 
@@ -109,50 +84,14 @@ namespace Physics
 		}
 		*/
 
-		//TODO : #1 find the best number of threads for multi threading 
-		//       #2 make a class for threads #3 do updates on threads 
-
 		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
 		{
 			if (m_Objects[i].m_Moveable)
 			{
 				m_Objects[i].Update(dt);
-
-				vector Movement;
-				Movement.build(m_Objects[i].m_Last_Position, m_Objects[i].GetPosition());
-
-				//The translation matrix
-				_4x4matrix MovementMatrix;
-
-				MovementMatrix.LoadTranslate(float(Movement.x), float(Movement.y), float(Movement.z));
-
-				m_RendererPtr->meshes[m_Objects[i].m_MeshID].model_matrix = MovementMatrix * m_RendererPtr->meshes[m_Objects[i].m_MeshID].model_matrix;
 			}
 		}
 
 	}
-	void PhysicsWorld::LoadWorld(Renderer* World, long double* Masses)
-	{ 
-		m_RendererPtr = World;
-
-		PhysicsObject TempObject;
-
-		for (register unsigned long int i = 0; i < World->mesh_nums; ++i)
-		{
-			//Set the mass
-			TempObject.SetMass(Masses[i]);
-
-			//The mesh handed to object
-			TempObject.SetMesh(World->meshes[i]);
-
-			//Now its valid
-			TempObject.m_MeshPtrIsValid = true;
-			TempObject.m_Moveable = true;
-
-			//Add the object
-			m_Objects.push_back(TempObject);
-
-			m_Objects[i].CalculateCollisionShapes();
-		}
-	}
+	
 }

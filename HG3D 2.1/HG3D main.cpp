@@ -4,16 +4,35 @@
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	init_main_window(hInstance);//init the wondpw
+	init_main_window(hInstance);
+
 	HDC *hdc = GetHDC();
-	HG3D_Engine::Renderer Engine;//define a renderer
-	Engine.hdc = hdc[0];//get the dc
-	Engine.init();//initialize the engine
-	MSG *msg = GetMSG();//get the message point the to actual msg in wnd class
-	Engine.add_camera();//add a camera to engine
-	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");//add the mesh to engine
-	Engine.meshes[0].model_matrix.LoadScaler(100.0f, 100.0f, 100.0f);//the mesh needs to be 100 times larger
-	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");//add the other mesh
+
+	HG3D_Engine::Renderer Engine;
+	Physics::PhysicsWorld World;
+
+	Engine.hdc = hdc[0];
+	Engine.init();
+
+	MSG *msg = GetMSG();
+	Engine.add_camera();
+
+
+	Physics::PhysicsObject Horse;
+	Horse.SetMass(60.0);
+
+	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
+	
+	HG3D_Engine::_4x4matrix HorseWorld[2];
+	HorseWorld[0].LoadTranslate(0.0f, 10.0f, 0.0f);
+	HorseWorld[0].LoadTranslate(0.0f, -10.0f, 0.0f);
+	HorseWorld[1].LoadScaler(100.0f, 100.0f, 100.0f);
+
+	Engine.meshes[0].model_matrix = HorseWorld[0] * HorseWorld[1];
+
+	World.AddObject(Horse, Engine.meshes[0]);
+
+	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
 	HG3D_Engine::_4x4matrix temp[2];
 	temp[0].LoadTranslate(24.0f,0.0f,0.0f);//move it 24 in direction of x
@@ -34,10 +53,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.cameras[0].Left = -1.0f*float(GetW()) / float(GetH());//update projection
 	Engine.cameras[0].update_camera();//update camera
 
-	Physics::PhysicsWorld PH_Engine;
-	long double masses[3] = { 10.0, 10.0, pow(10.0, 24.0)*5.972 };
-	PH_Engine.LoadWorld(&Engine, masses);
-	
 
 	long double last_time = clock(), current_time = clock();
 	while (msg->message != WM_QUIT)  
@@ -84,7 +99,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			last_time = current_time;
 			current_time = clock();
-			PH_Engine.Update((current_time-last_time)/1000.0);
+			//World.Update( (current_time - last_time) /1000.0 );
 			Engine.test_render(); //render scene
 		}
 

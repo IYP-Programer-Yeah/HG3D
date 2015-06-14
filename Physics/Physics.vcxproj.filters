@@ -31,6 +31,12 @@
     <Filter Include="Source Files\PhysicsWorld">
       <UniqueIdentifier>{bc099d8d-41f8-4b80-bee9-5fe9bcec2428}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{5f3c675e-078d-4d3e-bdbc-46af0b7d0dfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{5f4ef31b-a1d4-4bda-b15c-4766237dcb95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABB.h">
@@ -51,6 +57,9 @@
     <ClInclude Include="PhysicsWorld.h">
       <Filter>Header Files\PhysicsWorld</Filter>
     </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sphere.cpp">
@@ -64,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="AABB.cpp">
       <Filter>Source Files\CollisionShapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
