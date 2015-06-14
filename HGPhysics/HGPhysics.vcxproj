@@ -18,53 +18,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="HG3D main.cpp" />
-    <ClCompile Include="Main Window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Main Window.h" />
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resource.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Resource\HG3D.ico" />
-    <Image Include="Resource\Prestart.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\HG3D Engine\HG3D Engine.vcxproj">
-      <Project>{7be2d072-e987-44ec-9135-48f38d967de9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\HGPhysics\HGPhysics.vcxproj">
-      <Project>{5235341e-77e2-4329-9a18-d4910e8b0e22}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Physics\Physics.vcxproj">
-      <Project>{fff71eff-67cd-45e1-bd1f-6bad88d04692}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Windows Handler\Windows Handler.vcxproj">
-      <Project>{afe0b35a-e143-49fc-9bc5-28d8945f8b7e}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="Resource\Models\horse.obj">
-      <FileType>Document</FileType>
-    </Media>
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="Resource\Models\Cube.obj">
-      <FileType>Document</FileType>
-    </Media>
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="Resource\Models\sphere.obj">
-      <FileType>Document</FileType>
-    </Media>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{857E8D8A-D5A8-4665-A5B9-3B70F5911480}</ProjectGuid>
-    <RootNamespace>HG3D21</RootNamespace>
+    <ProjectGuid>{5235341E-77E2-4329-9A18-D4910E8B0E22}</ProjectGuid>
+    <RootNamespace>HGPhysics</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -80,14 +36,14 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -133,7 +89,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -142,13 +98,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <TargetMachine>NotSet</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -159,6 +114,19 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Physics.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Physics.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HG3D Engine\HG3D Engine.vcxproj">
+      <Project>{7be2d072-e987-44ec-9135-48f38d967de9}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

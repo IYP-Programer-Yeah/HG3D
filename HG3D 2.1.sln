@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{C1ED1EA3
 		Notes.txt = Notes.txt
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HGPhysics", "HGPhysics\HGPhysics.vcxproj", "{5235341E-77E2-4329-9A18-D4910E8B0E22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -74,7 +76,15 @@ Global
 		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Debug|x64.ActiveCfg = Debug|Win32
 		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Release|Win32.ActiveCfg = Release|Win32
 		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Release|Win32.Build.0 = Release|Win32
-		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Release|x64.ActiveCfg = Release|Win32
+		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Release|x64.ActiveCfg = Release|x64
+		{FFF71EFF-67CD-45E1-BD1F-6BAD88D04692}.Release|x64.Build.0 = Release|x64
+		{5235341E-77E2-4329-9A18-D4910E8B0E22}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5235341E-77E2-4329-9A18-D4910E8B0E22}.Debug|Win32.Build.0 = Debug|Win32
+		{5235341E-77E2-4329-9A18-D4910E8B0E22}.Debug|x64.ActiveCfg = Debug|Win32
+		{5235341E-77E2-4329-9A18-D4910E8B0E22}.Release|Win32.ActiveCfg = Release|Win32
+		{5235341E-77E2-4329-9A18-D4910E8B0E22}.Release|Win32.Build.0 = Release|Win32
+		{5235341E-77E2-4329-9A18-D4910E8B0E22}.Release|x64.ActiveCfg = Release|x64
+		{5235341E-77E2-4329-9A18-D4910E8B0E22}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

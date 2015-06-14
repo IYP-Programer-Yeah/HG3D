@@ -2,6 +2,7 @@
 #include "..\Windows Handler\SystemInformation.h"
 #include "..\HG3D Engine\HG3D Engine.h"
 #include "..\Physics\PhysicsWorld.h"
+#include "..\HGPhysics\Physics.h"
 #include <time.h>
 #define Mouse_Left_Stat    1
 #define Mouse_Right_Stat   2

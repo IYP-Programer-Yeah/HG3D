@@ -36,9 +36,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Physics::PhysicsWorld PH_Engine;
 	long double masses[3] = { 10.0, 10.0, pow(10.0, 24.0)*5.972 };
+	bool movables[3] = { 1, 1, 0 };
 	PH_Engine.LoadWorld(&Engine, masses);
-	
-
+	Physics_Engine::Physics sph;
+	sph.build(&Engine, movables, masses);
 	long double last_time = clock(), current_time = clock();
 	while (msg->message != WM_QUIT)  
 	{
@@ -84,7 +85,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			last_time = current_time;
 			current_time = clock();
-			PH_Engine.Update((current_time-last_time)/1000.0);
+			//PH_Engine.Update((current_time-last_time)/1000.0);
+			sph.apply_physics((current_time - last_time) / 1000.0);
 			Engine.test_render(); //render scene
 		}
 

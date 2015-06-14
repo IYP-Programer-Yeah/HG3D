@@ -148,9 +148,9 @@ namespace HG3D_Engine
 	{
 		point ret;
 		long double w = 0;
-		ret.x = x[0] * input.x + x[1] * input.y + x[2] * input.z;
-		ret.y = x[4] * input.x + x[5] * input.y + x[6] * input.z;//do the multiplication there is no w its vector
-		ret.z = x[8] * input.x + x[9] * input.y + x[10] * input.z;
+		ret.x = x[0] * input.x + x[1] * input.y + x[2] * input.z + x[3];
+		ret.y = x[4] * input.x + x[5] * input.y + x[6] * input.z + x[7];//do the multiplication there is no w its vector
+		ret.z = x[8] * input.x + x[9] * input.y + x[10] * input.z + x[11];
 		w += x[12] * input.x + x[13] * input.y + x[14] * input.z + x[15];//calculate w
 		ret.x /= w;//divide by w
 		ret.y /= w;
