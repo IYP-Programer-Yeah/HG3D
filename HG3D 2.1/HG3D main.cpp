@@ -53,6 +53,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.cameras[0].Left = -1.0f*float(GetW()) / float(GetH());//update projection
 	Engine.cameras[0].update_camera();//update camera
 
+	Physics::PhysicsWorld PH_Engine;
+	long double masses[3] = { 10.0, 10.0, pow(10.0, 24.0)*5.972 };
+	PH_Engine.LoadWorld(&Engine, masses);
+	
 
 	long double last_time = clock(), current_time = clock();
 	while (msg->message != WM_QUIT)  
@@ -99,7 +103,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			last_time = current_time;
 			current_time = clock();
-			//World.Update( (current_time - last_time) /1000.0 );
+			PH_Engine.Update((current_time-last_time)/1000.0);
 			Engine.test_render(); //render scene
 		}
 
