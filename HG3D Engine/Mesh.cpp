@@ -98,9 +98,12 @@ namespace HG3D_Engine
 
 	void Mesh::scale_model(float x, float y, float z)
 	{
-		_4x4matrix temp_scale;
-		temp_scale.LoadScaler(x, y, z);
-		model_matrix = model_matrix*temp_scale;
+		for (register int i = 0; i < 16; i+=4)
+		{
+			model_matrix.x[i] *= x;//we know what the matrix is so lets speed the process up
+			model_matrix.x[i + 1] *= y;
+			model_matrix.x[i + 2] *= z;
+		}
 	}
 	void Mesh::rotate_model_AIC(float theta, vector axis)//about it's center
 	{
@@ -117,9 +120,12 @@ namespace HG3D_Engine
 	}
 	void Mesh::move(vector movement)//about it's center
 	{
-		_4x4matrix temp_transilation;
-		temp_transilation.LoadTranslate(float(movement.x), float(movement.y), float(movement.z));//rotate about the center around the axis
-		model_matrix = temp_transilation*model_matrix;
+		for (register int i = 0; i < 4; i++)
+		{
+			model_matrix.x[i] += model_matrix.x[12 + i] * float(movement.x);//we know what the matrix is so lets speed the process up
+			model_matrix.x[i + 4] += model_matrix.x[12 + i] * float(movement.y);
+			model_matrix.x[i + 8] += model_matrix.x[12 + i] * float(movement.z);
+		}
 	}
 
 	void Mesh::free_mesh() //free the mesh memory

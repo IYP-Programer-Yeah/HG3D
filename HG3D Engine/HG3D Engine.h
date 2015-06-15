@@ -3,6 +3,7 @@
 #include <gl/gl.h> 
 #include <gl/glu.h>
 #include <math.h>
+#include <xmmintrin.h>
 
 // load GL libs
 #pragma comment(lib, "opengl32.lib")
