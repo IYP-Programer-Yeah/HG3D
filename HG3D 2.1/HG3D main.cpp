@@ -25,15 +25,13 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	vector translation;
 
 	//Don't forget to initialize any of these if you don't use them
-	translation.build(0.0f, 0.0f, 0.0f);
+	translation.build(0.0f, 100.0f, 0.0f);
 	Engine.meshes[0].move(translation);
 	Engine.meshes[0].scale_model(100.0f, 100.0f, 100.0f);
 	//Should be same as Translate.LoadTranslate(x, y, z)
 	Horse.SetPosition(0.0f, 0.0f, 0.0f);
 
 	Horse.SetForce(0.0f, 0.0f, 3.0f);
-
-	World.AddObject(Horse, Engine.meshes[0]);
 
 	//==========================================================================//
 
@@ -62,6 +60,11 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	long double last_time = clock(), current_time = clock();
+
+
+
+	World.AddObject(Horse, Engine.meshes[0]);
+
 
 	while (msg->message != WM_QUIT)  
 	{
