@@ -62,6 +62,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	long double last_time = clock(), current_time = clock();
+
 	while (msg->message != WM_QUIT)  
 	{
 		if (PeekMessage(msg, NULL, 0, 0, PM_REMOVE))
@@ -108,7 +109,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			long double dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
 
-			//World.Update(dt);
+			World.Update(dt);
 
 			Engine.test_render(); //render scene
 

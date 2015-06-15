@@ -153,7 +153,7 @@ namespace Physics
 		OutputDebugString(s);
 #endif
 		vector movement;
-		movement.build(m_Last_Position,m_Position);
+		movement.build(m_Last_Position, m_Position);
 		m_MeshPtr->move(movement);
 
 		//=========== SAVE FOR NEXT FRAME ====================//
