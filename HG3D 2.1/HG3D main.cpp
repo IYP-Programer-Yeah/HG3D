@@ -21,15 +21,13 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Physics::PhysicsObject Horse;
 	Horse.SetMass(1.0f);
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
-	
+
+	vector translation;
+
 	//Don't forget to initialize any of these if you don't use them
-	Engine.meshes[0].Translate.LoadTranslate(0.0f, 0.0f, 0.0f);
-	Engine.meshes[0].Scale.LoadScaler(100.0f, 100.0f, 100.0f);
-	Engine.meshes[0].Rotate.LoadIdentity();
-	Engine.meshes[0].physics_update = true;
-
-	Engine.meshes[0].model_matrix = Engine.meshes[0].Scale * Engine.meshes[0].Rotate * Engine.meshes[0].Translate;
-
+	translation.build(0.0f, 0.0f, 0.0f);
+	Engine.meshes[0].move(translation);
+	Engine.meshes[0].scale_model(100.0f, 100.0f, 100.0f);
 	//Should be same as Translate.LoadTranslate(x, y, z)
 	Horse.SetPosition(0.0f, 0.0f, 0.0f);
 
@@ -41,24 +39,17 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
-
-	Engine.meshes[1].Translate.LoadTranslate(24.0f, 0.0f, 0.0f);
-	Engine.meshes[1].Scale.LoadScaler(5.0f, 5.0f, 5.0f);
-	Engine.meshes[1].Rotate.LoadIdentity();
-	Engine.meshes[1].model_matrix = Engine.meshes[1].Scale * Engine.meshes[1].Rotate * Engine.meshes[1].Translate;
-	Engine.meshes[1].physics_update = false; //this mesh is not using any physics
+	translation.build(24.0f, 0.0f, 0.0f);
+	Engine.meshes[1].move(translation);
+	Engine.meshes[1].scale_model(5.0f, 5.0f, 5.0f);
 
 	//=========================================================================//
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
-	Engine.meshes[2].Translate.LoadTranslate(0.0f, -6370850.0f, 0.0f);
-	Engine.meshes[2].Scale.LoadScaler(6371000.0f, 6371000.0f, 6371000.0f);//earth radius
-	Engine.meshes[2].Rotate.LoadIdentity();
-	Engine.meshes[2].physics_update = false; //this mesh is not using any physics
-
-	Engine.meshes[2].model_matrix = Engine.meshes[2].Scale * Engine.meshes[2].Rotate * Engine.meshes[2].Translate;
-
+	translation.build(0.0f, -6370850.0f, 0.0f);
+	Engine.meshes[2].move(translation);
+	Engine.meshes[2].scale_model(6371000.0f, 6371000.0f, 6371000.0f);//earth radius
 	//==========================================================================//
 
 	Engine.cameras[0].camera_position.build(12.0f, 0.0f, 0.0f);//put the camera to x=12
@@ -115,9 +106,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			last_time = current_time;
 			current_time = clock();
 
-			float dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
+			long double dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
 
-			World.Update(dt);
+			//World.Update(dt);
 
 			Engine.test_render(); //render scene
 

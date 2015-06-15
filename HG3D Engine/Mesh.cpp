@@ -96,12 +96,30 @@ namespace HG3D_Engine
 
 	}
 
-	//NT Code:
-	//do this each frame
-	//Only for dynamic objects
-	void Mesh::update()
+	void Mesh::scale_model(float x, float y, float z)
 	{
-		model_matrix = Scale  * Translate * Rotate;
+		_4x4matrix temp_scale;
+		temp_scale.LoadScaler(x, y, z);
+		model_matrix = model_matrix*temp_scale;
+	}
+	void Mesh::rotate_model_AIC(float theta, vector axis)//about it's center
+	{
+		point center = model_matrix*mesh_center;//find the center 
+		_4x4matrix temp_rotation;
+		temp_rotation.LoadRotation(axis,center,theta);//rotate about the center around the axis
+		model_matrix = temp_rotation*model_matrix;
+	}
+	void Mesh::rotate_model(float theta, point origin, vector axis)//about it's center
+	{
+		_4x4matrix temp_rotation;
+		temp_rotation.LoadRotation(axis, origin, theta);//rotate about the center around the axis
+		model_matrix = temp_rotation*model_matrix;
+	}
+	void Mesh::move(vector movement)//about it's center
+	{
+		_4x4matrix temp_transilation;
+		temp_transilation.LoadTranslate(float(movement.x), float(movement.y), float(movement.z));//rotate about the center around the axis
+		model_matrix = temp_transilation*model_matrix;
 	}
 
 	void Mesh::free_mesh() //free the mesh memory

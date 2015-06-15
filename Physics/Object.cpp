@@ -152,11 +152,9 @@ namespace Physics
 		sprintf_s(s, "X: %.2f Y: %.2f Z: %.2f\n", m_Position.x, m_Position.y, m_Position.z);
 		OutputDebugString(s);
 #endif
-
-		m_MeshPtr->Translate.LoadTranslate(m_Position.x, m_Position.y, m_Position.z);
-
-		if (m_MeshPtr->physics_update)
-			m_MeshPtr->update();
+		vector movement;
+		movement.build(m_Last_Position,m_Position);
+		m_MeshPtr->move(movement);
 
 		//=========== SAVE FOR NEXT FRAME ====================//
 

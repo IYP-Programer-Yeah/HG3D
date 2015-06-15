@@ -95,6 +95,7 @@ namespace HG3D_Engine
 		ret.build(x / long double(entry), y / long double(entry), z / long double(entry));
 		return ret;
 	}
+
 	long double __fastcall vector::getsize()//get vector size
 	{
 		return sqrt(x*x + y*y + z*z);
