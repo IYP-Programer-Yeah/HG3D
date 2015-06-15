@@ -37,6 +37,9 @@
     <ProjectReference Include="..\HG3D Engine\HG3D Engine.vcxproj">
       <Project>{7be2d072-e987-44ec-9135-48f38d967de9}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\HGPhysics\HGPhysics.vcxproj">
+      <Project>{5235341e-77e2-4329-9a18-d4910e8b0e22}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Physics\Physics.vcxproj">
       <Project>{fff71eff-67cd-45e1-bd1f-6bad88d04692}</Project>
     </ProjectReference>

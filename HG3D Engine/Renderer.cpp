@@ -265,13 +265,13 @@ namespace HG3D_Engine
 		meshes_the_next[mesh_nums - 1].load_mesh(path);//load mesh from path
 
 		unsigned long int temp = mesh_nums - 1;
-		meshes_the_next[mesh_nums - 1].MeshID[3] = temp / 256;//mesh id to be writen as 4 8 byte int
+		meshes_the_next[mesh_nums - 1].MeshID[3] = unsigned char(temp % 256);//mesh id to be writen as 4 8 byte int
 		temp = temp / 256;
-		meshes_the_next[mesh_nums - 1].MeshID[2] = temp / 256;
+		meshes_the_next[mesh_nums - 1].MeshID[2] = unsigned char(temp % 256);
 		temp = temp / 256;
-		meshes_the_next[mesh_nums - 1].MeshID[1] = temp / 256;
+		meshes_the_next[mesh_nums - 1].MeshID[1] = unsigned char(temp % 256);
 		temp = temp / 256;
-		meshes_the_next[mesh_nums - 1].MeshID[0] = temp / 256;
+		meshes_the_next[mesh_nums - 1].MeshID[0] = unsigned char(temp % 256);
 
 		total_size += meshes_the_next[mesh_nums - 1].total_size;//update total size
 		vert_nums += meshes_the_next[mesh_nums - 1].vert_nums;//update total vert nums
