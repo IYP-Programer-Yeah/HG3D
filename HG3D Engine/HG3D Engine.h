@@ -155,10 +155,18 @@ namespace HG3D_Engine
 		bool needs_update;                //mesh needs an update
 		bool subdata_changed;			  //a part of data is changed by user
 
+		//NT code:
+		bool physics_update;
+
 		point mesh_cube[8];               //mesh's container cube
 		point mesh_center;                //mesh-cube's center
 
 		_4x4matrix model_matrix;          //model matrix will be sent to shader
+
+		//NT Code:
+		_4x4matrix Translate;
+		_4x4matrix Rotate;
+		_4x4matrix Scale;
 
 		face *faces;                      //mesh faces
 		vertex *verts;                    //mesh verts
@@ -169,6 +177,8 @@ namespace HG3D_Engine
 		void __declspec(dllexport) load_mesh(char *path);       //.obj mesh loader 3 verts for each face
 		void __declspec(dllexport) load_optimized(char *path);  //.obj mesh loader reuse the verts (time consumeing process)
 		void __declspec(dllexport) free_mesh();                 //free the mesh memory(cpu+gpu)
+
+		void __declspec(dllexport) update();
 
 		void __declspec(dllexport) update_vbo();				//update mesh vbo
 		void __declspec(dllexport) remap_vbo();					//update the subdata

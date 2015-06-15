@@ -42,7 +42,7 @@ namespace Physics
 		//This PointerAddress must be ACTUAL Object's position
 		//So, if we update position with our physics code, then the actual position of the object
 		//will be updated too
-		void DLLEXPORT SetPositionPointer(point& PointerAddress);
+		void DLLEXPORT SetPosition(float x, float y, float z);
 		point DLLEXPORT GetPosition();
 
 	public:
@@ -72,7 +72,7 @@ namespace Physics
 
 		//Pointer because actual position of the object too needs be updated
 		//So, this needs to be private
-		point* m_Position;
+		point m_Position;
 
 		Mesh* m_MeshPtr;
 	};

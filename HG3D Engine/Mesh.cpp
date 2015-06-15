@@ -95,6 +95,15 @@ namespace HG3D_Engine
 	{
 
 	}
+
+	//NT Code:
+	//do this each frame
+	//Only for dynamic objects
+	void Mesh::update()
+	{
+		model_matrix = Scale  * Translate * Rotate;
+	}
+
 	void Mesh::free_mesh() //free the mesh memory
 	{
 		free(verts); //free verts

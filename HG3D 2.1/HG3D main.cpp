@@ -17,33 +17,49 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MSG *msg = GetMSG();
 	Engine.add_camera();
 
-
+	//================ PHYSICS ENGINE USAGE ====================/
 	Physics::PhysicsObject Horse;
-	Horse.SetMass(60.0);
-
+	Horse.SetMass(1.0f);
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 	
-	HG3D_Engine::_4x4matrix HorseWorld[2];
-	HorseWorld[0].LoadTranslate(0.0f, 10.0f, 0.0f);
-	HorseWorld[0].LoadTranslate(0.0f, -10.0f, 0.0f);
-	HorseWorld[1].LoadScaler(100.0f, 100.0f, 100.0f);
+	//Don't forget to initialize any of these if you don't use them
+	Engine.meshes[0].Translate.LoadTranslate(0.0f, 0.0f, 0.0f);
+	Engine.meshes[0].Scale.LoadScaler(100.0f, 100.0f, 100.0f);
+	Engine.meshes[0].Rotate.LoadIdentity();
+	Engine.meshes[0].physics_update = true;
 
-	Engine.meshes[0].model_matrix = HorseWorld[0] * HorseWorld[1];
+	Engine.meshes[0].model_matrix = Engine.meshes[0].Scale * Engine.meshes[0].Rotate * Engine.meshes[0].Translate;
+
+	//Should be same as Translate.LoadTranslate(x, y, z)
+	Horse.SetPosition(0.0f, 0.0f, 0.0f);
+
+	Horse.SetForce(0.0f, 0.0f, 3.0f);
 
 	World.AddObject(Horse, Engine.meshes[0]);
 
+	//==========================================================================//
+
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
-	HG3D_Engine::_4x4matrix temp[2];
-	temp[0].LoadTranslate(24.0f,0.0f,0.0f);//move it 24 in direction of x
-	temp[1].LoadScaler(5.0f, 5.0f, 5.0f);//largen 5 times
-	Engine.meshes[1].model_matrix = temp[0]* temp[1];//multiply the scale from the right (always do this) and translate from right
 
-	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");//add the other mesh (this is earth)
+	Engine.meshes[1].Translate.LoadTranslate(24.0f, 0.0f, 0.0f);
+	Engine.meshes[1].Scale.LoadScaler(5.0f, 5.0f, 5.0f);
+	Engine.meshes[1].Rotate.LoadIdentity();
+	Engine.meshes[1].model_matrix = Engine.meshes[1].Scale * Engine.meshes[1].Rotate * Engine.meshes[1].Translate;
+	Engine.meshes[1].physics_update = false; //this mesh is not using any physics
 
-	temp[0].LoadTranslate(0.0f, -6370850.0f, 0.0f);//this is earth
-	temp[1].LoadScaler(6371000.0f, 6371000.0f, 6371000.0f);//earth radius
-	Engine.meshes[2].model_matrix = temp[0] * temp[1];//multiply the scale from the right (always do this) and translate from right
+	//=========================================================================//
+
+	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
+
+	Engine.meshes[2].Translate.LoadTranslate(0.0f, -6370850.0f, 0.0f);
+	Engine.meshes[2].Scale.LoadScaler(6371000.0f, 6371000.0f, 6371000.0f);//earth radius
+	Engine.meshes[2].Rotate.LoadIdentity();
+	Engine.meshes[2].physics_update = false; //this mesh is not using any physics
+
+	Engine.meshes[2].model_matrix = Engine.meshes[2].Scale * Engine.meshes[2].Rotate * Engine.meshes[2].Translate;
+
+	//==========================================================================//
 
 	Engine.cameras[0].camera_position.build(12.0f, 0.0f, 0.0f);//put the camera to x=12
 	Engine.cameras[0].forward.build(-1.0f, 0.0f, 0.0f);//look int x=-1 direction 
@@ -53,10 +69,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.cameras[0].Left = -1.0f*float(GetW()) / float(GetH());//update projection
 	Engine.cameras[0].update_camera();//update camera
 
-	Physics::PhysicsWorld PH_Engine;
-	long double masses[3] = { 10.0, 10.0, pow(10.0, 24.0)*5.972 };
-	PH_Engine.LoadWorld(&Engine, masses);
-	
 
 	long double last_time = clock(), current_time = clock();
 	while (msg->message != WM_QUIT)  
@@ -77,7 +89,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				HG3D_Engine::vector Movement;//set movement
 
 				Movement = normalize(Engine.cameras[0].forward)*long double(MWD) / long double(20.0);//get the movement
-
 
 				Engine.cameras[0].camera_position.build(LastPos.x + Movement.x, LastPos.y + Movement.y, LastPos.z + Movement.z);//move
 
@@ -103,8 +114,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			last_time = current_time;
 			current_time = clock();
-			PH_Engine.Update((current_time-last_time)/1000.0);
+
+			float dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
+
+			World.Update(dt);
+
 			Engine.test_render(); //render scene
+
+
 		}
 
 	}

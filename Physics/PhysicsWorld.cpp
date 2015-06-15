@@ -14,10 +14,10 @@ namespace Physics
 
 	void PhysicsWorld::AddObject(PhysicsObject& Object, Mesh& mesh)
 	{
-		m_Objects.push_back(Object);
+		Object.SetMesh(mesh);
+		Object.CalculateCollisionShapes();
 
-		m_Objects[m_Objects.size() - 1].SetMesh(mesh);
-		m_Objects[m_Objects.size() - 1].CalculateCollisionShapes();
+		m_Objects.push_back(Object);
 	}
 
 	void PhysicsWorld::RemoveLastObject()

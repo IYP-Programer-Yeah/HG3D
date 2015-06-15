@@ -1,5 +1,5 @@
 #include "Object.h"
-
+#include <iostream>
 
 namespace Physics
 {
@@ -7,7 +7,6 @@ namespace Physics
 	{
 		//Initialize everything to defaults
 
-		m_Position = nullptr;
 		m_MeshPtr = nullptr;
 
 		m_Acceleration.x = 0.0;
@@ -58,18 +57,10 @@ namespace Physics
 		m_Force.z += z;
 	}
 
-	void PhysicsObject::SetPositionPointer(point& PointerAddress)
-	{
-		m_Position = &PointerAddress;
-	}
 	
 	point PhysicsObject::GetPosition()
 	{
-#ifdef NT_IS_DEBUGGING
-		//make sure m_Position points to a valid address
-		assert(m_Position);
-#endif
-		return *m_Position;
+		return m_Position;
 	}
 
 	//Vector over loaded
@@ -115,14 +106,11 @@ namespace Physics
 	void PhysicsObject::Update(const long double& dt)
 	{
 #ifdef NT_IS_DEBUGGING
-
-		//assuming that m_Position points to a valid location
-		assert(m_Position);
-
 		//double-check
 		//We assume that mass is always greater than zero
 		assert(m_Mass > 0);
 #endif	
+
 
 		//Force = Mass * Acceleration
 		//Acceleration = Force / Mass 
@@ -137,7 +125,7 @@ namespace Physics
 		if (!m_LastFrameDataInitialized)
 		{
 			m_Last_dt = dt;
-			m_Last_Position = *m_Position;
+			m_Last_Position = m_Position;
 			m_Last_Velocity = m_Velocity;
 
 			m_LastFrameDataInitialized = true;
@@ -154,14 +142,26 @@ namespace Physics
 		NewPos = m_Velocity * dt;
 
 	
-		m_Position->x += NewPos.x;
-		m_Position->y += NewPos.y;
-		m_Position->z += NewPos.z;
+		m_Position.x += NewPos.x;
+		m_Position.y += NewPos.y;
+		m_Position.z += NewPos.z;
+
+
+#ifdef NT_IS_DEBUGGING
+		char s[256];
+		sprintf_s(s, "X: %.2f Y: %.2f Z: %.2f\n", m_Position.x, m_Position.y, m_Position.z);
+		OutputDebugString(s);
+#endif
+
+		m_MeshPtr->Translate.LoadTranslate(m_Position.x, m_Position.y, m_Position.z);
+
+		if (m_MeshPtr->physics_update)
+			m_MeshPtr->update();
 
 		//=========== SAVE FOR NEXT FRAME ====================//
 
 		//save last position
-		m_Last_Position = *m_Position;
+		m_Last_Position = m_Position;
 
 		//save last dt
 		m_Last_dt = dt;
@@ -172,6 +172,10 @@ namespace Physics
 		//====================================================//
 	}
 
+	void PhysicsObject::SetPosition(float x, float y, float z)
+	{
+		m_Position.build(x, y, z);
+	}
 	void PhysicsObject::SetMesh(Mesh& mesh)
 	{
 		m_MeshPtr = &mesh;
