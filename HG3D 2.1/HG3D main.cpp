@@ -19,7 +19,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//================ PHYSICS ENGINE USAGE ====================/
 	Physics::PhysicsObject Horse;
-	Horse.SetMass(1.0f);
+	
+	Horse.SetMass(60.0f);
+	Horse.SetPosition(0.0f, 0.0f, 0.0f);
+
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 
 	vector translation;
@@ -29,15 +32,21 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.meshes[0].move(translation);
 	Engine.meshes[0].scale_model(100.0f, 100.0f, 100.0f);
 	//Should be same as Translate.LoadTranslate(x, y, z)
-	Horse.SetPosition(0.0f, 0.0f, 0.0f);
 
-	Horse.SetForce(0.0f, 0.0f, 3.0f);
 
 	//==========================================================================//
 
-	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
+	Physics::PhysicsObject Sphere;
+	Sphere.SetMass(5.0f);
+	
+	Sphere.m_ApplyGravity = true;
+	Sphere.SetForce(7.0f, 0.0f, 0.0f);
+	Sphere.SetPosition(24.0f, 0.0f, 0.0f);
 
 	translation.build(24.0f, 0.0f, 0.0f);
+
+	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
+
 	Engine.meshes[1].move(translation);
 	Engine.meshes[1].scale_model(5.0f, 5.0f, 5.0f);
 
@@ -64,7 +73,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	World.AddObject(Horse, Engine.meshes[0]);
-
+	World.AddObject(Sphere, Engine.meshes[1]);
 
 	while (msg->message != WM_QUIT)  
 	{
