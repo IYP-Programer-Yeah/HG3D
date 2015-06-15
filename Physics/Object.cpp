@@ -147,13 +147,8 @@ namespace Physics
 		m_Position.z += NewPos.z;
 
 
-#ifdef NT_IS_DEBUGGING
-		char s[256];
-		sprintf_s(s, "X: %.2f Y: %.2f Z: %.2f\n", m_Position.x, m_Position.y, m_Position.z);
-		OutputDebugString(s);
-#endif
 		vector movement;
-		movement.build(m_Last_Position,m_Position);
+		movement.build(m_Last_Position, m_Position);
 		m_MeshPtr->move(movement);
 
 		//=========== SAVE FOR NEXT FRAME ====================//
