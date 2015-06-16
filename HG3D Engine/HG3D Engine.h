@@ -61,7 +61,18 @@ namespace HG3D_Engine
 	class _4x4matrix //4*4 matrix
 	{
 	public:
-		float x[16];
+		union
+		{
+#ifdef _M_X64
+			__declspec(align(16)) float x[16];
+			__declspec(align(16)) float xy[4][4];
+			__declspec(align(16)) __m128 data_row[4];
+#else
+			float x[16];
+			float xy[4][4];
+#endif
+			
+		};
 		_4x4matrix __declspec(dllexport) __fastcall operator * (_4x4matrix input);//mat4 multiply
 		vector __declspec(dllexport) __fastcall operator * (vector input);//mat4 multiply by vector
 		point __declspec(dllexport) __fastcall operator * (point input);//mat4 multiply by point

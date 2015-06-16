@@ -49,6 +49,11 @@ namespace HG3D_Engine
 		total_size = vert_nums*vertex_size;//calculate total verts size
 		verts = (vertex*)malloc(total_size);//allocate the vert memory
 		faces = (face*)malloc(faces_nums*face_size);//allocate the faces memory
+		for (register int i = 0; i < 3; i++)
+		{
+			min[i] = 0;
+			max[i] = 0;
+		}
 		for (register unsigned long int i = 0; i < faces_nums; i++)//feed the .obj data to mesh
 		{
 			faces[i].index[0] = i * 3;//there are no reuse of verts so just go forward
@@ -61,10 +66,12 @@ namespace HG3D_Engine
 				verts[i * 3 + j].y = (float)MeshObj.vertexList[MeshObj.faceList[i]->vertex_index[j]]->e[1];
 				verts[i * 3 + j].z = (float)MeshObj.vertexList[MeshObj.faceList[i]->vertex_index[j]]->e[2];
 				for (register int k = 0; k < 3; k++)//go through xyz
+				{
 					if ((float)MeshObj.vertexList[MeshObj.faceList[i]->vertex_index[j]]->e[k]>max[k])//check if more than max
 						max[k] = (float)MeshObj.vertexList[MeshObj.faceList[i]->vertex_index[j]]->e[k];//reset max
-					else if ((float)MeshObj.vertexList[MeshObj.faceList[i]->vertex_index[j]]->e[k]<min[k])//check if less than min
+					if ((float)MeshObj.vertexList[MeshObj.faceList[i]->vertex_index[j]]->e[k] < min[k])//check if less than min
 						min[k] = (float)MeshObj.vertexList[MeshObj.faceList[i]->vertex_index[j]]->e[k];//reset min
+				}
 				//load vert normals
 				verts[i * 3 + j].nx = (float)MeshObj.normalList[MeshObj.faceList[i]->normal_index[j]]->e[0];
 				verts[i * 3 + j].ny = (float)MeshObj.normalList[MeshObj.faceList[i]->normal_index[j]]->e[1];
@@ -79,7 +86,7 @@ namespace HG3D_Engine
 		}
 		float mesh_cube_vals[2][3];
 		for (register int i = 0; i < 3; i++)//feed mesh cube data
-			mesh_cube_vals[0][i] = max[i];
+			mesh_cube_vals[0][i] = min[i];
 		for (register int i = 0; i < 3; i++)//feed mesh cube data
 			mesh_cube_vals[1][i] = max[i];
 		mesh_center.build((max[0] + min[0]) / 2, (max[1] + min[1]) / 2, (max[2] + min[2]) / 2);//build mesh cube center
@@ -107,7 +114,8 @@ namespace HG3D_Engine
 	}
 	void Mesh::rotate_model_AIC(float theta, vector axis)//about it's center
 	{
-		point center = model_matrix*mesh_center;//find the center 
+		point center;
+		center = model_matrix*mesh_center;//find the center 
 		_4x4matrix temp_rotation;
 		temp_rotation.LoadRotation(axis,center,theta);//rotate about the center around the axis
 		model_matrix = temp_rotation*model_matrix;

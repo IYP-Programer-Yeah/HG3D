@@ -31,6 +31,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	translation.build(0.0f, 100.0f, 0.0f);
 	Engine.meshes[0].move(translation);
 	Engine.meshes[0].scale_model(100.0f, 100.0f, 100.0f);
+	vector axis;
+	axis.build(1.0f, 0.0f, 0.0f);
+	Engine.meshes[0].rotate_model_AIC(-3.14f/2.0f, axis);
 	//Should be same as Translate.LoadTranslate(x, y, z)
 
 
@@ -121,7 +124,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			long double dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
 
-			World.Update(dt);
+			//World.Update(dt);
 
 			Engine.test_render(); //render scene
 

@@ -132,9 +132,34 @@ namespace HG3D_Engine
 	{
 		_4x4matrix ret;
 		ret.LoadZero();//set it to zero
+#ifndef _M_X64
 		for (register int i = 0; i < 16; i++) //go through array
 			for (register int j = 0; j < 4; j++) //go through columns and rows
 				ret.x[i] += x[int(i / 4) * 4 +j] * input.x[j * 4 + i % 4]; //do the multipliction 
+#else
+		__declspec(align(16)) float tempfloat[4];
+		input = Transpose(input);
+		for (register int i = 0; i < 4; i++)
+		{
+			ret.data_row[i] = _mm_mul_ps(data_row[i], input.data_row[0]);
+			tempfloat[0] = 0;
+			for (register int j = 0; j < 4; j++)
+				tempfloat[0] += ret.data_row[i].m128_f32[j];
+			ret.data_row[i] = _mm_mul_ps(data_row[i], input.data_row[1]);
+			tempfloat[1] = 0;
+			for (register int j = 0; j < 4; j++)
+				tempfloat[1] += ret.data_row[i].m128_f32[j];
+			ret.data_row[i] = _mm_mul_ps(data_row[i], input.data_row[2]);
+			tempfloat[2] = 0;
+			for (register int j = 0; j < 4; j++)
+				tempfloat[2] += ret.data_row[i].m128_f32[j];
+			ret.data_row[i] = _mm_mul_ps(data_row[i], input.data_row[3]);
+			tempfloat[3] = 0;
+			for (register int j = 0; j < 4; j++)
+				tempfloat[3] += ret.data_row[i].m128_f32[j];
+			ret.data_row[i] = _mm_load_ps(tempfloat);
+		}
+#endif
 		return ret;
 	}
 	vector __fastcall _4x4matrix::operator * (vector input)//mat4 multiply
