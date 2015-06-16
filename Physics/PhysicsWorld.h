@@ -19,8 +19,8 @@ namespace Physics
 		void DLLEXPORT AddObject(const std::string Name, PhysicsObject& Object, Mesh& mesh);
 		void DLLEXPORT RemoveLastObject();
 
-		DLLEXPORT PhysicsObject& GetPhysicsObject(UINT Index);
-		DLLEXPORT PhysicsObject& GetPhysicsObject(const std::string Name);
+		PhysicsObject DLLEXPORT &GetPhysicsObject(UINT Index);
+		PhysicsObject DLLEXPORT &GetPhysicsObject(const std::string Name);
 	private:
 		std::vector<PhysicsObject> m_Objects;
 		std::vector<std::string> m_ObjectNames;

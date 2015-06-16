@@ -5,23 +5,6 @@
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-
-	string out_string;
-	long double start,end;
-	HG3D_Engine::_4x4matrix testmat;
-	testmat.LoadIdentity();
-	start = clock();
-	for (int i = 0; i < 100000; i++)
-		testmat = testmat*testmat;
-	end = clock();
-	out_string = "time is:  ";
-	out_string = out_string + doubletostring(end-start);
-	OutputDebugString(out_string.string1);
-
-
-
-
-
 	init_main_window(hInstance);
 
 	HDC *hdc = GetHDC();
@@ -36,9 +19,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.add_camera();
 
 	//================ PHYSICS ENGINE USAGE ====================/
-	Physics::PhysicsObject Horse;
+	//Physics::PhysicsObject Horse;
 	
-	Horse.SetMass(60.0f);
+	//Horse.SetMass(60.0f);
 	
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
@@ -52,20 +35,20 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	vector axis;
 	axis.build(1.0f, 0.0f, 0.0f);
 	Engine.meshes[0].rotate_model_AIC(-3.14f/2.0f, axis);
-	Engine.meshes[0].model_matrix = Engine.meshes[0].model_matrix*testmat;
+	Engine.meshes[0].model_matrix = Engine.meshes[0].model_matrix;
 	//Should be same as Translate.LoadTranslate(x, y, z)
-	Horse.SetPosition(translation.x, translation.y, translation.z);
+	//Horse.SetPosition(translation.x, translation.y, translation.z);
 
 	//==========================================================================//
 
-	Physics::PhysicsObject Sphere;
-	Sphere.SetMass(5.0f);
+	//Physics::PhysicsObject Sphere;
+	//Sphere.SetMass(5.0f);
 	
-	Sphere.m_ApplyGravity = true;
-	Sphere.SetForce(0.0f, 0.0f, -8.5f);
+	//Sphere.m_ApplyGravity = true;
+	//Sphere.SetForce(0.0f, 0.0f, -8.5f);
 
 	translation.build(24.0f, 0.0f, 0.0f);
-	Sphere.SetPosition(translation.x, translation.y, translation.z);
+	//Sphere.SetPosition(translation.x, translation.y, translation.z);
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
@@ -92,9 +75,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	long double last_time = clock(), current_time = clock();
 
-	World.AddObject("Horse", Horse, Engine.meshes[0]);
-	World.AddObject("Sphere", Sphere, Engine.meshes[1]);
-
+	//World.AddObject("Horse", Horse, Engine.meshes[0]);
+	//World.AddObject("Sphere", Sphere, Engine.meshes[1]);
+	//World.GetPhysicsObject("Horse").AddVelocity(-20, 30, 0);
 	while (msg->message != WM_QUIT)  
 	{
 		if (PeekMessage(msg, NULL, 0, 0, PM_REMOVE))
@@ -141,7 +124,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			long double dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
 
-			World.Update(dt);
+			//World.Update(dt);
 
 			Engine.test_render(); //render scene
 
