@@ -27,9 +27,6 @@ namespace Physics
 		void DLLEXPORT SetForce(const vector& Force);
 		void DLLEXPORT SetVelocity(const vector& vel);
 		void DLLEXPORT SetVelocity(float x, float y, float z);
-		void DLLEXPORT AddVelocity(float x, float y, float z);
-		void DLLEXPORT AddVelocity(const vector& vel);
-
 		void DLLEXPORT SetGravity(long double x, long double y, long double z);
 		void DLLEXPORT SetMass(long double Mass);
 
