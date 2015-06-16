@@ -49,21 +49,11 @@ namespace HG3D_Engine
 		total_size = vert_nums*vertex_size;//calculate total verts size
 		verts = (vertex*)malloc(total_size);//allocate the vert memory
 		faces = (face*)malloc(faces_nums*face_size);//allocate the faces memory
-		if (faces_nums != 0)
+		for (register int i = 0; i < 3; i++)
 		{
-			min[0] = MeshObj.vertexList[MeshObj.faceList[0]->vertex_index[0]]->e[0];
-			max[0] = MeshObj.vertexList[MeshObj.faceList[0]->vertex_index[0]]->e[0];
-			min[1] = MeshObj.vertexList[MeshObj.faceList[0]->vertex_index[0]]->e[1];
-			max[1] = MeshObj.vertexList[MeshObj.faceList[0]->vertex_index[0]]->e[1];
-			min[2] = MeshObj.vertexList[MeshObj.faceList[0]->vertex_index[0]]->e[2];
-			max[2] = MeshObj.vertexList[MeshObj.faceList[0]->vertex_index[0]]->e[2];
+			min[i] = 0;
+			max[i] = 0;
 		}
-		else
-			for (register int j = 0; j < 3; j++)
-			{
-				min[j] = 0;
-				max[j] = 0;
-			}
 		for (register unsigned long int i = 0; i < faces_nums; i++)//feed the .obj data to mesh
 		{
 			faces[i].index[0] = i * 3;//there are no reuse of verts so just go forward
