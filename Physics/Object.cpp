@@ -33,6 +33,7 @@ namespace Physics
 
 		m_Moveable = true;
 		m_ApplyGravity = true;
+		m_Valid = true;
 
 		m_LastFrameDataInitialized = false;
 		m_MeshID = 0;
@@ -163,6 +164,16 @@ namespace Physics
 		m_Last_Velocity = m_Velocity;
 
 		//====================================================//
+	}
+
+	void PhysicsObject::SetVelocity(float x, float y, float z)
+	{
+		m_Velocity.build(x, y, z);
+	}
+
+	void PhysicsObject::SetVelocity(const vector& vec)
+	{
+		m_Velocity = vec;
 	}
 
 	void PhysicsObject::SetPosition(float x, float y, float z)

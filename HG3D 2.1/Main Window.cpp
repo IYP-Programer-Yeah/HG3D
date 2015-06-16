@@ -100,7 +100,7 @@ bool Get_Mouse_Stat(int Stat_ID)//get mouse stats
 }
 bool Update_Wnd()
 {
-	return Main_Windows.update_mouse();//update mouse
+	return Main_W indows.update_mouse();//update mouse
 }
 
 void CheckSystemInformation()
@@ -114,7 +114,7 @@ void CheckSystemInformation()
 void DestroyCachedSystemInformation()
 {
 #ifdef NT_IS_DEBUGGING
-	//If you don't see this in the output window, then something is wrong
+	//If you don't see this in the output window while debugging, then something is wrong
 	OutputDebugString("\nDeleted SystemInformation::_instance.\n");
 #endif
 	SystemInformation::Instance()->Destroy();

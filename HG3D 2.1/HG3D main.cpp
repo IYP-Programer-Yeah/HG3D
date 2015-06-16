@@ -39,14 +39,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Physics::PhysicsObject Horse;
 	
 	Horse.SetMass(60.0f);
-	Horse.SetPosition(0.0f, 0.0f, 0.0f);
+	
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 
 	vector translation;
 
 	//Don't forget to initialize any of these if you don't use them
-	translation.build(0.0f, 100.0f, 0.0f);
+	translation.build(0.0f, 100.0f, -5.0f);
 	Engine.meshes[0].move(translation);
 	Engine.meshes[0].scale_model(100.0f, 100.0f, 100.0f);
 	vector axis;
@@ -54,7 +54,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.meshes[0].rotate_model_AIC(-3.14f/2.0f, axis);
 	Engine.meshes[0].model_matrix = Engine.meshes[0].model_matrix*testmat;
 	//Should be same as Translate.LoadTranslate(x, y, z)
-
+	Horse.SetPosition(translation.x, translation.y, translation.z);
 
 	//==========================================================================//
 
@@ -62,10 +62,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Sphere.SetMass(5.0f);
 	
 	Sphere.m_ApplyGravity = true;
-	Sphere.SetForce(7.0f, 0.0f, 0.0f);
-	Sphere.SetPosition(24.0f, 0.0f, 0.0f);
+	Sphere.SetForce(0.0f, 0.0f, -8.5f);
 
 	translation.build(24.0f, 0.0f, 0.0f);
+	Sphere.SetPosition(translation.x, translation.y, translation.z);
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
@@ -81,7 +81,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.meshes[2].scale_model(6371000.0f, 6371000.0f, 6371000.0f);//earth radius
 	//==========================================================================//
 
-	Engine.cameras[0].camera_position.build(12.0f, 0.0f, 0.0f);//put the camera to x=12
+	Engine.cameras[0].camera_position.build(0.0f, 0.0f, 0.0f);//put the camera to x=12
 	Engine.cameras[0].forward.build(-1.0f, 0.0f, 0.0f);//look int x=-1 direction 
 	Engine.cameras[0].camera_viewport[2] = GetW();//update view port
 	Engine.cameras[0].camera_viewport[3] = GetH();//update view port
@@ -92,10 +92,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	long double last_time = clock(), current_time = clock();
 
-
-
-	World.AddObject(Horse, Engine.meshes[0]);
-	World.AddObject(Sphere, Engine.meshes[1]);
+	World.AddObject("Horse", Horse, Engine.meshes[0]);
+	World.AddObject("Sphere", Sphere, Engine.meshes[1]);
 
 	while (msg->message != WM_QUIT)  
 	{

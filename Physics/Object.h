@@ -18,25 +18,22 @@ namespace Physics
 		DLLEXPORT PhysicsObject();
 		DLLEXPORT ~PhysicsObject();
 	
-		//This function is to be called by a PhysicsWorld
-		//Not available to user
-		void Update(const long double& Deltatime);
-		
-		//It's called by the PhysicalWorld class
-		//This function calculates 
-		void CalculateCollisionShapes();
+
 
 		//Set Object's properties
 		void DLLEXPORT AddForce(long double x, long double y, long double z);
 		void DLLEXPORT SetForce(long double x, long double y, long double z);
 		void DLLEXPORT AddForce(const vector& Force);
 		void DLLEXPORT SetForce(const vector& Force);
+		void DLLEXPORT SetVelocity(const vector& vel);
+		void DLLEXPORT SetVelocity(float x, float y, float z);
 		void DLLEXPORT SetGravity(long double x, long double y, long double z);
 		void DLLEXPORT SetMass(long double Mass);
 
-		//To be called by PhysicalWorld
+		//Functions to be called by PhysicsWorld class
 		void SetMesh(Mesh& mesh);
-
+		void Update(const long double& Deltatime);
+		void CalculateCollisionShapes();
 
 		//our m_Position vector will point to this address
 		//This PointerAddress must be ACTUAL Object's position
@@ -48,10 +45,11 @@ namespace Physics
 	public:
 		bool m_ApplyGravity;
 		bool m_Moveable;
+		bool m_Valid;
 
 		point m_Last_Position;
 
-		vector m_Velocity;
+
 		vector m_Last_Velocity;
 		vector m_Acceleration;
 
@@ -69,6 +67,7 @@ namespace Physics
 		//This stuff is now set by it's functions
 		vector m_Force;
 		vector m_Gravity;
+		vector m_Velocity;
 
 		//Pointer because actual position of the object too needs be updated
 		//So, this needs to be private

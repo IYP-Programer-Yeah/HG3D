@@ -12,12 +12,14 @@ namespace Physics
 	{
 	}
 
-	void PhysicsWorld::AddObject(PhysicsObject& Object, Mesh& mesh)
+	void PhysicsWorld::AddObject(const std::string Name, PhysicsObject& Object, Mesh& mesh)
 	{
+
 		Object.SetMesh(mesh);
 		Object.CalculateCollisionShapes();
 
 		m_Objects.push_back(Object);
+		m_ObjectNames.push_back(Name);
 	}
 
 	void PhysicsWorld::RemoveLastObject()
@@ -25,12 +27,39 @@ namespace Physics
 		m_Objects.pop_back();
 	}
 
+	PhysicsObject& PhysicsWorld::GetPhysicsObject(const std::string Name)
+	{
+#ifdef NT_IS_DEBUGGING
+		if (m_Objects.empty() || (m_Objects.size() != m_ObjectNames.size()))
+		{
+			OutputDebugString("Come here, something is wrong.\n");
+		}
+#endif
+
+		for (register int i = 0; i < m_Objects.size(); ++i)
+		{
+			if (m_ObjectNames[i] == Name)
+			{
+				return m_Objects[i];
+			}
+		}
+
+		//return invalid/empty object
+		//Always check if m_Valid is true after using this function
+		PhysicsObject empty;
+
+		empty.m_Valid = false;
+
+		return empty;
+	}
+
+
 	PhysicsObject& PhysicsWorld::GetPhysicsObject(UINT Index)
 	{
 #ifdef NT_IS_DEBUGGING
 		if (Index > m_Objects.size() || m_Objects.empty())
 		{
-			OutputDebugString("Come here, something is wrong.");
+			OutputDebugString("Come here, something is wrong.\n");
 		}
 #endif
 

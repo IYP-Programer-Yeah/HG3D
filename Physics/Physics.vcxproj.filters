@@ -31,11 +31,8 @@
     <Filter Include="Source Files\PhysicsWorld">
       <UniqueIdentifier>{bc099d8d-41f8-4b80-bee9-5fe9bcec2428}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine">
-      <UniqueIdentifier>{5f3c675e-078d-4d3e-bdbc-46af0b7d0dfe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine">
-      <UniqueIdentifier>{5f4ef31b-a1d4-4bda-b15c-4766237dcb95}</UniqueIdentifier>
+    <Filter Include="Header Files\Others">
+      <UniqueIdentifier>{73831b48-36f3-4592-a9c3-766cea5d95b7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,20 +42,17 @@
     <ClInclude Include="Sphere.h">
       <Filter>Header Files\CollisionShapes</Filter>
     </ClInclude>
-    <ClInclude Include="BasicIncludes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Object.h">
       <Filter>Header Files\PhysicsObject</Filter>
-    </ClInclude>
-    <ClInclude Include="defines.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsWorld.h">
       <Filter>Header Files\PhysicsWorld</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Header Files\Engine</Filter>
+    <ClInclude Include="BasicIncludes.h">
+      <Filter>Header Files\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="defines.h">
+      <Filter>Header Files\Others</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -73,9 +67,6 @@
     </ClCompile>
     <ClCompile Include="AABB.cpp">
       <Filter>Source Files\CollisionShapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
