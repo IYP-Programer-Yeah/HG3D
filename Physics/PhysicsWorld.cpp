@@ -27,12 +27,59 @@ namespace Physics
 		m_Objects.pop_back();
 	}
 
+	void PhysicsWorld::LoadWorld(Renderer* renderer, float* Masses, std::string* Names, vector* Positions,
+		UINT* MeshIDs, UINT NumMeshes)
+	{
+#ifdef NT_IS_DEBUGGING
+		if (renderer->mesh_nums < 1)
+		{
+			OutputDebugString("Something is wrong. Invalid data is being passed in PhysicsWorld::LoadWorld() function.\n");
+			return;
+		}
+
+		if (!m_Objects.empty() || !m_ObjectNames.empty())
+		{
+			OutputDebugString("Warning: m_Objects or m_ObjectNames std::vector is not empty.");
+			return;
+		}
+
+
+#endif
+
+		//We need 'NumMeshes' instead of renderer->mesh_nums because not all meshes will use physics
+		for (register unsigned long int i = 0; i < NumMeshes; ++i)
+		{
+			UINT ID = MeshIDs[i];
+
+			Mesh& CurrentMesh = renderer->meshes[ID];
+
+			PhysicsObject Temp;
+
+			Temp.SetMesh(CurrentMesh);
+			Temp.CalculateCollisionShapes();
+			Temp.SetMass(Masses[i]);
+
+			vector Pos = Positions[i];
+
+#ifdef NT_IS_DEBUGGING
+			char s[256];
+			sprintf_s(s, "%s Mass: %.2f, Pos: %.2f %.2f %.2f\n", Names[i].c_str(), Masses[i], Pos.x, Pos.y, Pos.z);
+			
+			OutputDebugString(s);
+#endif
+			Temp.SetPosition(Pos.x, Pos.y, Pos.z);
+
+			m_ObjectNames.push_back(Names[i]);
+			m_Objects.push_back(Temp);
+		}
+	}
+
 	PhysicsObject& PhysicsWorld::GetPhysicsObject(const std::string Name)
 	{
 #ifdef NT_IS_DEBUGGING
 		if (m_Objects.empty() || (m_Objects.size() != m_ObjectNames.size()))
 		{
-			OutputDebugString("Come here, something is wrong.\n");
+			OutputDebugString("Come here, something is wrong. Don't ask me now how to come here.\n");
 		}
 #endif
 
@@ -76,7 +123,6 @@ namespace Physics
 			return;
 		}
 #endif
-
 		//Calculate gravitational force and add it to objects
 
 		//TODO : do this on a multi threaded way

@@ -17,52 +17,42 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	MSG *msg = GetMSG();
 	Engine.add_camera();
-	Engine.add_camera();
-	Engine.add_current_camera(0);
-	Engine.add_current_camera(1);
+
 	//================ PHYSICS ENGINE USAGE ====================/
 	Physics::PhysicsObject Horse;
 	
-	Horse.SetMass(60.0f);
-	
-
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 
-	vector translation;
+	vector HorsePos;
 
 	//Don't forget to initialize any of these if you don't use them
-	translation.build(0.0f, 100.0f, -5.0f);
-	Engine.meshes[0].move(translation);
+	HorsePos.build(0.0f, 100.0f, -5.0f);
+	Engine.meshes[0].move(HorsePos);
 	Engine.meshes[0].scale_model(100.0f, 100.0f, 100.0f);
 	vector axis;
 	axis.build(1.0f, 0.0f, 0.0f);
 	Engine.meshes[0].rotate_model_AIC(-3.14f/2.0f, axis);
 	Engine.meshes[0].model_matrix = Engine.meshes[0].model_matrix;
-	//Should be same as Translate.LoadTranslate(x, y, z)
-	Horse.SetPosition(translation.x, translation.y, translation.z);
 
 	//==========================================================================//
 
-	Physics::PhysicsObject Sphere;
-	Sphere.SetMass(5.0f);
+	vector SpherePos;
 	
-	Sphere.m_ApplyGravity = true;
-	Sphere.SetForce(0.0f, 0.0f, -8.5f);
-
-	translation.build(24.0f, 0.0f, 0.0f);
-	Sphere.SetPosition(translation.x, translation.y, translation.z);
+	SpherePos.build(24.0f, 0.0f, 0.0f);
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
-	Engine.meshes[1].move(translation);
+	Engine.meshes[1].move(SpherePos);
 	Engine.meshes[1].scale_model(5.0f, 5.0f, 5.0f);
 
 	//=========================================================================//
 
+	vector SpherePos2;
+
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
-	translation.build(0.0f, -6370850.0f, 0.0f);
-	Engine.meshes[2].move(translation);
+	SpherePos2.build(0.0f, -6370850.0f, 0.0f);
+	Engine.meshes[2].move(SpherePos2);
 	Engine.meshes[2].scale_model(6371000.0f, 6371000.0f, 6371000.0f);//earth radius
 	//==========================================================================//
 
@@ -86,9 +76,39 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	long double last_time = clock(), current_time = clock();
 
-	World.AddObject("Horse", Horse, Engine.meshes[0]);
-	World.AddObject("Sphere", Sphere, Engine.meshes[1]);
-	World.GetPhysicsObject("Sphere").AddVelocity(-40.0, 60.0, 0.0);
+	//World.AddObject("Horse", Horse, Engine.meshes[0]);
+	//World.AddObject("Sphere", Sphere, Engine.meshes[1]);
+
+	float Masses[] = 
+	{ 60.0f /*Horse Mass*/,
+	  5.0f /*Sphere mass*/ };
+
+	std::string Names[] = { 
+		"Horse", 
+		"Sphere" };
+
+	vector MeshPoses[] = { 
+		HorsePos, 
+		SpherePos };
+
+	UINT IDs[] = {
+		0, //Mesh Index of Horse in renderer->meshes
+		1 //Mesh Index of Sphere
+	};
+
+	World.LoadWorld(&Engine, Masses, Names, MeshPoses, IDs, ARRAYSIZE(Masses)); //or ARRAYSIZE(Names)
+
+
+	Physics::PhysicsObject& SphereObj = World.GetPhysicsObject("Sphere");
+
+#ifdef NT_IS_DEBUGGING
+	if (!SphereObj.m_Valid)
+		OutputDebugString("SphereObj is not valid.\n");
+#endif
+
+
+	SphereObj.AddVelocity(-40.0, 60.0, 0.0);
+
 	while (msg->message != WM_QUIT)  
 	{
 		if (PeekMessage(msg, NULL, 0, 0, PM_REMOVE))
@@ -153,7 +173,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			last_time = current_time;
 			current_time = clock();
 
-			long double dt = ((current_time)-last_time) / 1000.0f;
+			long double dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
 			if (Get_Mouse_Stat(Mouse_Left_Stat))
 				World.Update(dt);
 

@@ -16,6 +16,9 @@ namespace Physics
 
 		void DLLEXPORT Update(const long double& Deltatime);
 	
+		void DLLEXPORT LoadWorld(Renderer* renderer, float* Masses, std::string* Names, vector* Positions,
+			                     UINT* MeshIDs, UINT NumMeshes);
+
 		void DLLEXPORT AddObject(const std::string Name, PhysicsObject& Object, Mesh& mesh);
 		void DLLEXPORT RemoveLastObject();
 

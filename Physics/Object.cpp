@@ -110,6 +110,7 @@ namespace Physics
 		//double-check
 		//We assume that mass is always greater than zero
 		assert(m_Mass > 0);
+
 #endif	
 
 
@@ -147,6 +148,14 @@ namespace Physics
 		m_Position.y += NewPos.y;
 		m_Position.z += NewPos.z;
 
+
+#ifdef NT_IS_DEBUGGING
+		char s[256];
+
+		sprintf_s(s, "X: %.2f Y: %.2f Z: %.2f\n", (float)m_Position.x, (float)m_Position.y, (float)m_Position.z);
+		OutputDebugString(s);
+
+#endif
 
 		vector movement;
 		movement.build(m_Last_Position, m_Position);
