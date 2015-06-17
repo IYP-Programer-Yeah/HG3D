@@ -243,6 +243,7 @@ namespace HG3D_Engine
 		return_mat.x[3] = (float)0.0;                return_mat.x[7] = (float)0.0;                   return_mat.x[11] = (float)-1.0*nearz*farz / d;		return_mat.x[15] = (float)0.0;
 		return return_mat;
 	}
+
 	_4x4matrix __fastcall InverseTranspose(_4x4matrix input)//invers mat
 	{
 		float det = 0;
@@ -375,8 +376,19 @@ namespace HG3D_Engine
 	_4x4matrix __fastcall Transpose(_4x4matrix input)//transpose mat
 	{
 		_4x4matrix return_mat;
+#ifndef _M_X64
 		for (register int i = 0; i < 16; i++)
 			return_mat.x[i] = input.x[(i%4)*4+int(i/4)];
+#else
+		return_mat.data_row[0] = input.data_row[0];
+		return_mat.data_row[1] = input.data_row[1];
+		return_mat.data_row[2] = input.data_row[2];
+		return_mat.data_row[3] = input.data_row[3];
+		_MM_TRANSPOSE4_PS(return_mat.data_row[0],
+			return_mat.data_row[1],
+			return_mat.data_row[2],
+			return_mat.data_row[3]);
+#endif
 		return return_mat;
 	}
 }

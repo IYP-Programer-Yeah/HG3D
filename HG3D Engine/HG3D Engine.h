@@ -292,6 +292,10 @@ namespace HG3D_Engine
 		unsigned long int *current_cameras;		//current used cameras
 
 		GLuint Shaders[100];					//max 100 shaders 20 is rendered in the scene
+		GLuint light_data_UBO_ID;				//the id of light data 
+		GLuint mat_data_UBO_ID;					//the id of material data
+		GLuint Gbuffer_textIDS;                 //id of Gbuffer textures
+		GLuint Gbuffer_FBO_ID;					//id of the Gbuffer textures
 
 		void __declspec(dllexport) add_current_camera(unsigned long int camera_ID);	//add a current camera
 		void __declspec(dllexport) delete_current_camera(unsigned long int camera_ID);	//delete a current camera

@@ -18,8 +18,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MSG *msg = GetMSG();
 	Engine.add_camera();
 
-	//==========================================================================/
-
+	//================ PHYSICS ENGINE USAGE ====================/
+	Physics::PhysicsObject Horse;
+	
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 
 	vector HorsePos;
@@ -36,7 +37,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//==========================================================================//
 
 	vector SpherePos;
-
+	
 	SpherePos.build(24.0f, 0.0f, 0.0f);
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
@@ -62,6 +63,15 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.cameras[0].Right = float(GetW()) / float(GetH());//update projection
 	Engine.cameras[0].Left = -1.0f*float(GetW()) / float(GetH());//update projection
 	Engine.cameras[0].update_camera();//update camera
+
+
+	Engine.cameras[1].camera_position.build(0.0f, 0.0f, 0.0f);//put the camera to x=12
+	Engine.cameras[1].forward.build(-1.0f, 0.0f, 0.0f);//look int x=-1 direction 
+	Engine.cameras[1].camera_viewport[0] = GetW() - 400;//update view port
+	Engine.cameras[1].camera_viewport[1] = GetH() - 400;//update view port
+	Engine.cameras[1].camera_viewport[2] = 400;//update view port
+	Engine.cameras[1].camera_viewport[3] = 400;//update view port
+	Engine.cameras[1].update_camera();//update camera
 
 
 	long double last_time = clock(), current_time = clock();
@@ -108,7 +118,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DispatchMessage(msg);
 			int MWD = Get_Mouse_Wheel_Delta();
 
-			if (MWD != 0)//check if mouse will moved
+			if (MWD != 0 && !Get_Mouse_Stat(Mouse_Right_Stat))//check if mouse will moved
 			{
 				HG3D_Engine::point LastPos;//last pos
 
@@ -121,6 +131,20 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				Engine.cameras[0].camera_position.build(LastPos.x + Movement.x, LastPos.y + Movement.y, LastPos.z + Movement.z);//move
 
 				Engine.cameras[0].needs_update = true;//need update
+			}
+			if (MWD != 0 && Get_Mouse_Stat(Mouse_Right_Stat))//check if mouse will moved
+			{
+				HG3D_Engine::point LastPos;//last pos
+
+				LastPos = Engine.cameras[1].camera_position;//set the value
+
+				HG3D_Engine::vector Movement;//set movement
+
+				Movement = normalize(Engine.cameras[1].forward)*long double(MWD) / long double(20.0);//get the movement
+
+				Engine.cameras[1].camera_position.build(LastPos.x + Movement.x, LastPos.y + Movement.y, LastPos.z + Movement.z);//move
+
+				Engine.cameras[1].needs_update = true;//need update
 			}
 			//Update camera data
 			Engine.cameras[0].camera_viewport[2] = GetW();
@@ -137,6 +161,12 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					float(Get_Mouse_Last_Y() - Get_Mouse_Y()) / 180.0f, 
 					Engine.cameras[0].up); //a simple fps camera
 			}
+			if (Get_Mouse_Stat(Mouse_Right_Stat))///check if the mddile button is pressed
+			{
+				Engine.cameras[1].fps_camera(float(Get_Mouse_X() - Get_Mouse_Last_X()) / 180.0f,
+					float(Get_Mouse_Last_Y() - Get_Mouse_Y()) / 180.0f,
+					Engine.cameras[1].up); //a simple fps camera
+			}
 		}
 		else
 		{
@@ -144,7 +174,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			current_time = clock();
 
 			long double dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
-
 			if (Get_Mouse_Stat(Mouse_Left_Stat))
 				World.Update(dt);
 
