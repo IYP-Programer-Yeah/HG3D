@@ -191,9 +191,21 @@ namespace HG3D_Engine
 	void light::calculate_max_radius()
 	{
 		if (Attenuation[2] == 0 && Attenuation[1] == 0)
-			max_radius = 10000;
+			max_radius = 10000;//it will never not be contirbuting
 		else
-			max_radius = (256.0f - Attenuation[0]) / (Attenuation[2] * Attenuation[2] + Attenuation[1]);//what ever the color after this atinoution the light contribution is 0
+		{
+			float min_value_rad = -1 * Attenuation[1] / Attenuation[2] / 2;//the minimum value's occurrence radius 
+			if (min_value_rad*(min_value_rad * Attenuation[2] + Attenuation[1]) +Attenuation[0] > 256)
+				max_radius = 0;//it will always be more that 256
+			else
+			{
+				float delta = Attenuation[1] * Attenuation[1] + 4 * (256.0f - Attenuation[0])*Attenuation[2];
+				if (delta < 0)
+					max_radius = max_radius = 10000;//it will never not be contirbuting;
+				else
+					max_radius = min_value_rad - sqrt(delta) / (2 * Attenuation[2]);//what ever the color after this atinoution the light contribution is 0
+			}
+		}
 	}
 	void light::operator=(light input)//needed in add light to duplicate the light data
 	{
@@ -331,7 +343,7 @@ namespace HG3D_Engine
 	{
 		if (camera_ID >= cameras_nums)
 			return;
-		unsigned long int TCCID;//the id of the cammera in current cameras
+		unsigned long int TCCID = 0;//the id of the cammera in current cameras
 		bool camre_in_the_list = 0;//is camera in the list
 		for (register unsigned long int i = 0; i < current_camera_nums; i++)
 			if (camera_ID == current_cameras[i])
