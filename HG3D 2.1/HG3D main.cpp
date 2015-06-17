@@ -141,7 +141,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			long double dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
 			if (Get_Mouse_Stat(Mouse_Left_Stat))
-			World.Update(dt);
+				World.Update(dt);
 
 			Engine.test_render(); //render scene
 
