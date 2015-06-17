@@ -1,7 +1,8 @@
-TODO:
+﻿TODO:
 #1 set/add velocity (NT)
 #2 multi threadig (NT)
 #3 testing gravitational force calculator (NT)
-#4 fast matrix multiplication (IYP)
+#4 fast matrix multiplication (IYP)✓
 #5 graphics (IYP)
 #6 collision detection (NT)
+#7 add a function to build physical world from renderer (NT)

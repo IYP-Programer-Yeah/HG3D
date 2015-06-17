@@ -94,7 +94,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	World.AddObject("Horse", Horse, Engine.meshes[0]);
 	World.AddObject("Sphere", Sphere, Engine.meshes[1]);
-
+	World.GetPhysicsObject("Sphere").AddVelocity(-40.0, 60.0, 0.0);
 	while (msg->message != WM_QUIT)  
 	{
 		if (PeekMessage(msg, NULL, 0, 0, PM_REMOVE))
@@ -140,7 +140,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			current_time = clock();
 
 			long double dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
-
+			if (Get_Mouse_Stat(Mouse_Left_Stat))
 			World.Update(dt);
 
 			Engine.test_render(); //render scene

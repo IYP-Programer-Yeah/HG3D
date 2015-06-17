@@ -36,7 +36,7 @@ namespace Physics
 		}
 #endif
 
-		for (register int i = 0; i < m_Objects.size(); ++i)
+		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
 		{
 			if (m_ObjectNames[i] == Name)
 			{

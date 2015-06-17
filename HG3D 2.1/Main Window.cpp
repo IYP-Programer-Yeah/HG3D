@@ -100,7 +100,7 @@ bool Get_Mouse_Stat(int Stat_ID)//get mouse stats
 }
 bool Update_Wnd()
 {
-	return Main_W indows.update_mouse();//update mouse
+	return Main_Windows.update_mouse();//update mouse
 }
 
 void CheckSystemInformation()

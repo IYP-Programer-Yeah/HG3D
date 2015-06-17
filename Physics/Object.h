@@ -26,7 +26,10 @@ namespace Physics
 		void DLLEXPORT AddForce(const vector& Force);
 		void DLLEXPORT SetForce(const vector& Force);
 		void DLLEXPORT SetVelocity(const vector& vel);
-		void DLLEXPORT SetVelocity(float x, float y, float z);
+		void DLLEXPORT SetVelocity(long double x, long double y, long double z);
+		void DLLEXPORT AddVelocity(long double x, long double y, long double z);
+		void DLLEXPORT AddVelocity(const vector& vel);
+
 		void DLLEXPORT SetGravity(long double x, long double y, long double z);
 		void DLLEXPORT SetMass(long double Mass);
 
@@ -39,7 +42,7 @@ namespace Physics
 		//This PointerAddress must be ACTUAL Object's position
 		//So, if we update position with our physics code, then the actual position of the object
 		//will be updated too
-		void DLLEXPORT SetPosition(float x, float y, float z);
+		void DLLEXPORT SetPosition(long double x, long double y, long double z);
 		point DLLEXPORT GetPosition();
 
 	public:

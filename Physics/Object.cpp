@@ -166,7 +166,7 @@ namespace Physics
 		//====================================================//
 	}
 
-	void PhysicsObject::SetVelocity(float x, float y, float z)
+	void PhysicsObject::SetVelocity(long double x, long double y, long double z)
 	{
 		m_Velocity.build(x, y, z);
 	}
@@ -176,7 +176,21 @@ namespace Physics
 		m_Velocity = vec;
 	}
 
-	void PhysicsObject::SetPosition(float x, float y, float z)
+	void PhysicsObject::AddVelocity(long double x, long double y, long double z)
+	{
+		m_Velocity.x += x;
+		m_Velocity.y += y;
+		m_Velocity.z += z;
+	}
+
+	void PhysicsObject::AddVelocity(const vector& vel)
+	{
+		m_Velocity.x += vel.x;
+		m_Velocity.y += vel.y;
+		m_Velocity.z += vel.z;
+	}
+
+	void PhysicsObject::SetPosition(long double x, long double y, long double z)
 	{
 		m_Position.build(x, y, z);
 	}
