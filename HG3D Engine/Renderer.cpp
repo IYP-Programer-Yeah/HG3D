@@ -221,6 +221,8 @@ namespace HG3D_Engine
 		meshes =(Mesh*) malloc(0);
 		cameras = (camera*)malloc(0);//so they can be freed
 		textures = (texture*)malloc(0);
+		mesh_draw_order = (unsigned long int*)malloc(0);
+		current_cameras = (unsigned long int*)malloc(0);
 		rendere_ID = renderer_class_nums;//give it an ID
 		renderer_class_nums++;//a renderer added
 		SetupPixelFormat_WND_DC(hdc);//setup the pixel format
@@ -231,6 +233,7 @@ namespace HG3D_Engine
 		glDepthFunc(GL_LEQUAL); //less or equal(closer) z are writen
 		glEnable(GL_CULL_FACE); //cull the back face 
 		glCullFace(GL_BACK);//cull the back face
+		glClearDepth(1);//clear the depth with 1
 		Shaders[0] = LoadShaders("..\\HG3D Engine\\VS00.txt", "..\\HG3D Engine\\FS00.txt");//load shaders
 		wglMakeCurrent(hdc, 0);//make the rc current
 		/******************************************************************/
@@ -276,7 +279,8 @@ namespace HG3D_Engine
 		total_size += meshes_the_next[mesh_nums - 1].total_size;//update total size
 		vert_nums += meshes_the_next[mesh_nums - 1].vert_nums;//update total vert nums
 
-
+		free(mesh_draw_order);//it'll ve re allocated
+		mesh_draw_order = (unsigned long int*)malloc(sizeof(unsigned long int)*mesh_nums);
 		free(meshes);//free last data
 		meshes = meshes_the_next;//replace the pointer to new mesh data
 
@@ -311,6 +315,43 @@ namespace HG3D_Engine
 		cameras = cameras_the_next;//replace the pointer to new camera data
 		return cameras_nums - 1;//return the added camera's ID
 	}
+	void Renderer::add_current_camera(unsigned long int camera_ID)
+	{
+		if (camera_ID >= cameras_nums)
+			return;
+		current_camera_nums++;//add the numbers
+		unsigned long int *temp_current_camera = (unsigned long int*)malloc(sizeof(unsigned long int)*current_camera_nums);//allocated new data
+		for (register unsigned long int i = 0; i < current_camera_nums - 1; i++)
+			temp_current_camera[i] = current_cameras[i];//copy last data
+		free(current_cameras);//free last data
+		temp_current_camera[current_camera_nums - 1] = camera_ID;//add new camera
+		current_cameras = temp_current_camera;//pass the new pointer
+	}
+	void Renderer::delete_current_camera(unsigned long int camera_ID)
+	{
+		if (camera_ID >= cameras_nums)
+			return;
+		unsigned long int TCCID;//the id of the cammera in current cameras
+		bool camre_in_the_list = 0;//is camera in the list
+		for (register unsigned long int i = 0; i < current_camera_nums; i++)
+			if (camera_ID == current_cameras[i])
+			{
+				TCCID = i;
+				camre_in_the_list = 1;
+			}
+		if (camre_in_the_list)
+		{
+			unsigned long int *temp_current_camera = (unsigned long int*)malloc(sizeof(unsigned long int)*(current_camera_nums - 1));
+			for (register unsigned long int i = 0; i < current_camera_nums - 1; i++)
+				if (i >= TCCID)
+					temp_current_camera[i] = current_cameras[i + 1];
+				else
+					temp_current_camera[i] = current_cameras[i];
+			free(current_cameras);
+			current_cameras = temp_current_camera;
+			current_camera_nums--;
+		}
+	}
 	unsigned long int Renderer::add_texture(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
 	{
 		texture_nums++;//add number of cameras by 1
@@ -335,16 +376,19 @@ namespace HG3D_Engine
 	void Renderer::test_render()
 	{
 		wglMakeCurrent(hdc, hrc);//make the rc current
-		glClearDepth(1);
-		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		if (cameras_nums > 0)
+		glClear(GL_COLOR_BUFFER_BIT);
+		for (register unsigned long int j = 0; j < current_camera_nums;j++)
 		{
-			if (cameras[0].needs_update)
-				cameras[0].update_camera();
-			glViewport(cameras[0].camera_viewport[0], cameras[0].camera_viewport[1], cameras[0].camera_viewport[2], cameras[0].camera_viewport[3]);
+			glClear(GL_DEPTH_BUFFER_BIT);
+			if (cameras[current_cameras[j]].needs_update)
+				cameras[current_cameras[j]].update_camera();
+			glViewport(cameras[current_cameras[j]].camera_viewport[0],
+				cameras[current_cameras[j]].camera_viewport[1],
+				cameras[current_cameras[j]].camera_viewport[2],
+				cameras[current_cameras[j]].camera_viewport[3]);
 			glUseProgram(Shaders[0]);
-			glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ProjectionMatrix"), 1, 1, cameras[0].ProjectionMatrix.x);
-			glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ViewMatrix"), 1, 1, cameras[0].ViewMatrix.x);
+			glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ProjectionMatrix"), 1, 1, cameras[current_cameras[j]].ProjectionMatrix.x);
+			glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ViewMatrix"), 1, 1, cameras[current_cameras[j]].ViewMatrix.x);
 			for (register unsigned long int i = 0; i < mesh_nums; i++)
 			{
 				if (meshes[i].needs_update)
@@ -358,6 +402,7 @@ namespace HG3D_Engine
 				glBindVertexArray(0);
 			}
 		}
+
 		glFlush();
 		SwapBuffers(hdc);
 		wglMakeCurrent(hdc, 0);//make the rc current
