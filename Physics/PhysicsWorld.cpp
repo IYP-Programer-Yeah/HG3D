@@ -27,8 +27,8 @@ namespace Physics
 		m_Objects.pop_back();
 	}
 
-	void PhysicsWorld::LoadWorld(Renderer* renderer, float* Masses, std::string* Names, vector* Positions,
-		UINT* MeshIDs, UINT NumMeshes)
+	void PhysicsWorld::LoadWorld(Renderer* renderer, float* Masses, std::string* Names,
+		unsigned long int* MeshIDs, unsigned long int NumMeshes)
 	{
 #ifdef NT_IS_DEBUGGING
 		if (renderer->mesh_nums < 1)
@@ -49,7 +49,7 @@ namespace Physics
 		//We need 'NumMeshes' instead of renderer->mesh_nums because not all meshes will use physics
 		for (register unsigned long int i = 0; i < NumMeshes; ++i)
 		{
-			UINT ID = MeshIDs[i];
+			unsigned long int ID = MeshIDs[i];
 
 			Mesh& CurrentMesh = renderer->meshes[ID];
 
@@ -59,7 +59,7 @@ namespace Physics
 			Temp.CalculateCollisionShapes();
 			Temp.SetMass(Masses[i]);
 
-			vector Pos = Positions[i];
+			point Pos = CurrentMesh.model_matrix*Temp.m_ColSphere.Center;//calculate the position from sphere center it will be reupdated in physics world class
 
 #ifdef NT_IS_DEBUGGING
 			char s[256];
@@ -69,9 +69,12 @@ namespace Physics
 #endif
 			Temp.SetPosition(Pos.x, Pos.y, Pos.z);
 
+			Temp.m_MeshID = ID;
+
 			m_ObjectNames.push_back(Names[i]);
 			m_Objects.push_back(Temp);
 		}
+		m_RendrerPtr = renderer;
 	}
 
 	PhysicsObject& PhysicsWorld::GetPhysicsObject(const std::string Name)
@@ -101,7 +104,7 @@ namespace Physics
 	}
 
 
-	PhysicsObject& PhysicsWorld::GetPhysicsObject(UINT Index)
+	PhysicsObject& PhysicsWorld::GetPhysicsObject(unsigned long int Index)
 	{
 #ifdef NT_IS_DEBUGGING
 		if (Index > m_Objects.size() || m_Objects.empty())
@@ -123,12 +126,19 @@ namespace Physics
 			return;
 		}
 #endif
+		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
+		{
+			point temo_pos;
+			temo_pos = m_RendrerPtr->meshes[m_Objects[i].m_MeshID].model_matrix*m_Objects[i].m_ColSphere.Center;//calculate the position
+			m_Objects[i].SetPosition(temo_pos.x, temo_pos.y, temo_pos.z);//set the position
+		}
+			 
 		//Calculate gravitational force and add it to objects
 
 		//TODO : do this on a multi threaded way
-	/*	for (register unsigned long int i = 0; i < m_Objects.size(); i++)
+		for (register unsigned long int i = 0; i < m_Objects.size(); i++)
 		{
-			for (register unsigned long int j = i; j < m_Objects.size(); j++)
+			for (register unsigned long int j = i + 1; j < m_Objects.size(); j++)
 			{
 				//Final force containor
 				vector GravitationalForce;
@@ -146,7 +156,7 @@ namespace Physics
 				long double r_P3 = pow(Object_Object.getsize(), 3.0);
 
 				//Calculate gravitational force
-				GravitationalForce = Object_Object * (m_Objects[i].m_Mass * m_Objects[j].m_Mass * G *pow(10.0, GE) / r_P3);
+				GravitationalForce = Object_Object * (m_Objects[i].m_Mass * m_Objects[j].m_Mass * G / r_P3);
 
 				//Apply force
 				m_Objects[i].AddForce(GravitationalForce.x, GravitationalForce.y, GravitationalForce.z);
@@ -157,7 +167,7 @@ namespace Physics
 			
 			
 		}
-		*/
+		
 
 		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
 		{

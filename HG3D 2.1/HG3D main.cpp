@@ -17,6 +17,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	MSG *msg = GetMSG();
 	Engine.add_camera();
+	Engine.add_camera();
+	Engine.add_current_camera(0);
+	Engine.add_current_camera(1);
 
 	//================ PHYSICS ENGINE USAGE ====================/
 	Physics::PhysicsObject Horse;
@@ -79,24 +82,25 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//World.AddObject("Horse", Horse, Engine.meshes[0]);
 	//World.AddObject("Sphere", Sphere, Engine.meshes[1]);
 
-	float Masses[] = 
+	float Masses[] =
 	{ 60.0f /*Horse Mass*/,
-	  5.0f /*Sphere mass*/ };
+	5.0f /*Sphere mass*/,
+	5.972f*pow(10.0f, 24.0f)//*earth mass*/
+	};
 
 	std::string Names[] = { 
 		"Horse", 
-		"Sphere" };
-
-	vector MeshPoses[] = { 
-		HorsePos, 
-		SpherePos };
-
-	UINT IDs[] = {
-		0, //Mesh Index of Horse in renderer->meshes
-		1 //Mesh Index of Sphere
+		"Sphere",
+		"Earth"
 	};
 
-	World.LoadWorld(&Engine, Masses, Names, MeshPoses, IDs, ARRAYSIZE(Masses)); //or ARRAYSIZE(Names)
+	unsigned long int IDs[] = {
+		0, //Mesh Index of Horse in renderer->meshes
+		1, //Mesh Index of Sphere
+		2  //Mesh index of Earth
+	};
+
+	World.LoadWorld(&Engine, Masses, Names, IDs, ARRAYSIZE(Masses)); //or ARRAYSIZE(Names)
 
 
 	Physics::PhysicsObject& SphereObj = World.GetPhysicsObject("Sphere");
@@ -173,7 +177,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			last_time = current_time;
 			current_time = clock();
 
-			long double dt = (static_cast<float>(current_time)-last_time) / 1000.0f;
+			long double dt = (current_time - last_time) / 1000.0f;
 			if (Get_Mouse_Stat(Mouse_Left_Stat))
 				World.Update(dt);
 

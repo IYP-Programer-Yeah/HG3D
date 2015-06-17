@@ -22,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation of Changes", 
 	ProjectSection(SolutionItems) = preProject
 		IYP Changes June 10th 2015.txt = IYP Changes June 10th 2015.txt
 		IYP changes June 12th 2015.txt = IYP changes June 12th 2015.txt
+		IYP Changes June 18th 2015.txt = IYP Changes June 18th 2015.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{C1ED1EA3-0DB1-445E-B51A-2CD106617D8B}"

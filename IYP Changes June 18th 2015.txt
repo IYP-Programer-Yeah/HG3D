@@ -1,0 +1,28 @@
+June 12th 2015
+changes made on files :
+PhysicsWorld.h
+PhysicsWorld.cpp
+
+changes made on PhysicsWorld.h
+replaces: 
+#1 all the UINT's to unsigned long int
+
+adds: 
+#1 Renderer* m_RendrerPtr; to private physics world class
+
+removes: 
+#1 the positions input was removed
+
+changes made on PhysicsWorld.cpp
+replaces: 
+#1 all the UINT's to unsigned long int
+#2 position is geting built from  CurrentMesh.model_matrix*Temp.m_ColSphere.Center;
+
+adds: 
+#1 the position is getting updated every frame
+#2 setting the mesh id of the object in load world
+#3 setting the renderer pointer of the physics world in loadworld
+
+
+removes: 
+#1 the positions input was removed

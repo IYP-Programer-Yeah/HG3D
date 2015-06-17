@@ -16,17 +16,18 @@ namespace Physics
 
 		void DLLEXPORT Update(const long double& Deltatime);
 	
-		void DLLEXPORT LoadWorld(Renderer* renderer, float* Masses, std::string* Names, vector* Positions,
-			                     UINT* MeshIDs, UINT NumMeshes);
+		void DLLEXPORT LoadWorld(Renderer* renderer, float* Masses, std::string* Names,
+			unsigned long int* MeshIDs, unsigned long int NumMeshes);
 
 		void DLLEXPORT AddObject(const std::string Name, PhysicsObject& Object, Mesh& mesh);
 		void DLLEXPORT RemoveLastObject();
 
-		DLLEXPORT PhysicsObject& GetPhysicsObject(UINT Index);
+		DLLEXPORT PhysicsObject& GetPhysicsObject(unsigned long int Index);
 		DLLEXPORT PhysicsObject& GetPhysicsObject(const std::string Name);
 	private:
 		std::vector<PhysicsObject> m_Objects;
 		std::vector<std::string> m_ObjectNames;
+		Renderer* m_RendrerPtr;
 	};
 }
 

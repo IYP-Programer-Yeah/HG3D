@@ -7,5 +7,4 @@
 //Should be removed while shipping
 #define NT_IS_DEBUGGING
 
-#define G  6.67384 //gravitational constant
-#define GE -11 //gravitational constant exponent
+#define G  0.0000000000667384 //gravitational constant
