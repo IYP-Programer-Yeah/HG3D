@@ -5,23 +5,6 @@
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-
-	string out_string;
-	long double start,end;
-	HG3D_Engine::_4x4matrix testmat;
-	testmat.LoadIdentity();
-	start = clock();
-	for (int i = 0; i < 100000; i++)
-		testmat = testmat*testmat;
-	end = clock();
-	out_string = "time is:  ";
-	out_string = out_string + doubletostring(end-start);
-	OutputDebugString(out_string.string1);
-
-
-
-
-
 	init_main_window(hInstance);
 
 	HDC *hdc = GetHDC();
@@ -52,7 +35,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	vector axis;
 	axis.build(1.0f, 0.0f, 0.0f);
 	Engine.meshes[0].rotate_model_AIC(-3.14f/2.0f, axis);
-	Engine.meshes[0].model_matrix = Engine.meshes[0].model_matrix*testmat;
+	Engine.meshes[0].model_matrix = Engine.meshes[0].model_matrix;
 	//Should be same as Translate.LoadTranslate(x, y, z)
 	Horse.SetPosition(translation.x, translation.y, translation.z);
 
