@@ -1,5 +1,5 @@
 ﻿TODO:
-#1 set/add velocity (NT)
+#1 set/add velocity (NT) \/
 #2 multi threadig (NT)
 #3 testing gravitational force calculator (NT)
 #4 fast matrix multiplication (IYP)✓
