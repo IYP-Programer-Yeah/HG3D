@@ -141,7 +141,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				HG3D_Engine::point LastPos;//last pos
 
 				LastPos = Engine.cameras[1].camera_position;//set the value
-
+				
 				HG3D_Engine::vector Movement;//set movement
 
 				Movement = normalize(Engine.cameras[1].forward)*long double(MWD) / long double(20.0);//get the movement
