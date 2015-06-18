@@ -128,6 +128,7 @@ namespace Physics
 #endif
 		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
 		{
+			m_Objects[i].SetForce(0.0, 0.0, 0.0);
 			point temo_pos;
 			temo_pos = m_RendrerPtr->meshes[m_Objects[i].m_MeshID].model_matrix*m_Objects[i].m_ColSphere.Center;//calculate the position
 			m_Objects[i].SetPosition(temo_pos.x, temo_pos.y, temo_pos.z);//set the position
@@ -136,7 +137,7 @@ namespace Physics
 		//Calculate gravitational force and add it to objects
 
 		//TODO : do this on a multi threaded way
-		for (register unsigned long int i = 0; i < m_Objects.size(); i++)
+		/*for (register unsigned long int i = 0; i < m_Objects.size(); i++)
 		{
 			for (register unsigned long int j = i + 1; j < m_Objects.size(); j++)
 			{
@@ -166,7 +167,7 @@ namespace Physics
 			}
 			
 			
-		}
+		}*/
 		
 
 		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)

@@ -118,7 +118,11 @@ namespace Physics
 		//Acceleration = Force / Mass 
 		m_Acceleration = m_Force / m_Mass;
 		
-	
+		if (m_ApplyGravity)
+		{
+			m_Acceleration = m_Acceleration + m_Gravity;
+		}
+		long double a = m_Acceleration.getsize();
 		//Equivalent to m_Velocity += m_Acceleration * dt;
 		m_Velocity = m_Velocity + m_Acceleration * dt;
 
@@ -131,12 +135,6 @@ namespace Physics
 			m_Last_Velocity = m_Velocity;
 
 			m_LastFrameDataInitialized = true;
-		}
-
-		if (m_ApplyGravity)
-		{
-			//Equivalent to m_Velocity += m_Gravity * dt;
-			m_Velocity = m_Velocity + m_Gravity * dt;
 		}
 
 		//Update position with our physics code
