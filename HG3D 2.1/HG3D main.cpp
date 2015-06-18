@@ -159,6 +159,15 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			Engine.cameras[0].Left = -1.0f * float(GetW()) / float(GetH());    //update projection
 
+			Engine.cameras[1].camera_viewport[0] = GetW() - 400;//update view port
+
+			Engine.cameras[1].camera_viewport[1] = GetH() - 400;//update view port
+
+			Engine.cameras[1].camera_viewport[2] = 400;//update view port
+
+			Engine.cameras[1].camera_viewport[3] = 400;//update view port
+
+
 			if (Get_Mouse_Stat(Mouse_Middle_Stat))///check if the mddile button is pressed
 			{
 				Engine.cameras[0].fps_camera(float(Get_Mouse_X() - Get_Mouse_Last_X()) / 180.0f, 

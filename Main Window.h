@@ -1,6 +1,0 @@
-#include "..\Windows Handler\Windows Handler.h"
-#include "..\HG3D Engine\HG3D Engine.h"
-using namespace Windows_Handler;
-bool init_main_window(HINSTANCE hInstance); //initialize main window
-MSG* GetMSG(); //get main window's msg
-HDC* GetHDC(); //get main window's hdc

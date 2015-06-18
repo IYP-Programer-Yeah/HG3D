@@ -13,6 +13,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "File_HG_FS", "File_HG_FS\Fi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Headers", "Shared Headers", "{5A910F7F-55DE-411C-87A5-75A7D7CF4AFD}"
 	ProjectSection(SolutionItems) = preProject
+		Shared Headers\bitmap.h = Shared Headers\bitmap.h
 		Shared Headers\hstring.h = Shared Headers\hstring.h
 	EndProjectSection
 EndProject
