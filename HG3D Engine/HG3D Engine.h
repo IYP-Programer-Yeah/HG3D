@@ -237,8 +237,9 @@ namespace HG3D_Engine
 		unsigned int width, height;//width and height
 
 		unsigned long int total_size;
+		unsigned long int compression_method;//the compresion method
 		
-		void __declspec(dllexport) build(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC);//will copy the irgba to rgb free your own allocation
+		void __declspec(dllexport) build(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC, bool icompressed, unsigned long int icompression_method, unsigned long int idata_size);//will copy the irgba to rgb free your own allocation
 		void __declspec(dllexport) free_data();//free all alloction as well as gpu memory
 		void __declspec(dllexport) update(); //update the data
 		void __declspec(dllexport) clone_NMA(texture input);//clone with the same memory allocation (no new memory is allocated)
@@ -302,7 +303,7 @@ namespace HG3D_Engine
 		void __declspec(dllexport) delete_current_camera(unsigned long int camera_ID);	//delete a current camera
 		
 		unsigned long int __declspec(dllexport) add_camera();	//add a camera
-		unsigned long int __declspec(dllexport) add_texture(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC);	//add a texture
+		unsigned long int __declspec(dllexport) add_texture(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC, bool icompressed, unsigned long int icompression_method, unsigned long int idata_size);	//add a texture
 		unsigned long int __declspec(dllexport) add_mesh(char* path);	//add a mesh 
 
 		void __declspec(dllexport) init();		//initialize function

@@ -137,7 +137,7 @@ namespace Physics
 		//Calculate gravitational force and add it to objects
 
 		//TODO : do this on a multi threaded way
-		/*for (register unsigned long int i = 0; i < m_Objects.size(); i++)
+		for (register unsigned long int i = 0; i < m_Objects.size(); i++)
 		{
 			for (register unsigned long int j = i + 1; j < m_Objects.size(); j++)
 			{
@@ -167,7 +167,7 @@ namespace Physics
 			}
 			
 			
-		}*/
+		}
 		
 
 		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)

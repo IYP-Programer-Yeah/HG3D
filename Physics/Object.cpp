@@ -32,7 +32,7 @@ namespace Physics
 		m_Mass = 1.0;
 
 		m_Moveable = true;
-		m_ApplyGravity = true;
+		m_ApplyGravity = false;
 		m_Valid = true;
 
 		m_LastFrameDataInitialized = false;

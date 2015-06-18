@@ -123,12 +123,15 @@ namespace HG3D_Engine
 		needs_update = 1;
 	}
 
-	void texture::build(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
+	void texture::build(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC, bool icompressed, unsigned long int icompression_method, unsigned long int idata_size)
 	{
 		width = w;
 		height = h;//set the input
 		number_of_components = NOC;
-		total_size = width*height*number_of_components;//get the total memory size
+		if (!compressed)
+			total_size = width*height*number_of_components;//get the total memory size
+		else
+			total_size = idata_size;
 		rgba = (unsigned char*)malloc(total_size);//allocate memory
 		for (register unsigned long int i = 0; i < total_size; i++)//copy the data
 			rgba[i] = irgba[i];
@@ -137,6 +140,8 @@ namespace HG3D_Engine
 		Repeat_X = 0;
 		Repeat_Y = 0;
 		glGenTextures(1, &texture_name);//generate the texture so you can free it
+		compressed = icompressed;
+		compression_method = icompression_method;
 	}
 	void texture::free_data()
 	{
@@ -153,9 +158,18 @@ namespace HG3D_Engine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		else
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba);//set the data
-		if (generate_mipmaps)//creat the miomaps if wanted
-			gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+		if (!compressed)//is it compressed data?
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba);//set the data
+			if (generate_mipmaps)//creat the miomaps if wanted
+				gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+		}
+		else
+		{
+			if (generate_mipmaps)//creat the miomaps if wanted
+				glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, true);
+			glCompressedTexImage2D(GL_TEXTURE_2D, 0, compression_method, width, height, 0, total_size, rgba);
+		}
 		glBindTexture(GL_TEXTURE_2D, 0);//unbind the texture 
 		needs_update = false;//just updated no need to redo it
 	}
@@ -364,7 +378,7 @@ namespace HG3D_Engine
 			current_camera_nums--;
 		}
 	}
-	unsigned long int Renderer::add_texture(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
+	unsigned long int Renderer::add_texture(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC, bool icompressed, unsigned long int icompression_method, unsigned long int idata_size)
 	{
 		texture_nums++;//add number of cameras by 1
 		texture *textures_the_next = (texture *)malloc(sizeof(texture) * texture_nums);//allocate new meshes' memory
@@ -374,7 +388,7 @@ namespace HG3D_Engine
 			textures_the_next[i].clone_NMA(textures[i]);//clone last data with no new memory allocation
 
 
-		textures_the_next[texture_nums - 1].build(irgba, w, h, NOC);//build the texture
+		textures_the_next[texture_nums - 1].build(irgba, w, h, NOC, icompressed, icompression_method, icompression_method);//build the texture
 
 
 		free(textures);//free last data
