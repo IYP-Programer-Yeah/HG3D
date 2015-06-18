@@ -123,7 +123,7 @@ namespace HG3D_Engine
 		needs_update = 1;
 	}
 
-	void texture::build(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
+	void texture::build(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC, bool icompressed)
 	{
 		width = w;
 		height = h;//set the input
@@ -137,6 +137,7 @@ namespace HG3D_Engine
 		Repeat_X = 0;
 		Repeat_Y = 0;
 		glGenTextures(1, &texture_name);//generate the texture so you can free it
+		compressed = icompressed;
 	}
 	void texture::free_data()
 	{
@@ -364,7 +365,7 @@ namespace HG3D_Engine
 			current_camera_nums--;
 		}
 	}
-	unsigned long int Renderer::add_texture(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC)
+	unsigned long int Renderer::add_texture(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC, bool icompressed)
 	{
 		texture_nums++;//add number of cameras by 1
 		texture *textures_the_next = (texture *)malloc(sizeof(texture) * texture_nums);//allocate new meshes' memory
@@ -374,7 +375,7 @@ namespace HG3D_Engine
 			textures_the_next[i].clone_NMA(textures[i]);//clone last data with no new memory allocation
 
 
-		textures_the_next[texture_nums - 1].build(irgba, w, h, NOC);//build the texture
+		textures_the_next[texture_nums - 1].build(irgba, w, h, NOC, icompressed);//build the texture
 
 
 		free(textures);//free last data
