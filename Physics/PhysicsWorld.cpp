@@ -59,7 +59,7 @@ namespace Physics
 			Temp.CalculateCollisionShapes();
 			Temp.SetMass(Masses[i]);
 
-			point Pos = CurrentMesh.model_matrix * Temp.m_ColSphere.Center;//calculate the position from sphere center it will be reupdated in physics world class
+			point Pos = CurrentMesh.model_matrix * Temp.m_ColSphere.Center;
 
 #ifdef NT_IS_DEBUGGING
 			char s[256];
@@ -74,6 +74,7 @@ namespace Physics
 			m_ObjectNames.push_back(Names[i]);
 			m_Objects.push_back(Temp);
 		}
+
 		m_RendrerPtr = renderer;
 	}
 

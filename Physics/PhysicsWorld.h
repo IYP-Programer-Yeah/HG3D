@@ -19,7 +19,10 @@ namespace Physics
 		void DLLEXPORT LoadWorld(Renderer* renderer, float* Masses, std::string* Names,
 			unsigned long int* MeshIDs, unsigned long int NumMeshes);
 
+		//This function is going to be removed when LoadWorld() is ready
 		void DLLEXPORT AddObject(const std::string Name, PhysicsObject& Object, Mesh& mesh);
+
+
 		void DLLEXPORT RemoveLastObject();
 
 		DLLEXPORT PhysicsObject& GetPhysicsObject(unsigned long int Index);

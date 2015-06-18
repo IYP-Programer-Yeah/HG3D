@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HG3D main.cpp" />
     <ClCompile Include="Main Window.cpp" />
   </ItemGroup>
   <ItemGroup>
