@@ -228,6 +228,7 @@ namespace HG3D_Engine
 		bool Repeat_X, Repeat_Y;//does it repeat over the face or it's clamped to edgs?
 		bool needs_update;// check if needs update
 		bool generate_mipmaps;//do you nrrd mipmaps
+		bool compressed;//is the data compressed
 
 		unsigned short int number_of_components;// number of components
 
@@ -237,7 +238,7 @@ namespace HG3D_Engine
 
 		unsigned long int total_size;
 		
-		void __declspec(dllexport) build(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC);//will copy the irgba to rgb free your own allocation
+		void __declspec(dllexport) build(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC, bool icompressed);//will copy the irgba to rgb free your own allocation
 		void __declspec(dllexport) free_data();//free all alloction as well as gpu memory
 		void __declspec(dllexport) update(); //update the data
 		void __declspec(dllexport) clone_NMA(texture input);//clone with the same memory allocation (no new memory is allocated)
@@ -301,7 +302,7 @@ namespace HG3D_Engine
 		void __declspec(dllexport) delete_current_camera(unsigned long int camera_ID);	//delete a current camera
 		
 		unsigned long int __declspec(dllexport) add_camera();	//add a camera
-		unsigned long int __declspec(dllexport) add_texture(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC);	//add a texture
+		unsigned long int __declspec(dllexport) add_texture(unsigned char *irgba, unsigned int w, unsigned int h, unsigned short int NOC, bool icompressed);	//add a texture
 		unsigned long int __declspec(dllexport) add_mesh(char* path);	//add a mesh 
 
 		void __declspec(dllexport) init();		//initialize function
