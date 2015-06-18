@@ -1,13 +1,7 @@
 #ifndef _bitmap_h
 #define _bitmap_h
-#include <windows.h>
-#include <stddef.h>
 #include <stdio.h>
-#include <iostream>
-#include "F:\C++\HG3D_V_2 64bit\HG3D_V_2 64bit\graphics.h"
-#include <stdlib.h>
-#include <io.h>
-#include "F:\C++\HG3D_V_2 64bit\HG3D_V_2 64bit\hstring.h"
+#include <Windows.h>
 #define bmpnums 100
 bool nobetb(int f, int s, int no)
 {
@@ -195,24 +189,6 @@ public:
 				rgb[i].b = b;
 			}
 		}
-	}
-	void show(int x, int y, bool filter = 1)
-	{
-		if (filter)
-			for (register int i = Height[0] * Width[0] - 1; i >= 0; --i)
-			{
-				if (!(rgb[i].b == 255 && rgb[i].g == 255 && rgb[i].r == 255))
-				{
-					setrgbpalette(1, rgb[i].r, rgb[i].g, rgb[i].b);
-					putpixel(x + (i%Width[0]), y - (i / Width[0]), 1);
-				}
-			}
-		else
-			for (register int i = Height[0] * Width[0] - 1; i >= 0; --i)
-			{
-				setrgbpalette(1, rgb[i].r, rgb[i].g, rgb[i].b);
-				putpixel(x + (i%Width[0]), y - (i / Width[0]), 1);
-			}
 	}
 };
 class _bitmap

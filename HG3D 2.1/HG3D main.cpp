@@ -1,10 +1,13 @@
 #include "Main Window.h"
 #include <iostream>
 #include "..\Shared Headers\hstring.h"
+#include "..\Shared Headers\bitmap.h"
 
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	hbitmap texture;
+	texture.getimage("..\\HG3D 2.1\\Resource\\Prestart.bmp");
 	init_main_window(hInstance);
 
 	HDC *hdc = GetHDC();
@@ -20,6 +23,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.add_camera();
 	Engine.add_current_camera(0);
 	Engine.add_current_camera(1);
+
+	Engine.add_texture((BYTE*)texture.rgb, texture.Width[0], texture.Height[0], 3, 0, 0, 0);
 
 	//================ PHYSICS ENGINE USAGE ====================/
 	Physics::PhysicsObject Horse;
