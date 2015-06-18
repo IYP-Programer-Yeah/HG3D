@@ -59,7 +59,7 @@ namespace Physics
 			Temp.CalculateCollisionShapes();
 			Temp.SetMass(Masses[i]);
 
-			point Pos = CurrentMesh.model_matrix*Temp.m_ColSphere.Center;//calculate the position from sphere center it will be reupdated in physics world class
+			point Pos = CurrentMesh.model_matrix * Temp.m_ColSphere.Center;
 
 #ifdef NT_IS_DEBUGGING
 			char s[256];
@@ -116,6 +116,34 @@ namespace Physics
 		return m_Objects[Index];
 	}
 
+
+	void PhysicsWorld::UpdateCollision()
+	{
+		for (register auto i = 0; i < m_Objects.size(); ++i)
+		{
+			PhysicsObject& CurrentObject = m_Objects[i];
+
+			//Transform this Sphere's center into world space
+			CurrentObject.m_ColSphere.Center = CurrentObject.m_MeshPtr->model_matrix * CurrentObject.m_ColSphere.Center;
+
+			//Do collision of this object with all other objects (but not itself)
+			for (register auto j = 0; j < m_Objects.size(); ++j)
+			{
+				//Are we calculating collision of this object with itself? OMG? What the hell were we doing?
+				if (CurrentObject.m_UniqueObjectID == m_Objects[j].m_UniqueObjectID)
+					continue;
+
+
+
+				CollisionSphere CurrentObjSphere = CurrentObject.m_ColSphere;
+				CollisionSphere OtherObjSphere = m_Objects[j].m_ColSphere;
+
+			
+
+			}
+		}
+	}
+
 	void PhysicsWorld::Update(const long double& dt)
 	{
 #ifdef NT_IS_DEBUGGING
@@ -129,17 +157,20 @@ namespace Physics
 		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
 		{
 			m_Objects[i].SetForce(0.0, 0.0, 0.0);
-			point temo_pos;
-			temo_pos = m_RendrerPtr->meshes[m_Objects[i].m_MeshID].model_matrix*m_Objects[i].m_ColSphere.Center;//calculate the position
-			m_Objects[i].SetPosition(temo_pos.x, temo_pos.y, temo_pos.z);//set the position
+
+			point TempPos;
+
+			TempPos = m_RendrerPtr->meshes[m_Objects[i].m_MeshID].model_matrix  * m_Objects[i].m_ColSphere.Center;
+
+			m_Objects[i].SetPosition(TempPos.x, TempPos.y, TempPos.z);
 		}
 			 
 		//Calculate gravitational force and add it to objects
 
 		//TODO : do this on a multi threaded way
-		for (register unsigned long int i = 0; i < m_Objects.size(); i++)
+		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
 		{
-			for (register unsigned long int j = i + 1; j < m_Objects.size(); j++)
+			for (register unsigned long int j = i + 1; j < m_Objects.size(); ++j)
 			{
 				//Final force containor
 				vector GravitationalForce;

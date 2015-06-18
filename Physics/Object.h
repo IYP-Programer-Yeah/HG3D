@@ -18,8 +18,6 @@ namespace Physics
 		DLLEXPORT PhysicsObject();
 		DLLEXPORT ~PhysicsObject();
 	
-
-
 		//Set Object's properties
 		void DLLEXPORT AddForce(long double x, long double y, long double z);
 		void DLLEXPORT SetForce(long double x, long double y, long double z);
@@ -52,6 +50,9 @@ namespace Physics
 
 		point m_Last_Position;
 
+		//Each object has a unique ID
+		//I need this for some reason
+		unsigned long int m_UniqueObjectID;
 
 		vector m_Last_Velocity;
 		vector m_Acceleration;
@@ -64,6 +65,7 @@ namespace Physics
 		CollisionSphere m_ColSphere;
 		CollisionBox m_ColBox;
 
+		Mesh* m_MeshPtr;
 	private:
 		bool m_LastFrameDataInitialized;
 
@@ -76,6 +78,6 @@ namespace Physics
 		//So, this needs to be private
 		point m_Position;
 
-		Mesh* m_MeshPtr;
+
 	};
 }
