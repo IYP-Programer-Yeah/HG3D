@@ -228,6 +228,7 @@ namespace HG3D_Engine
 		bool Repeat_X, Repeat_Y;//does it repeat over the face or it's clamped to edgs?
 		bool needs_update;// check if needs update
 		bool generate_mipmaps;//do you nrrd mipmaps
+		bool compressed;//is the data compressed
 
 		unsigned short int number_of_components;// number of components
 
