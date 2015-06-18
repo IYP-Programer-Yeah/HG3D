@@ -57,6 +57,7 @@ PFNGLBINDATTRIBLOCATIONPROC                  glBindAttribLocation;
 PFNGLENABLEVERTEXATTRIBARRAYPROC             glEnableVertexAttribArray;
 PFNGLBINDFRAGDATALOCATIONPROC                glBindFragDataLocation;
 PFNGLGETSHADERINFOLOGPROC                    glGetShaderInfoLog;
+PFNGLCOMPRESSEDTEXIMAGE2DPROC				 glCompressedTexImage2D;
 //      glew definitions
 //
 void Init_glew()
@@ -116,5 +117,6 @@ void Init_glew()
 	glEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glEnableVertexAttribArray");
 	glBindFragDataLocation = (PFNGLBINDFRAGDATALOCATIONPROC)wglGetProcAddress("glBindFragDataLocation");
 	glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)wglGetProcAddress("glGetShaderInfoLog");
+	glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)wglGetProcAddress("glCompressedTexImage2D");
 }
 // shader loader

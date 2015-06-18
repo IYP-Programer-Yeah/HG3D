@@ -160,9 +160,16 @@ namespace HG3D_Engine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		if (!compressed)//is it compressed data?
 		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba);//set the data
+			unsigned long int format = GL_RGBA;
+			if (number_of_components == 3)
+				format = GL_RGB;
+			if (number_of_components == 2)
+				format = GL_RG;
+			if (number_of_components == 1)
+				format = GL_R;
+			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, rgba);//set the data
 			if (generate_mipmaps)//creat the miomaps if wanted
-				gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+				gluBuild2DMipmaps(GL_TEXTURE_2D, format, width, height, format, GL_UNSIGNED_BYTE, rgba);
 		}
 		else
 		{
