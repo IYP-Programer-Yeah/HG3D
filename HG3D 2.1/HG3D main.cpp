@@ -8,7 +8,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	init_main_window(hInstance);
 
 	HDC *hdc = GetHDC();
-
+	
 	HG3D_Engine::Renderer Engine;
 	Physics::PhysicsWorld World;
 
