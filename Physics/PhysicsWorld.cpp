@@ -119,31 +119,32 @@ namespace Physics
 
 	void PhysicsWorld::UpdateCollision()
 	{
-		for (register auto i = 0; i < m_Objects.size(); ++i)
+
+		for (register unsigned long int i = 0; i < m_Objects.size(); ++i)
 		{
 			PhysicsObject& CurrentObject = m_Objects[i];
 
-			//Transform this Sphere's center into world space
-			//OPTIMIZATION NOTE:
-			//We need to only transform this once if this object is static
-			CurrentObject.m_ColSphere.Center = CurrentObject.m_MeshPtr->model_matrix * CurrentObject.m_ColSphere.Center;
+			if (!CurrentObject.m_DoCollision)
+				continue;
 
+			CollisionSphere CurrentObjSphere = CurrentObject.m_ColSphere;
 
-			CollisionSphere& CurrentObjSphere = CurrentObject.m_ColSphere;
+			CurrentObjSphere.Center = CurrentObject.m_MeshPtr->model_matrix * CurrentObject.m_ColSphere.Center;
 
 			//Do collision of this object with all other objects (but not itself)
-			for (register auto j = 0; j < m_Objects.size(); ++j)
+			for (register unsigned long int j = 0; j < m_Objects.size(); ++j)
 			{
 				//Are we calculating collision of this object with itself? OMG? What the hell were we doing?
 				if (CurrentObject.m_UniqueObjectID == m_Objects[j].m_UniqueObjectID)
 					continue;
 
-				CollisionSphere& OtherObjSphere = m_Objects[j].m_ColSphere;
+				if (!m_Objects[j].m_DoCollision)
+					continue;
 
-				//Transform other object's sphere's center to world space
-				//OPTIMIZATION NOTE:
-				//We need to only transform this once if this object is static
-				OtherObjSphere.Center = m_Objects[j].m_MeshPtr->model_matrix * OtherObjSphere.Center;
+				CollisionSphere OtherObjSphere = m_Objects[j].m_ColSphere;
+
+
+				OtherObjSphere.Center = m_Objects[j].m_MeshPtr->model_matrix * m_Objects[j].m_ColSphere.Center;
 
 				//========= SOMETHING INCOMPLETE HERE ==============/
 

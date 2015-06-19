@@ -47,6 +47,7 @@ namespace Physics
 		m_Moveable = true;
 		m_ApplyGravity = false;
 		m_Valid = true;
+		m_DoCollision = true;
 
 		m_LastFrameDataInitialized = false;
 		m_MeshID = 0;
@@ -220,6 +221,10 @@ namespace Physics
 	void PhysicsObject::CalculateCollisionShapes()
 	{
 		if (!m_MeshPtr)
+			return;
+
+		//Why calculate shape when we're not going to do collision with this object at all?
+		if (!m_DoCollision)
 			return;
 
 		point SphereCenter;

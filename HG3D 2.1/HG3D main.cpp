@@ -40,7 +40,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	vector HorsePos;
 
 	//Don't forget to initialize any of these if you don't use them
-	HorsePos.build(17.0f, 0.0f, 0.0f);
+	HorsePos.build(24.0f, 0.0f, 0.0f);
 	Engine.meshes[0].move(HorsePos);
 	Engine.meshes[0].scale_model(100.0f, 100.0f, 100.0f);
 	vector axis;
@@ -96,19 +96,19 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	float Masses[] =
 	{ 60.0f /*Horse Mass*/,
 	5.0f /*Sphere mass*/,
-	5.972f*pow(10.0f, 24.0f)//*earth mass*/
+	//5.972f*pow(10.0f, 24.0f)//*earth mass*/
 	};
 
 	std::string Names[] = { 
 		"Horse", 
 		"Sphere",
-		"Earth"
+	//	"Earth"
 	};
 
 	unsigned long int IDs[] = {
 		0, //Mesh Index of Horse in renderer->meshes
 		1, //Mesh Index of Sphere
-		2  //Mesh index of Earth
+	//	2  //Mesh index of Earth
 	};
 
 	World.LoadWorld(&Engine, Masses, Names, IDs, ARRAYSIZE(Masses)); //or ARRAYSIZE(Names)
@@ -199,9 +199,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			long double dt = (current_time - last_time) / 1000.0f;
 			if (Get_Mouse_Stat(Mouse_Left_Stat))
 			{
-
+			    World.UpdateCollision();
 				World.Update(dt); 
-				World.UpdateCollision();
+
 			}
 			Engine.test_render(); //render scene
 

@@ -47,6 +47,8 @@ namespace Physics
 		bool m_ApplyGravity;
 		bool m_Moveable;
 		bool m_Valid;
+		bool m_DoCollision;
+
 
 		point m_Last_Position;
 
@@ -68,6 +70,7 @@ namespace Physics
 		Mesh* m_MeshPtr;
 	private:
 		bool m_LastFrameDataInitialized;
+
 
 		//This stuff is now set by it's functions
 		vector m_Force;
