@@ -28,7 +28,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation of Changes", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{C1ED1EA3-0DB1-445E-B51A-2CD106617D8B}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\HG3D_V_2 64bit\Release\Final.zip = ..\..\HG3D_V_2 64bit\Release\Final.zip
 		Notes.txt = Notes.txt
 		TODO.txt = TODO.txt
 	EndProjectSection
