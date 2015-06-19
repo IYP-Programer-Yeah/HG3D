@@ -124,7 +124,12 @@ namespace Physics
 			PhysicsObject& CurrentObject = m_Objects[i];
 
 			//Transform this Sphere's center into world space
+			//OPTIMIZATION NOTE:
+			//We need to only transform this once if this object is static
 			CurrentObject.m_ColSphere.Center = CurrentObject.m_MeshPtr->model_matrix * CurrentObject.m_ColSphere.Center;
+
+
+			CollisionSphere& CurrentObjSphere = CurrentObject.m_ColSphere;
 
 			//Do collision of this object with all other objects (but not itself)
 			for (register auto j = 0; j < m_Objects.size(); ++j)
@@ -133,12 +138,28 @@ namespace Physics
 				if (CurrentObject.m_UniqueObjectID == m_Objects[j].m_UniqueObjectID)
 					continue;
 
+				CollisionSphere& OtherObjSphere = m_Objects[j].m_ColSphere;
 
+				//Transform other object's sphere's center to world space
+				//OPTIMIZATION NOTE:
+				//We need to only transform this once if this object is static
+				OtherObjSphere.Center = m_Objects[j].m_MeshPtr->model_matrix * OtherObjSphere.Center;
 
-				CollisionSphere CurrentObjSphere = CurrentObject.m_ColSphere;
-				CollisionSphere OtherObjSphere = m_Objects[j].m_ColSphere;
+				//========= SOMETHING INCOMPLETE HERE ==============/
 
+				//Scale radius accordingly to the mesh
+
+				//==================================================/
 			
+				if (CurrentObjSphere.CheckCollisionWith(OtherObjSphere))
+				{
+#ifdef NT_IS_DEBUGGING
+					char s[256];
+					sprintf_s(s, "Object (%d) has collided with Object (%d)", CurrentObject.m_UniqueObjectID, m_Objects[j].m_UniqueObjectID); 
+
+					OutputDebugString(s);
+#endif
+				}
 
 			}
 		}
