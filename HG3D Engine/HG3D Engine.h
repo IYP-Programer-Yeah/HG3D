@@ -333,5 +333,5 @@ namespace HG3D_Engine
 	};
 	//end of renderer class
 	//end of renderer libs
-}
+} 
 #endif
