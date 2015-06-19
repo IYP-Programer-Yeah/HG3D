@@ -2,11 +2,11 @@
 in vec4 normal;
 in vec4 position;
 in vec4 ligt_position[3];
+in vec2 coord;
 
 out vec4 Output1;
 
-
-in vec4 color;
+uniform sampler2D Tex_Sampler;
 
 void main() 
 {
@@ -27,4 +27,5 @@ void main()
 	dotv=dot(LTP,normalize(normal))*-1.0/dist;
 	if (dotv>0)
 		Output1+=vec4(1.0,1.0,0.8,1.0)*dotv/2;
+	Output1=Output1*texture(Tex_Sampler,coord);
 } 

@@ -16,7 +16,8 @@
 #define Vert_Pos_Size      12                                //size of positions
 #define Vert_Normal_Size   12                                //size of normals
 #define Vert_Coord_Size    8                                 //size of coord
-#define vertex_size        32                                //vertex size
+#define Vert_Bone_ID_Size  4                                 //size of coord
+#define vertex_size        36                                //vertex size
 #define face_size          12								 //face size
 
 namespace HG3D_Engine
@@ -104,9 +105,10 @@ namespace HG3D_Engine
 	class vertex //vertex class
 	{
 	public:
-		float x, y, z;       //positions
-		float nx, ny, nz;    //normals
-		float cx, cy;        //coords
+		float x, y, z;				//positions
+		float nx, ny, nz;			//normals
+		float cx, cy;				//coords
+		unsigned int bone_ID;		//bone ID
 		void __declspec(dllexport) operator=(vertex input);//= operator
 	};
 	//end of vertex class

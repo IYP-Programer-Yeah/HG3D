@@ -67,6 +67,7 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 	glBindAttribLocation(ProgramID, 0, "Vertex");
 	glBindAttribLocation(ProgramID, 1, "Normal");
 	glBindAttribLocation(ProgramID, 2, "Coord");
+	glBindAttribLocation(ProgramID, 3, "bone_ID");
 	glBindFragDataLocation(ProgramID, 0, "Output1");//bind the out put 
 	glLinkProgram(ProgramID);//link shaders
 	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
@@ -128,7 +129,7 @@ namespace HG3D_Engine
 		width = w;
 		height = h;//set the input
 		number_of_components = NOC;
-		if (!compressed)
+		if (!icompressed)
 			total_size = width*height*number_of_components;//get the total memory size
 		else
 			total_size = idata_size;
@@ -163,9 +164,9 @@ namespace HG3D_Engine
 			unsigned long int format = GL_RGBA;
 			if (number_of_components == 3)
 				format = GL_RGB;
-			if (number_of_components == 2)
+			else if (number_of_components == 2)
 				format = GL_RG;
-			if (number_of_components == 1)
+			else if (number_of_components == 1)
 				format = GL_R;
 			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, rgba);//set the data
 			if (generate_mipmaps)//creat the miomaps if wanted
@@ -394,13 +395,14 @@ namespace HG3D_Engine
 		for (register unsigned long int i = 0; i < texture_nums - 1; i++)
 			textures_the_next[i].clone_NMA(textures[i]);//clone last data with no new memory allocation
 
-
+		wglMakeCurrent(hdc, hrc);//make the rc current
 		textures_the_next[texture_nums - 1].build(irgba, w, h, NOC, icompressed, icompression_method, icompression_method);//build the texture
-
+		wglMakeCurrent(hdc, 0);//make the rc current
 
 		free(textures);//free last data
 		textures = textures_the_next;//replace the pointer to new camera data
 		return texture_nums - 1;//return the added camera's ID
+
 	}
 	/******************************************************************/
 	/**************************test functions**************************/
@@ -412,6 +414,15 @@ namespace HG3D_Engine
 		glClear(GL_COLOR_BUFFER_BIT);
 		for (register unsigned long int j = 0; j < current_camera_nums;j++)
 		{
+			if (texture_nums > 0)
+			{
+				if (textures[0].needs_update)
+					textures[0].update();
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, textures[0].texture_name);
+				glUniform1i(glGetUniformLocation(Shaders[0], "Tex_Sampler"), 0);
+			}
+
 			glClear(GL_DEPTH_BUFFER_BIT);
 			if (cameras[current_cameras[j]].needs_update)
 				cameras[current_cameras[j]].update_camera();

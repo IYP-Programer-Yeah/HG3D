@@ -32,6 +32,7 @@
   <ItemGroup>
     <Image Include="Resource\HG3D.ico" />
     <Image Include="Resource\Prestart.bmp" />
+    <Image Include="Resource\Test Texture.bmp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HG3D Engine\HG3D Engine.vcxproj">

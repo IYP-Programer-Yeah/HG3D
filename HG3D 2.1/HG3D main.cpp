@@ -7,7 +7,7 @@
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	hbitmap texture;
-	texture.getimage("..\\HG3D 2.1\\Resource\\Prestart.bmp");
+	texture.getimage("..\\HG3D 2.1\\Resource\\Test Texture.bmp");
 	init_main_window(hInstance);
 
 	HDC *hdc = GetHDC();
@@ -23,8 +23,15 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.add_camera();
 	Engine.add_current_camera(0);
 	Engine.add_current_camera(1);
-
-	Engine.add_texture((BYTE*)texture.rgb, texture.Width[0], texture.Height[0], 3, 0, 0, 0);
+	BYTE *data;
+	data = (byte*)malloc(texture.Width[0] * texture.Height[0] * 3);
+	for (register int i = 0; i < texture.Width[0] * texture.Height[0]; i++)
+	{
+		data[i * 3] = texture.rgb[i].r;
+		data[i * 3 + 1] = texture.rgb[i].g;
+		data[i * 3 + 2] = texture.rgb[i].b;
+	}
+	Engine.add_texture(data, texture.Width[0], texture.Height[0], 3, 0, 0, 0);
 
 	//================ PHYSICS ENGINE USAGE ====================/
 	Physics::PhysicsObject Horse;

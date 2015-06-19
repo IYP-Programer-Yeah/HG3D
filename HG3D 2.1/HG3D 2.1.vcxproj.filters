@@ -45,6 +45,9 @@
     <Image Include="Resource\HG3D.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resource\Test Texture.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Media Include="Resource\Models\horse.obj">

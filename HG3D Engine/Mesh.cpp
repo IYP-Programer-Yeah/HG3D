@@ -178,6 +178,8 @@ namespace HG3D_Engine
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)Vert_Pos_Size);//set normals first normal: Vert_Pos_Size-Vert_Normal_Size + Vert_Pos_Size 
 		glEnableVertexAttribArray(2);//set the index 2
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertex_size, (void*)(Vert_Pos_Size + Vert_Normal_Size));//set position first pos: Vert_Normal_Size + Vert_Pos_Size -Vert_Normal_Size + Vert_Pos_Size + Vert_Coord_Size
+		glEnableVertexAttribArray(3);//set the index 3
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, vertex_size, (void*)(Vert_Pos_Size + Vert_Normal_Size + Vert_Coord_Size));//vertex bone ID
 		glBindBuffer(GL_ARRAY_BUFFER, 0);//unbinde vbo
 		glBindVertexArray(0);//unbind vao
 		needs_update = 0;
