@@ -7,6 +7,19 @@ namespace Physics
 	{
 		//Initialize everything to defaults
 
+		static unsigned long int lolID = 0;
+
+		lolID++;
+
+		m_UniqueObjectID = lolID;
+
+#ifdef NT_IS_DEBUGGING
+		char s[256];
+		sprintf_s(s, "Unique ID of Physics Object: %d\n", m_UniqueObjectID);
+		
+		OutputDebugString(s);
+#endif
+
 		m_MeshPtr = nullptr;
 
 		m_Acceleration.x = 0.0;
@@ -113,16 +126,16 @@ namespace Physics
 
 #endif	
 
-
 		//Force = Mass * Acceleration
 		//Acceleration = Force / Mass 
 		m_Acceleration = m_Force / m_Mass;
 		
 		if (m_ApplyGravity)
 		{
+			//Equivalent to m_Acceleration += m_Gravity;
 			m_Acceleration = m_Acceleration + m_Gravity;
 		}
-		long double a = m_Acceleration.getsize();
+
 		//Equivalent to m_Velocity += m_Acceleration * dt;
 		m_Velocity = m_Velocity + m_Acceleration * dt;
 
@@ -141,11 +154,9 @@ namespace Physics
 		vector NewPos;
 		NewPos = m_Velocity * dt;
 
-	
 		m_Position.x += NewPos.x;
 		m_Position.y += NewPos.y;
 		m_Position.z += NewPos.z;
-
 
 #ifdef NT_IS_DEBUGGING
 		char s[256];

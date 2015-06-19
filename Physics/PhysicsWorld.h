@@ -15,7 +15,8 @@ namespace Physics
 		DLLEXPORT ~PhysicsWorld();
 
 		void DLLEXPORT Update(const long double& Deltatime);
-	
+		void DLLEXPORT UpdateCollision();
+
 		void DLLEXPORT LoadWorld(Renderer* renderer, float* Masses, std::string* Names,
 			unsigned long int* MeshIDs, unsigned long int NumMeshes);
 

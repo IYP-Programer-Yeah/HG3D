@@ -33,9 +33,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 	Engine.add_texture(data, texture.Width[0], texture.Height[0], 3, 0, 0, 0);
 
-	//================ PHYSICS ENGINE USAGE ====================/
-	Physics::PhysicsObject Horse;
-	
+	//===========================================================/
+
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");
 
 	vector HorsePos;
@@ -121,7 +120,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (!SphereObj.m_Valid)
 		OutputDebugString("SphereObj is not valid.\n");
 #endif
-
 
 	SphereObj.AddVelocity(-40.0, 60.0, 0.0);
 
