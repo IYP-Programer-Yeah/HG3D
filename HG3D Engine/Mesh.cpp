@@ -40,8 +40,6 @@ namespace HG3D_Engine
 
 	void Mesh::load_mesh(char *path)
 	{
-		m_Translation.build(0.0f, 0.0f, 0.0f);
-
 		objLoader MeshObj;
 		float min[3];//minimum x,y,z for mesh cube
 		float max[3];//maximum x,y,z for mesh cube
@@ -140,8 +138,6 @@ namespace HG3D_Engine
 	}
 	void Mesh::move(vector movement)//about it's center
 	{
-		m_Translation = movement;
-
 		for (register int i = 0; i < 4; i++)
 		{
 			model_matrix.x[i] += model_matrix.x[12 + i] * float(movement.x);//we know what the matrix is so lets speed the process up

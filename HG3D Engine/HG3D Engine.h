@@ -193,9 +193,6 @@ namespace HG3D_Engine
 		void __declspec(dllexport) remap_vbo();					//update the subdata
 		void __declspec(dllexport) operator=(Mesh input);		//= operator
 		void __declspec(dllexport) clone_NMA(Mesh input);		//clone with the same memory allocation (no new memory is allocated)
-
-		//NT = awesomeness
-		vector m_Translation;
 	};
 	//end of mesh class
 	//end of mesh libs
