@@ -40,7 +40,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	vector HorsePos;
 
 	//Don't forget to initialize any of these if you don't use them
-	HorsePos.build(0.0f, 100.0f, -5.0f);
+	HorsePos.build(17.0f, 0.0f, 0.0f);
 	Engine.meshes[0].move(HorsePos);
 	Engine.meshes[0].scale_model(100.0f, 100.0f, 100.0f);
 	vector axis;
@@ -198,8 +198,11 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			long double dt = (current_time - last_time) / 1000.0f;
 			if (Get_Mouse_Stat(Mouse_Left_Stat))
-				World.Update(dt);
+			{
 
+				World.Update(dt); 
+				World.UpdateCollision();
+			}
 			Engine.test_render(); //render scene
 
 
