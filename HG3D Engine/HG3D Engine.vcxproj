@@ -146,7 +146,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="FS00.txt" />
+    <Text Include="FS01.txt" />
     <Text Include="VS00.txt" />
+    <Text Include="VS01.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\File_HG_FS\File_HG_FS.vcxproj">

@@ -1,0 +1,15 @@
+#version 150
+in vec3 Actual_Pos;
+
+out vec4 Output1;
+
+uniform float radius;
+
+void main()
+{
+	if (Actual_Pos.z>0)
+		discard;
+	gl_FragDepth=length(Actual_Pos)/min(radius,10000);
+	if (gl_FragDepth>1)
+		discard;
+}

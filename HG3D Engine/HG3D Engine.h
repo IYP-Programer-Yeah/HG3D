@@ -20,6 +20,13 @@
 #define vertex_size        36                                //vertex size
 #define face_size          12								 //face size
 
+#define MaxLightNums	   32
+#define MaxShadowmapsNums  8
+
+#define Shadowmap_Res	   4096
+
+#define lights_UBO_binding_point 1							 //the binding point of the lights
+
 namespace HG3D_Engine
 {
 	//math libs
@@ -89,7 +96,7 @@ namespace HG3D_Engine
 
 	_4x4matrix Projection(float left, float right, float buttom, float top, float nearz, float farz);//projection matrix
 
-	_4x4matrix __declspec(dllexport) __fastcall InverseTranspose(_4x4matrix input);//invers mat
+	_4x4matrix __declspec(dllexport) __fastcall Inverse(_4x4matrix input);//invers mat
 
 	_4x4matrix __declspec(dllexport) __fastcall Transpose(_4x4matrix input);//invers mat
 	//end of math libs
@@ -249,17 +256,26 @@ namespace HG3D_Engine
 	{
 	public:
 		float light_position[3];//light pos
-		float light_color[3];//light color
-		float Attenuation[3];//attenuation values
-		float direction[3];//the direction of light
 
 		float max_radius;//the maximum radius of light contribution
+
+		float light_color[3];//light color
+
 		float cut_off_cos;//cosine of the the the cut of angle 
 
+		float Attenuation[3];//attenuation values
+
+		float nonesense2;
+
+		float direction[3];//the direction of light
+
 		bool light_enabled;//is the light enabled
-		bool shadow_map;//does it use shadow maps?
 		bool update_shadow_maps;//does the shadow map need update
+		bool nonesense1;
+		bool shadow_map;//does it use shadow maps?
+
 		
+
 		void __declspec(dllexport) build();//just initializes the data
 		void __declspec(dllexport) calculate_max_radius();//calculate the max radius of contribution
 		void __declspec(dllexport) operator=(light input);//copy the data to and other light
@@ -278,7 +294,7 @@ namespace HG3D_Engine
 
 		texture *textures;						//stack of textures and 
 
-		light lights[100];						//no more than 12 ligts at a scene will be rendered
+		light lights[100];						//no more than 32 ligts at a scene will be rendered and 8 will be shadow mapped
 
 		unsigned long int current_camera_nums;	//number of current used camera
 		unsigned long int cameras_nums;			//number of cameras
@@ -292,11 +308,31 @@ namespace HG3D_Engine
 		unsigned long int *mesh_draw_order;		//the order in which meshs are drawn
 		unsigned long int *current_cameras;		//current used cameras
 
-		GLuint Shaders[100];					//max 100 shaders 20 is rendered in the scene
+		bool light_data_changed;				//lights need to be updated
+
 		GLuint light_data_UBO_ID;				//the id of light data 
 		GLuint mat_data_UBO_ID;					//the id of material data
 		GLuint Gbuffer_textIDS;                 //id of Gbuffer textures
 		GLuint Gbuffer_FBO_ID;					//id of the Gbuffer textures
+		GLuint Shadowmap_FBO_ID;				//id of shadowmap fbo
+		GLuint Shadowmap_RBO_ID;				//id of shadowmap rbo
+
+
+		GLuint Shaders[50];						//max 100 shaders 20 is rendered in the scene
+		GLuint Light_Block_Index[50];			//the index of light block in shader
+		GLuint Model_Matrix_Location[50];		//the loaction of model matrix in shader
+		GLuint Normal_Matrix_Location[50];		//the loaction of normal matrix in shader
+		GLuint Projection_Matrix_Location[50];	//the loaction of projection matrix in shader
+		GLuint View_Matrix_Location[50];		//the loaction of view matrix in shader
+		GLuint Lights_Nums_Location[50];		//the loaction of Lights Nums in shader
+		GLuint Lights_View_Matrix_Location[50];	//the loaction of Lights view matrix in shader
+		GLuint Shadowmap_Sampler_Location[50];	//the loaction of Lights view matrix in shader
+		GLuint Lightradius_Location[50];		//the loaction of Lights radius in shader
+
+
+		GLuint Shadow_Maps_Tex_ID[MaxShadowmapsNums];			//the shadow map textures
+
+
 
 		void __declspec(dllexport) add_current_camera(unsigned long int camera_ID);	//add a current camera
 		void __declspec(dllexport) delete_current_camera(unsigned long int camera_ID);	//delete a current camera

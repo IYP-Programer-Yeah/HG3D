@@ -107,6 +107,15 @@ namespace HG3D_Engine
 		subdata_changed = 0;//the whole data gonna get updated no need for this
 		indices = (unsigned long int*)faces;//get the pointer it'll be used to draw elements
 
+		have_diff_text = 0;              //have diffuse texture? 
+		have_spec_text = 0;              //have specular texture? 
+		have_NM_text = 0;                //have normals map texture? 
+		have_HM_text = 0;                //have height map texture? 
+		have_mask_text = 0;              //have mask texture? 
+		have_alphamap_text = 0;			 //have alpha map texture?
+		have_dispmap_text = 0;			 //have displacement map texture?
+		have_TFmap_text = 0;			 //have transmision filter map texture?
+
 	}
 	void Mesh::load_optimized(char *path)//load the .obj optimize for memory
 	{

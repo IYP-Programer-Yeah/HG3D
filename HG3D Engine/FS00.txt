@@ -1,31 +1,113 @@
 #version 150
-in vec4 normal;
-in vec4 position;
-in vec4 ligt_position[3];
+in vec3 normal;
+in vec3 position;
 in vec2 coord;
+in vec3 Actual_Pos[8];
 
 out vec4 Output1;
 
-uniform sampler2D Tex_Sampler;
+//layout(early_fragment_tests) in;
+
+uniform int Lights_Nums;
+uniform sampler2D SMTex_Sampler[8];
+
+struct light
+{
+	vec3 light_position;//light pos
+
+	float max_radius;//the maximum radius of light contribution
+
+	vec3 light_color;//light color
+
+	float cut_off_cos;//cosine of the the the cut of angle 
+
+	vec3 Attenuation;//attenuation values
+
+	float nonesense2;
+
+	vec3 direction;//the direction of light
+
+	int nonesense1;
+		
+};
+
+layout (std140) uniform lights
+{
+		light Light[32];
+};
 
 void main() 
 {
-	Output1=vec4(0,0,0,0);
-	vec4 LTP=position-ligt_position[0];
-	float dist=length(LTP);
-	float dotv=dot(LTP,normalize(normal))*-1.0/dist/dist*10;
-	if (dotv>0)
-		Output1=vec4(1.0,1.0,1.0,1.0)*dotv;
-	LTP=position-ligt_position[1];
-	dist=length(LTP);
-	dotv=dot(LTP,normalize(normal))*-1.0/dist/dist*10;
-	if (dotv>0)
-		Output1+=vec4(0.0,1.0,1.0,1.0)*dotv;
-
-	LTP=position-ligt_position[2];
-	dist=length(LTP);
-	dotv=dot(LTP,normalize(normal))*-1.0/dist;
-	if (dotv>0)
-		Output1+=vec4(1.0,1.0,0.8,1.0)*dotv/2;
-	Output1=Output1*texture(Tex_Sampler,coord);
+	vec3 final_color;
+	final_color=vec3(0,0,0);
+	vec3 Normal=normalize(normal);
+	light currentlightl;
+	for (int i=0;i<Lights_Nums;i++)
+	{
+		currentlightl=Light[i];
+		vec3 Light_To_Point=position-currentlightl.light_position;
+		float LTP_Length=length(Light_To_Point);
+		Light_To_Point=Light_To_Point/LTP_Length;
+		if (LTP_Length<currentlightl.max_radius)
+		{	
+			float LTP_N_Dot=dot(Light_To_Point,Normal);
+			if (LTP_N_Dot<=0.0)
+			{
+				float Cut_Off_Dot;
+				if (currentlightl.cut_off_cos==-1.0)
+					Cut_Off_Dot=-1;
+				else
+					Cut_Off_Dot=currentlightl.cut_off_cos-dot(Light_To_Point,currentlightl.direction);
+				if (Cut_Off_Dot<0.01)
+				{
+					float Cut_Off_Effect=min(1.0,(0.01-Cut_Off_Dot)*100.0);
+					if (i>7)
+					{
+						float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
+						final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation);
+					}
+					else if (currentlightl.nonesense1>16777215||currentlightl.nonesense1<0)
+					{
+						vec4 light_view_pos=vec4(Actual_Pos[i],1);
+						if (light_view_pos.z>0.0)
+						{
+							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
+							final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation);
+						}
+						else 
+						{
+							float depth=(LTP_Length-0.01)/min(currentlightl.max_radius,10000);
+							vec2 SMcoords=(light_view_pos.xy/(light_view_pos.z-LTP_Length)+1.0)/2;
+							if (depth<=texture(SMTex_Sampler[i],SMcoords).x)
+							{
+								float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
+								final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation);
+							}
+							else
+							{
+								float white_texels=0.0;
+								for (float l=0.001;l<0.0025;l+=0.001)
+									for (float j=0.001;j<0.0025;j+=0.001)
+										for (float k=0.001;k<0.0025;k+=0.001)
+											if (depth<texture(SMTex_Sampler[i],SMcoords+vec2(l-k,j-k)/3).x)
+												white_texels+=1.0;
+								if (white_texels>0.5)
+								{
+									float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
+									final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation)*min(white_texels,5.0)/5.0;
+								}
+							}
+						}
+					}
+					else
+					{
+						float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
+						final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation);
+					}
+					final_color*=Cut_Off_Effect;
+				}
+			}
+		}
+	}
+	Output1=vec4(final_color,1);
 } 

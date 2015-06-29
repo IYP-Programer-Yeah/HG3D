@@ -3,6 +3,7 @@
 #include "..\Shared Headers\hstring.h"
 #include "GLew.h"
 static unsigned long int renderer_class_nums = 0;
+static unsigned long int shader_nums = 0;
 /******************************************************************/
 /**************************test console****************************/
 /******************************************************************/
@@ -18,7 +19,9 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 	GLuint ProgramID = glCreateProgram();//creat program
 	File_HG_FS::File V_Shader, F_Shader;//shader's file
 	GLuint VertexShaderID = 0, FragmentShaderID = 0;
-	Final_str[0] = "vertex shader log: \n";
+	Final_str[0] = "vertex shader #";
+	Final_str[0] = Final_str[0] + inttostring(shader_nums);
+	Final_str[0] = Final_str[0] + " log: \n";
 	if (V_Shader_Path != NULL) //check if the path exists
 	{
 		V_Shader.open(V_Shader_Path);
@@ -31,7 +34,7 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 			GLint maxLength = 0;
 			string Log;
 			Log = "";
-			glGetShaderInfoLog(VertexShaderID, sizeof(Log.string1), &maxLength, Log.string1); //get the log
+			glGetShaderInfoLog(VertexShaderID, 1000, &maxLength, Log.string1); //get the log
 			Final_str[0] = Final_str[0] + Log; //add the log to the string
 			Final_str[0] = Final_str[0] + "\n\n\n"; //add triple new lines
 		}
@@ -41,7 +44,9 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 	}
 	else
 		Final_str[0] = Final_str[0] + "not found. \n"; //no such path idiot
-	Final_str[1] = "fragment shader log: \n";
+	Final_str[1] = "fragment shader #"; 
+	Final_str[1] = Final_str[1] + inttostring(shader_nums);
+	Final_str[1] = Final_str[1] + " log: \n";
 	if (F_Shader_Path != NULL)
 	{
 		F_Shader.open(F_Shader_Path); //check if the path exists
@@ -54,7 +59,7 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 			GLsizei maxLength = 0;
 			string Log;
 			Log = "";
-			glGetShaderInfoLog(FragmentShaderID, sizeof(Log.string1)/2, &maxLength, Log.string1); //get the log
+			glGetShaderInfoLog(FragmentShaderID, 1000, &maxLength, Log.string1); //get the log
 			Final_str[1] = Final_str[1] + Log; //add the log to the string
 			Final_str[1] = Final_str[1] + "\n\n\n"; //add triple new lines
 		}
@@ -75,6 +80,7 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 		glDeleteShader(VertexShaderID);//delete if only one was created
 	if (F_Shader_Path != NULL)
 		glDeleteShader(FragmentShaderID);//delete if only one was created
+	shader_nums++;
 	return ProgramID;
 }
 //end of shader loader
@@ -94,7 +100,7 @@ void SetupPixelFormat_WND_DC(HDC hDC) //setup pixel format
 		1,                                      //ignore shift bit
 		0,                                      //no accumulation buffer
 		0, 0, 0, 0,                             //ignore accumulation bits
-		24,                                     //16 bit z-buffer size
+		32,                                     //32 bit z-buffer size
 		0,                                      //no stencil buffer
 		0,                                      //no aux buffer
 		PFD_MAIN_PLANE,                         //main drawing plane
@@ -179,7 +185,7 @@ namespace HG3D_Engine
 			glCompressedTexImage2D(GL_TEXTURE_2D, 0, compression_method, width, height, 0, total_size, rgba);
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);//unbind the texture 
-		needs_update = false;//just updated no need to redo it
+		needs_update = 0;//just updated no need to redo it
 	}
 	void texture::clone_NMA(texture input)
 	{
@@ -198,34 +204,39 @@ namespace HG3D_Engine
 	{
 		for (register int i = 0; i < 3; i++)
 		{
-			light_position[i] = 0;
-			light_color[i] = 1;
-			Attenuation[i] = 0;
-			direction[i] = 0;
+			light_position[i] = 0.0f;
+			light_color[i] = 1.0f;
+			Attenuation[i] = 0.0f;
+			direction[i] = 0.0f;
 		}
-		Attenuation[0] = 1;
-		max_radius = 10000;
-		cut_off_cos = -1;
-		light_enabled = 1;
+		Attenuation[0] = 1.0f;
+		max_radius = 10000.0f;
+		cut_off_cos = -1.0f;
+		light_enabled = 0;
 		update_shadow_maps = 1;
 		shadow_map = 1;
 	}
 	void light::calculate_max_radius()
 	{
-		if (Attenuation[2] == 0 && Attenuation[1] == 0)
-			max_radius = 10000;//it will never not be contirbuting
+		if (Attenuation[2] == 0.0f && Attenuation[1] == 0.0f)
+			max_radius = 10000.0f;//it will never not be contirbuting
 		else
 		{
-			float min_value_rad = -1 * Attenuation[1] / Attenuation[2] / 2;//the minimum value's occurrence radius 
-			if (min_value_rad*(min_value_rad * Attenuation[2] + Attenuation[1]) +Attenuation[0] > 256)
-				max_radius = 0;//it will always be more that 256
+			if (Attenuation[2] == 0.0f)
+			{
+				max_radius = (256.0f - Attenuation[0]) / Attenuation[1];
+				return;
+			}
+			float min_value_rad = -1.0f * Attenuation[1] / Attenuation[2] / 2.0f;//the minimum value's occurrence radius 
+			if (min_value_rad*(min_value_rad * Attenuation[2] + Attenuation[1]) +Attenuation[0] > 256.0f)
+				max_radius = 0.0f;//it will always be more that 256
 			else
 			{
-				float delta = Attenuation[1] * Attenuation[1] + 4 * (256.0f - Attenuation[0])*Attenuation[2];
-				if (delta < 0)
-					max_radius = max_radius = 10000;//it will never not be contirbuting;
+				float delta = Attenuation[1] * Attenuation[1] + 4.0f * (256.0f - Attenuation[0])*Attenuation[2];
+				if (delta < 0.0f)
+					max_radius = max_radius = 10000.0f;//it will never not be contirbuting;
 				else
-					max_radius = min_value_rad - sqrt(delta) / (2 * Attenuation[2]);//what ever the color after this atinoution the light contribution is 0
+					max_radius = min_value_rad + sqrt(delta) / (2.0f * Attenuation[2]);//what ever the color after this atinoution the light contribution is 0
 			}
 		}
 	}
@@ -241,6 +252,8 @@ namespace HG3D_Engine
 		max_radius = input.max_radius;
 		cut_off_cos = input.cut_off_cos;
 		light_enabled = input.light_enabled;
+		shadow_map = input.shadow_map;
+		update_shadow_maps = input.update_shadow_maps;
 	}
 
 	void Renderer::init()
@@ -252,11 +265,14 @@ namespace HG3D_Engine
 		current_camera_nums = 0;
 		last_light_ID = 0;
 		texture_nums = 0;
+		light_data_changed = 0;
 		meshes =(Mesh*) malloc(0);
 		cameras = (camera*)malloc(0);//so they can be freed
 		textures = (texture*)malloc(0);
 		mesh_draw_order = (unsigned long int*)malloc(0);
 		current_cameras = (unsigned long int*)malloc(0);
+		for (register int i = 0; i < 100; i++)
+			lights[i].build();
 		rendere_ID = renderer_class_nums;//give it an ID
 		renderer_class_nums++;//a renderer added
 		SetupPixelFormat_WND_DC(hdc);//setup the pixel format
@@ -267,9 +283,23 @@ namespace HG3D_Engine
 		glDepthFunc(GL_LEQUAL); //less or equal(closer) z are writen
 		glEnable(GL_CULL_FACE); //cull the back face 
 		glCullFace(GL_BACK);//cull the back face
-		glClearDepth(1);//clear the depth with 1
+		glClearDepth(1.0f);//clear the depth with 1
+		
+		glGenBuffers(1, &light_data_UBO_ID);//generate the UBP
+		glBindBufferBase(GL_UNIFORM_BUFFER, lights_UBO_binding_point, light_data_UBO_ID);
+
 		Shaders[0] = LoadShaders("..\\HG3D Engine\\VS00.txt", "..\\HG3D Engine\\FS00.txt");//load shaders
-		wglMakeCurrent(hdc, 0);//make the rc current
+		Light_Block_Index[0] = glGetUniformBlockIndex(Shaders[0], "lights");//get lights index
+		glUniformBlockBinding(Shaders[0], Light_Block_Index[0], lights_UBO_binding_point);
+		//get uniforms loactions
+		Model_Matrix_Location[0] = glGetUniformLocation(Shaders[0], "ModelMatrix");
+		Normal_Matrix_Location[0] = glGetUniformLocation(Shaders[0], "NormalMatrix");
+		Projection_Matrix_Location[0] = glGetUniformLocation(Shaders[0], "ProjectionMatrix");
+		View_Matrix_Location[0] = glGetUniformLocation(Shaders[0], "ViewMatrix");
+		Lights_Nums_Location[0] = glGetUniformLocation(Shaders[0], "Lights_Nums");
+		Lights_View_Matrix_Location[0] = glGetUniformLocation(Shaders[0], "light_view_matrix");
+		Shadowmap_Sampler_Location[0] = glGetUniformLocation(Shaders[0], "SMTex_Sampler");
+
 		/******************************************************************/
 		/**************************test console****************************/
 		/******************************************************************/
@@ -287,6 +317,55 @@ namespace HG3D_Engine
 		/******************************************************************/
 		/**************************test console****************************/
 		/******************************************************************/
+		//load the shadow mapping shader
+		Shaders[1] = LoadShaders("..\\HG3D Engine\\VS01.txt", "..\\HG3D Engine\\FS01.txt");//load shaders
+		Model_Matrix_Location[1] = glGetUniformLocation(Shaders[1], "ModelMatrix");
+		View_Matrix_Location[1] = glGetUniformLocation(Shaders[1], "ViewMatrix");
+		Lightradius_Location[1] = glGetUniformLocation(Shaders[1], "radius");
+		/******************************************************************/
+		/**************************test console****************************/
+		/******************************************************************/
+		/******************************************************************/
+		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		/******************************************************************/
+		/******************************************************************/
+		/**************************test console****************************/
+		/******************************************************************/
+
+		/********************************************************************/
+		/*					setting up shadow map textures					*/
+		/********************************************************************/
+		for (register int i = 0; i < MaxShadowmapsNums; i++)
+		{
+			glGenTextures(1, &Shadow_Maps_Tex_ID[i]);//generate the texture so you can free it
+			glBindTexture(GL_TEXTURE_2D, Shadow_Maps_Tex_ID[i]);//bind the texture
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, Shadowmap_Res, Shadowmap_Res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//linear filter (we'll use it)
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP); //clamping dosnt really matter since we wont read out of the range
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		}
+		glBindTexture(GL_TEXTURE_2D, 0);//unbind the texture
+		/********************************************************************/
+		/*					setting up shadow map textures					*/
+		/********************************************************************/
+		/********************************************************************/
+		/*						setting up shadow map fbo					*/
+		/********************************************************************/
+		glGenRenderbuffers(1, &Shadowmap_RBO_ID);
+		glBindRenderbuffer(GL_RENDERBUFFER, Shadowmap_RBO_ID);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Shadowmap_Res, Shadowmap_Res);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		glGenFramebuffers(1, &Shadowmap_FBO_ID);//set the fbo
+		glBindFramebuffer(GL_FRAMEBUFFER, Shadowmap_FBO_ID);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, Shadowmap_RBO_ID);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		/********************************************************************/
+		/*						setting up shadow map fbo					*/
+		/********************************************************************/
+		wglMakeCurrent(hdc, 0);//make the rc current
+
 	}
 	unsigned long int Renderer::add_mesh(char* path)	//add a mesh 
 	{
@@ -411,41 +490,168 @@ namespace HG3D_Engine
 	void Renderer::test_render()
 	{
 		wglMakeCurrent(hdc, hrc);//make the rc current
+		int number_of_lights = 0;
+		int shadowmapped_lights_num = 0;
+		light lights_in_the_scene[MaxLightNums];
+		for (register unsigned long int i = 0; i < last_light_ID; i++)//sort light by enablity 
+			if (lights[i].light_enabled)
+			{
+				lights_in_the_scene[number_of_lights] = lights[i];
+				number_of_lights++;
+				if (number_of_lights == MaxLightNums)//reached the limit?
+					break;
+			}
+		light temp_light;
+		for (register int i = 0; i < number_of_lights; i++)//sort light by shadow maping
+			if (lights_in_the_scene[i].shadow_map)
+			{
+				if (i != shadowmapped_lights_num)//no need to sort the lightis in place
+				{
+					temp_light = lights_in_the_scene[shadowmapped_lights_num];
+					lights_in_the_scene[shadowmapped_lights_num] = lights_in_the_scene[i];
+					lights_in_the_scene[i] = temp_light;
+				}
+				shadowmapped_lights_num++;//a light needs shadow map
+				if (shadowmapped_lights_num == MaxShadowmapsNums)
+					break;
+			}
+		_4x4matrix light_view[8];
+		glUseProgram(Shaders[1]);
+		glBindFramebuffer(GL_FRAMEBUFFER, Shadowmap_FBO_ID);//bind the frame buffer
+		glViewport(0, 0, Shadowmap_Res, Shadowmap_Res);//draw on the whole texture
+		//declare temp variables
+		point light_temp_pos;
+		vector arbitrary_vecs[2],forward;
+		arbitrary_vecs[0].build(1.0f, 0.0f, 0.0f);
+		arbitrary_vecs[1].build(0.0f, 1.0f, 0.0f);
+		glCullFace(GL_FRONT);//cull the front face
+		for (register int i = 0; i < shadowmapped_lights_num; i++)
+		{
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Shadow_Maps_Tex_ID[i], 0);//set the texture as depth buffer and start drawing
+			glClear(GL_DEPTH_BUFFER_BIT);//clear the depth
+
+			light_temp_pos.build(lights_in_the_scene[i].light_position[0], lights_in_the_scene[i].light_position[1], lights_in_the_scene[i].light_position[2]);//build the light pos point
+			forward.build(lights_in_the_scene[i].direction[0], lights_in_the_scene[i].direction[1], lights_in_the_scene[i].direction[2]);//build the light direction vector
+
+			if (abs(lights_in_the_scene[i].light_position[1]) < 0.01f&&abs(lights_in_the_scene[i].light_position[2]) < 0.01f)//check not to let later errors and then calculate the view matrix
+				light_view[i] = LookAt(light_temp_pos, forward, cross(forward, arbitrary_vecs[1]));
+			else
+				light_view[i] = LookAt(light_temp_pos, forward, cross(forward, arbitrary_vecs[0]));
+
+			glUniformMatrix4fv(View_Matrix_Location[1], 1, 1, light_view[i].x);//send the viewmatrix to shader
+			glUniform1f(Lightradius_Location[1], lights_in_the_scene[i].max_radius);//send the max radius to the shader 
+
+			for (register unsigned long int j = 0; j < mesh_nums; j++)
+			{
+				if (meshes[j].needs_update)//update data if needed
+					meshes[j].update_vbo();
+				if (meshes[j].subdata_changed)//update data if needed
+					meshes[j].remap_vbo();
+				glUniformMatrix4fv(Model_Matrix_Location[1], 1, 1, meshes[j].model_matrix.x);//set model matrix
+				glBindVertexArray(meshes[j].VAO_ID);//bind vao to draw
+				glDrawElements(GL_TRIANGLES, meshes[j].vert_nums, GL_UNSIGNED_INT, meshes[j].indices);
+				glBindVertexArray(0);
+			}
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glCullFace(GL_BACK);//cull the back face
+		//final image
+		glUseProgram(Shaders[0]);
+		if (textures[0].needs_update)
+			textures[0].update();
+		if (light_data_changed)//light data needs to be updated
+		{
+			glUniform1i(Lights_Nums_Location[0], number_of_lights);//send light data to UBO
+			glBindBuffer(GL_UNIFORM_BUFFER, light_data_UBO_ID);
+			glBufferData(GL_UNIFORM_BUFFER, sizeof(light) * MaxLightNums, (void*)lights_in_the_scene, GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+			for (int register i = 0; i < MaxShadowmapsNums; i++)
+			{
+				glUniform1i(Shadowmap_Sampler_Location[0] + i, i);//send light data to UBO
+				glActiveTexture(GL_TEXTURE0 + i);
+				glBindTexture(GL_TEXTURE_2D, Shadow_Maps_Tex_ID[i]);
+			}
+			glUniformMatrix4fv(Lights_View_Matrix_Location[0], 8, 1, (float*)light_view);//set view and projection matrices
+		}
 		glClear(GL_COLOR_BUFFER_BIT);
 		for (register unsigned long int j = 0; j < current_camera_nums;j++)
 		{
-			if (texture_nums > 0)
-			{
-				if (textures[0].needs_update)
-					textures[0].update();
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, textures[0].texture_name);
-				glUniform1i(glGetUniformLocation(Shaders[0], "Tex_Sampler"), 0);
-			}
-
 			glClear(GL_DEPTH_BUFFER_BIT);
 			if (cameras[current_cameras[j]].needs_update)
 				cameras[current_cameras[j]].update_camera();
-			glViewport(cameras[current_cameras[j]].camera_viewport[0],
+
+			glViewport(cameras[current_cameras[j]].camera_viewport[0],//set the view port
 				cameras[current_cameras[j]].camera_viewport[1],
 				cameras[current_cameras[j]].camera_viewport[2],
 				cameras[current_cameras[j]].camera_viewport[3]);
-			glUseProgram(Shaders[0]);
-			glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ProjectionMatrix"), 1, 1, cameras[current_cameras[j]].ProjectionMatrix.x);
-			glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ViewMatrix"), 1, 1, cameras[current_cameras[j]].ViewMatrix.x);
+
+			glUniformMatrix4fv(Projection_Matrix_Location[0], 1, 1, cameras[current_cameras[j]].ProjectionMatrix.x);//set view and projection matrices
+			glUniformMatrix4fv(View_Matrix_Location[0], 1, 1, cameras[current_cameras[j]].ViewMatrix.x);
 			for (register unsigned long int i = 0; i < mesh_nums; i++)
 			{
-				if (meshes[i].needs_update)
+				if (meshes[i].needs_update)//update data if needed
 					meshes[i].update_vbo();
-				if (meshes[i].subdata_changed)
+				if (meshes[i].subdata_changed)//update data if needed
 					meshes[i].remap_vbo();
-				glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "ModelMatrix"), 1, 1, meshes[i].model_matrix.x);
-				glUniformMatrix4fv(glGetUniformLocation(Shaders[0], "NormalMatrix"), 1, 1, InverseTranspose(meshes[i].model_matrix).x);
-				glBindVertexArray(meshes[i].VAO_ID);
+				glUniformMatrix4fv(Model_Matrix_Location[0], 1, 1, meshes[i].model_matrix.x);//set model and normal matrices
+				glUniformMatrix4fv(Normal_Matrix_Location[0], 1, 0, Inverse(meshes[i].model_matrix).x);
+				glBindVertexArray(meshes[i].VAO_ID);//bind vao to draw
 				glDrawElements(GL_TRIANGLES, meshes[i].vert_nums, GL_UNSIGNED_INT, meshes[i].indices);
 				glBindVertexArray(0);
 			}
 		}
+
+
+
+		glUseProgram(0);
+		glDisable(GL_CULL_FACE);
+		glEnable(GL_TEXTURE_2D);
+		glViewport(0, 0, 1366, 768);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(-1.0, 1.0, -1.0, 1.0, 1.0f, 100000.0f);
+		glMatrixMode(GL_MODELVIEW);
+		glShadeModel(GL_SMOOTH);
+		glLoadIdentity();
+		gluLookAt(0, 0, -3, 0, 0, 1, 0, 1, 0);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		GLfloat color[4];
+		color[0] = 1;
+		color[1] = 1;
+		color[2] = 1;
+		color[3] = 1;
+		glColor4fv(color);
+		glBegin(GL_TRIANGLES);
+		float hwratio = 1.0;
+		glTexCoord2f(0, 0);  glVertex2f(0, 0);
+		glTexCoord2f(1, 0);  glVertex2f(1, 0);
+		glTexCoord2f(1, 1);  glVertex2f(1, 1);
+		glTexCoord2f(1, 1);  glVertex2f(1, 1);
+		glTexCoord2f(0, 1);  glVertex2f(0, 1);
+		glTexCoord2f(0, 0);  glVertex2f(0, 0);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_CULL_FACE);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		glFlush();
 		SwapBuffers(hdc);
