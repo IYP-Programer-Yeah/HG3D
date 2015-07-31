@@ -297,15 +297,15 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			current_time = clock();
 
 			long double dt = (current_time - last_time) / 1000.0f;
+
 			if (Get_Mouse_Stat(Mouse_Left_Stat))
 			{
 			    World.UpdateCollision();
 				World.Update(dt); 
 
 			}
+
 			Engine.test_render(); //render scene
-
-
 		}
 
 	}
