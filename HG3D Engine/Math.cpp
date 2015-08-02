@@ -158,7 +158,7 @@ namespace HG3D_Engine
 		ret.y = x[4] * input.x + x[5] * input.y + x[6] * input.z;//do the multiplication there is no w its vector
 		ret.z = x[8] * input.x + x[9] * input.y + x[10] * input.z;
 		return ret;
-	}	
+	}
 	point __fastcall _4x4matrix::operator * (point input)//mat4 multiply
 	{
 		point ret;
@@ -390,5 +390,132 @@ namespace HG3D_Engine
 			return_mat.data_row[3]);
 #endif
 		return return_mat;
+	}
+
+	factorial::factorial()
+	{
+		Last_Fact = 0;
+		data = (float*)malloc((Max_Facts + 1)*sizeof(float));
+		data[0] = 1;//0! = 1
+	}
+	factorial::~factorial()
+	{
+		free(data);
+	}
+	float factorial::get(unsigned int N)//calculate facts
+	{
+		if (N > Max_Facts)//invalid value
+			return 0;
+		if (N > Last_Fact)//hasnt yet been calculated
+			for (register unsigned int i = Last_Fact + 1; i <= N; i++)//calculate from Last_Fact+ to N
+				data[i] = data[i - 1] * i;
+		Last_Fact = N;//just got calculated
+		return data[N];
+	}
+
+	float fact(unsigned int N)//calculate fact
+	{
+		static factorial facts;//will contain the LUT
+		return facts.get(N);
+	}
+
+	ALP::ALP()
+	{
+		Functions = (float*)malloc(sizeof(float)*Max_Band*(Max_Band + 1) / 2 * Max_Calculated_Vlaues);//allocate enough memory
+		XVlues = (float*)malloc(sizeof(float) * Max_Calculated_Vlaues);//allocate enough memory
+		last_L = 0;//fisrt band is set
+		for (register unsigned long int k = 0; k < Max_Calculated_Vlaues; k++)
+			Functions[k] = 1;//set the first band
+	}
+	ALP::~ALP()
+	{
+		free(Functions);
+	}
+	void ALP::Calculate_Function(unsigned long int L, unsigned long int M, unsigned long int X)//calculate the function to the point givven
+	{
+		unsigned long int current_index = Calculate_Coords(last_L + 1, 0, 0);//the starting index
+		unsigned long int temp_offset[2], temp_coeeffs[3];
+		for (register unsigned long int i = last_L + 1; i <= L; i++)//go through the bands
+		{
+			temp_offset[0] = i * Max_Calculated_Vlaues;
+			temp_offset[1] = temp_offset[0] + temp_offset[0] - Max_Calculated_Vlaues;
+			temp_coeeffs[0] = 2 * i - 1;
+			for (register unsigned long int j = 0; j < i - 1; j++)//go though functions in bands
+			{
+				temp_coeeffs[1] = i + j - 1;
+				temp_coeeffs[2] = i - j;
+				for (register unsigned long int k = 0; k < Max_Calculated_Vlaues; k++)//calculate the values for the function
+				{
+					Functions[current_index] = (XVlues[k] * float(temp_coeeffs[0]) * float(Functions[current_index - temp_offset[0]]) - float(temp_coeeffs[1])*float(Functions[current_index - temp_offset[1]])) / float(temp_coeeffs[2]);
+					current_index++;
+				}
+			}
+			temp_coeeffs[0] = 2 * i - 1;
+			for (register unsigned long int k = 0; k < Max_Calculated_Vlaues; k++)//calculate the values for the function
+			{
+				Functions[current_index] = XVlues[k] * float(temp_coeeffs[0]) * float(Functions[current_index - temp_offset[0]]);
+				current_index++;
+			}
+			temp_offset[0] += Max_Calculated_Vlaues;
+			for (register unsigned long int k = 0; k < Max_Calculated_Vlaues; k++)//calculate the values for the function
+			{
+				Functions[current_index] = -sqrt(1.0f - XVlues[k] * XVlues[k]) * float(temp_coeeffs[0]) * float(Functions[current_index - temp_offset[0]]);
+				current_index++;
+			}
+		}
+		last_L = L;
+	}
+	unsigned long int ALP::Calculate_Coords(unsigned long int L, unsigned long int M, unsigned long int X)
+	{
+		unsigned long int result = (L*(L + 1) / 2 + M)*Max_Calculated_Vlaues + X;//get the index
+		return result;
+	}
+	float ALP::Get_Function(unsigned long int L, unsigned long int M, unsigned long int X)//get the function value
+	{
+		if (L >= Max_Band || M > L || X >= Max_Calculated_Vlaues)//invalid input
+			return 0.0f;
+		if (L > last_L)//the value is not calculated yet
+			Calculate_Function(L, M, X);
+		return Functions[Calculate_Coords(L, M, X)];
+
+	}
+
+	double calcALP(int l, int m, double x)
+	{
+		// evaluate an Associated Legendre Polynomial P(l,m,x) at x 
+		double pmm = 1.0;
+		if (m>0) {
+			double somx2 = sqrt((1.0 - x)*(1.0 + x));
+			double fact = 1.0;
+			for (int i = 1; i <= m; i++) {
+				pmm *= (-fact) * somx2;
+				fact += 2.0;
+			}
+		}
+		if (l == m) return pmm;
+		double pmmp1 = x * (2.0*m + 1.0) * pmm;
+		if (l == m + 1) return pmmp1;
+		double pll = 0.0;
+		for (int ll = m + 2; ll <= l; ++ll) {
+			pll = ((2.0*ll - 1.0)*x*pmmp1 - (ll + m - 1.0)*pmm) / (ll - m);
+			pmm = pmmp1;
+			pmmp1 = pll;
+		}
+		return pll;
+	}
+
+	double calcK(int l, int m)
+	{
+		// renormalisation constant for SH function 
+		double temp = ((2.0*l + 1.0)*fact(l - m)) / (4.0*PI*fact(l + m));
+		return sqrt(temp);
+	}
+
+	double calcSH(int l, int m, double theta, double phi)
+	{
+		const double sqrt2 = sqrt(2.0);
+		if (m == 0) return calcK(l, 0)*calcALP(l, m, cos(theta));
+		else if (m>0) return sqrt2*calcK(l, m)*cos(m*phi)*calcALP(l, m, cos(theta));
+		else return sqrt2*calcK(l, -m)*sin(-m*phi)*calcALP(l, -m, cos(theta));
 	}
 }

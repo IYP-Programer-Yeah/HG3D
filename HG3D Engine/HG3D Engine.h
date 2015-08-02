@@ -12,6 +12,14 @@
 #ifndef HG3D_ENG  //check if included before
 #define HG3D_ENG
 
+#define Max_Facts			  100							//max factorial input
+
+#define Max_Band			  10							//max ALP bands
+#define Max_Calculated_Vlaues 10000							//max number of calculated values of the function
+
+#ifndef PI
+#define PI                    3.1415926535897				//pi
+#endif
 
 #define Vert_Pos_Size      12                                //size of positions
 #define Vert_Normal_Size   12                                //size of normals
@@ -22,10 +30,14 @@
 
 #define MaxLightNums	   32
 #define MaxShadowmapsNums  8
+#define MaxCascadessNums   8
 
-#define Shadowmap_Res	   4096
+#define Shadowmap_Res			   2048						 //shadow map resolution 
 
 #define lights_UBO_binding_point 1							 //the binding point of the lights
+#define text_offsets_UBO_binding_point 2					 //the binding point of the texture sampling offset
+
+#define VSM													 //use PCF instead of VSMs
 
 namespace HG3D_Engine
 {
@@ -91,7 +103,7 @@ namespace HG3D_Engine
 		void __declspec(dllexport) __fastcall LoadTranslate(float sx, float sy, float sz);//load translate matrix
 		void __declspec(dllexport) __fastcall LoadRotation(vector axis, point origin, float theta);//load rotation matrix
 	};
-	//end of rotation class
+	//end of matrix class
 	_4x4matrix LookAt(point cam_pos,vector forward,vector up);//get view mat
 
 	_4x4matrix Projection(float left, float right, float buttom, float top, float nearz, float farz);//projection matrix
@@ -99,6 +111,56 @@ namespace HG3D_Engine
 	_4x4matrix __declspec(dllexport) __fastcall Inverse(_4x4matrix input);//invers mat
 
 	_4x4matrix __declspec(dllexport) __fastcall Transpose(_4x4matrix input);//invers mat
+	//factorial class
+	class factorial
+	{
+	public:
+		float *data;
+		unsigned int Last_Fact;
+
+		__declspec(dllexport) factorial();
+		__declspec(dllexport) ~factorial();
+		float __declspec(dllexport) get(unsigned int N);
+	};
+	//end of factorial class
+	float __declspec(dllexport) fact(unsigned int N);
+	//start of associated legendre polynomials class
+	class ALP
+	{
+	public:
+		unsigned long int last_L;//the last calculated function's band
+		float *Functions; //the values
+		float *XVlues;//the values for x
+
+		__declspec(dllexport) ALP();
+		__declspec(dllexport) ~ALP();
+
+		void _declspec(dllexport) Calculate_Function(unsigned long int L, unsigned long int M, unsigned long int X);//calculate the function to the point givven
+		unsigned long int _declspec(dllexport) Calculate_Coords(unsigned long int L, unsigned long int M, unsigned long int X);//calculate the exact point on the pointer
+		float _declspec(dllexport) Get_Function(unsigned long int L, unsigned long int M, unsigned long int X);//get the function value
+
+	};
+	//end of associated legendre polynomials class
+	double _declspec(dllexport) calcALP(int l, int m, double x);
+	//start of SH class
+	class SH
+	{
+	public:
+		unsigned long int last_L;//the last calculated function's band
+		float *Functions; //the values
+		float *thetaVlues;//the values for theta
+		float *philues;//the values for phi
+
+		__declspec(dllexport) SH();
+		__declspec(dllexport) ~SH();
+
+		void _declspec(dllexport) Calculate_Function(unsigned long int L, unsigned long int M, unsigned long int theta, unsigned long int phi);//calculate the function to the point givven
+		unsigned long int _declspec(dllexport) Calculate_Coords(unsigned long int L, unsigned long int M, unsigned long int theta, unsigned long int phi);//calculate the exact point on the pointer
+		float _declspec(dllexport) Get_Function(unsigned long int L, unsigned long int M, unsigned long int theta, unsigned long int phi);//get the function value
+	};
+
+	double _declspec(dllexport) calcSH(int l, int m, double theta, double phi);
+
 	//end of math libs
 
 	//mesh libs
@@ -128,7 +190,7 @@ namespace HG3D_Engine
 		float Specular[3];//specular color
 		float Diffuse[3];//diffuse color
 		float Emission[3];//Emission color
-		float TF[3];//transmision filter color
+		float TF[3];//transmission filter color
 		float dissolve;//transparancy 
 		float Spec_Exponent;//specular reflection exponent range 1 to 10000
 		float optical_density;//optical density (light bending throgh the mat) range 0.001 to 1
@@ -138,7 +200,7 @@ namespace HG3D_Engine
 		void __declspec(dllexport) operator=(Mat input);//= operator
 
 	};
-	//end of mat class
+	//end of mat class	
 	class Mesh//mesh class
 	{
 	public:
@@ -149,7 +211,7 @@ namespace HG3D_Engine
 		unsigned long int faces_nums;     //number of faces
 		unsigned long int total_size;     //total size of the verts data
 
-		unsigned long int *indices;      //vert indices
+		unsigned long int *indices;       //vert indices
 
 		unsigned long int text_ID_diff;               //diffuse texture ID
 		unsigned long int text_ID_spec;               //specular texture ID
@@ -160,7 +222,7 @@ namespace HG3D_Engine
 		unsigned long int text_ID_dispmap;			  //displacement map texture ID
 		unsigned long int text_ID_TFmap;			  //transmision filter map texture ID
 
-		unsigned char MeshID[4];             //mesh id for defered shading
+		unsigned char MeshID[4];          //mesh id for defered shading
 
 		bool have_diff_text;              //have diffuse texture? 
 		bool have_spec_text;              //have specular texture? 
@@ -310,6 +372,7 @@ namespace HG3D_Engine
 
 		bool light_data_changed;				//lights need to be updated
 
+		GLuint text_offset_UBO_ID;				//the id of texture sampling offset 
 		GLuint light_data_UBO_ID;				//the id of light data 
 		GLuint mat_data_UBO_ID;					//the id of material data
 		GLuint Gbuffer_textIDS;                 //id of Gbuffer textures
@@ -318,19 +381,20 @@ namespace HG3D_Engine
 		GLuint Shadowmap_RBO_ID;				//id of shadowmap rbo
 
 
-		GLuint Shaders[50];						//max 100 shaders 20 is rendered in the scene
-		GLuint Light_Block_Index[50];			//the index of light block in shader
-		GLuint Model_Matrix_Location[50];		//the loaction of model matrix in shader
-		GLuint Normal_Matrix_Location[50];		//the loaction of normal matrix in shader
-		GLuint Projection_Matrix_Location[50];	//the loaction of projection matrix in shader
-		GLuint View_Matrix_Location[50];		//the loaction of view matrix in shader
-		GLuint Lights_Nums_Location[50];		//the loaction of Lights Nums in shader
-		GLuint Lights_View_Matrix_Location[50];	//the loaction of Lights view matrix in shader
-		GLuint Shadowmap_Sampler_Location[50];	//the loaction of Lights view matrix in shader
-		GLuint Lightradius_Location[50];		//the loaction of Lights radius in shader
+		GLuint Shaders[50];							//max 100 shaders 20 is rendered in the scene
+		GLuint Text_Offset_Block_Index[50];				//the index of light block in shader
+		GLuint Light_Block_Index[50];				//the index of light block in shader
+		GLuint Model_Matrix_Location[50];			//the loaction of model matrix in shader
+		GLuint Normal_Matrix_Location[50];			//the loaction of normal matrix in shader
+		GLuint Projection_Matrix_Location[50];		//the loaction of projection matrix in shader
+		GLuint View_Matrix_Location[50];			//the loaction of view matrix in shader
+		GLuint Lights_Nums_Location[50];			//the loaction of Lights Nums in shader
+		GLuint Lights_Proj_View_Matrix_Location[50];//the loaction of Lights view matrix in shader
+		GLuint Shadowmap_Sampler_Location[50];		//the loaction of Lights view matrix in shader
+		GLuint CSM_Data_Location[50];				//the location of Ext's
 
 
-		GLuint Shadow_Maps_Tex_ID[MaxShadowmapsNums];			//the shadow map textures
+		GLuint Shadow_Maps_Tex_ID[MaxCascadessNums]; //the shadow map textures an array of cascades
 
 
 

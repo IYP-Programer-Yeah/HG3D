@@ -1,29 +1,16 @@
-#version 150
+#version 420
+
 in vec3 Vertex;
 in vec3 Normal;
 in vec2 Coord;
 in int bone_ID;
 
-out vec3 Actual_Pos;
-
-uniform mat4 ViewMatrix;
+uniform mat4 ProjViewMatrix;
 uniform mat4 ModelMatrix;
-
-uniform float radius;
-
-vec4 PProj (in vec4 pos,in float in_radius) 
-{
-	float length = length (pos.xyz);
-	vec4 dir = (pos / length);
-	float new_Z = (dir.z - 1.0);
-	return vec4 (dir.x / new_Z, dir.y / new_Z, length/in_radius, 1.0);
-}
-
-
+uniform mat4 ProjectionMatrix;
+uniform mat4 ViewMatrix;
 
 void main()
 {
-	Actual_Pos=vec3(ViewMatrix*(ModelMatrix*vec4(Vertex,1)));
-	gl_Position=PProj(vec4(Actual_Pos,1),min(radius,10000));
-
+	gl_Position=ProjViewMatrix*(ModelMatrix*vec4(Vertex,1));
 }

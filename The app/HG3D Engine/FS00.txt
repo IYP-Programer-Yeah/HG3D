@@ -1,25 +1,15 @@
-#version 420
-
-#define VSM
-#define MaxShadowmapsNums  8
-#define MaxCascadessNums   8
-
-#ifdef PCF
-#define delta_intesity        0.1111
-#endif
-
+#version 330
 in vec3 normal;
 in vec3 position;
 in vec2 coord;
-in float cascade;
 
 out vec4 Output1;
 
-layout(early_fragment_tests) in; //will try this later
+//layout(early_fragment_tests) in; //will try this later
 
 uniform int Lights_Nums;
-uniform sampler2DArray SMTex_Sampler[MaxCascadessNums];
-uniform mat4 light_proj_view_matrix[MaxCascadessNums*MaxShadowmapsNums];
+uniform sampler2D SMTex_Sampler[8];
+uniform mat4 light_proj_view_matrix[8];
 
 struct light
 {
@@ -51,6 +41,12 @@ layout (std140) uniform TSOS
 		vec2 text_offsets[32];
 };
 
+
+#define PCF
+#ifdef PCF
+#define delta_intesity        0.1111
+#endif
+
 void main() 
 {
 	vec3 final_color;
@@ -79,17 +75,16 @@ void main()
 				if (Cut_Off_Dot<0.01)
 				{
 					float Cut_Off_Effect=min(1.0,(0.01-Cut_Off_Dot)*100.0);
-					if (i>MaxShadowmapsNums-1)
+					if (i>7)
 					{
 						float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
 						final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation);
 					}
 					else if (currentlightl.nonesense1>16777215||currentlightl.nonesense1<0)
 					{
-						int Cascade=int(cascade);
-						vec4 Actual_Pos=light_proj_view_matrix[i*MaxCascadessNums+Cascade]*vec4(position,1);
-						vec3 SMCoords=(Actual_Pos.xyz/Actual_Pos.w+1)/2;
 
+						vec4 Actual_Pos=light_proj_view_matrix[i]*vec4(position,1);
+						vec3 SMCoords=(Actual_Pos.xyz/Actual_Pos.w+1)/2;
 						if (SMCoords.x<0.001||SMCoords.x>0.999||SMCoords.y<0.001||SMCoords.y>0.999||SMCoords.z<0.001||SMCoords.z>1.0)
 						{
 							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
@@ -97,7 +92,6 @@ void main()
 						}
 						else 
 						{
-							
 #ifndef PCF
 							////////////////////////////VSM///////////////////////////////////////
 							
@@ -117,24 +111,14 @@ void main()
 							final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation)*draw_val;
 							*/
 
-							/*if(Cascade==0)
-								final_color+=vec3(0.5,0,0);
-							if(Cascade==1)
-								final_color+=vec3(0.5,0.5,0);
-							if(Cascade==2)
-								final_color+=vec3(0,0.5,0);
-							if(Cascade==3)
-								final_color+=vec3(0,0.5,0.5);
-							if(Cascade==4)
-								final_color+=vec3(0,0,0.5);
-							if(Cascade>4)
-								final_color+=vec3(0.5,0,0.5);*/
 
-							float off_set=pow(10.0,floor(log(SMCoords.z)-4.0));
-							float filter_offset=off_set*20;
+							
+
+
+							float off_set=0.1/(currentlightl.max_radius-1.0);
+							float filter_offset=off_set*2;
 							float depth=SMCoords.z-off_set;
-							vec2 texture_data=texture(SMTex_Sampler[Cascade],vec3(SMCoords.xy, i) , 0).xy;
-							//vec2 texture_data=texelFetch(SMTex_Sampler[0],ivec3(floor(SMCoords.xy*textureSize(SMTex_Sampler[0],0).xy ), i) , 0).xy;
+							vec2 texture_data=texelFetch(SMTex_Sampler[i],ivec2(floor(SMCoords.xy*textureSize(SMTex_Sampler[i],0) ) ) , 0).xy;
 							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
 							if (depth<=texture_data.x)
 							{
@@ -145,7 +129,7 @@ void main()
 									tempSMcoords=SMCoords.xy+text_offsets[j];
 									if (!(tempSMcoords.x<0.001||tempSMcoords.x>0.999||tempSMcoords.y<0.001||tempSMcoords.y>0.999))
 									{
-										texture_data=texture(SMTex_Sampler[Cascade],vec3(tempSMcoords,i),0).xy;
+										texture_data=textureLod(SMTex_Sampler[i],tempSMcoords,1).xy;
 										if (SMCoords.z>texture_data.x+filter_offset)	
 										{				
 											float variance=texture_data.y-texture_data.x*texture_data.x;
@@ -163,19 +147,19 @@ void main()
 							float off_set=0.1/(currentlightl.max_radius-1.0);
 							float filter_offset=off_set*2;
 							float depth=SMCoords.z-off_set;
-							float texture_data=texture(SMTex_Sampler[Cascade],vec3(SMCoords.xy,i)).x;
+							vec2 texture_data=texture(SMTex_Sampler[i],SMCoords.xy).xy;
 							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
 							float draw_val=1;
 							vec2 tempSMcoords;
-							if (depth>texture_data)
+							if (depth>texture_data.x)
 								draw_val-=delta_intesity;
 							for (int j=0;j<8;j++)
 							{
 								tempSMcoords=SMCoords.xy+text_offsets[j];
 								if (!(tempSMcoords.x<0.001||tempSMcoords.x>0.999||tempSMcoords.y<0.001||tempSMcoords.y>0.999))
 								{
-									texture_data=texture(SMTex_Sampler[Cascade],vec3(tempSMcoords,i)).x;
-									if (SMCoords.z>texture_data+filter_offset)	
+									texture_data=texture(SMTex_Sampler[i],tempSMcoords).xy;
+									if (SMCoords.z>texture_data.x+filter_offset)	
 										draw_val-=delta_intesity;
 								}
 							}

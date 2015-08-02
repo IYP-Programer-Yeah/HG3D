@@ -1,15 +1,20 @@
-#version 150
-in vec3 Actual_Pos;
+#version 420
 
-out vec4 Output1;
+#define VSM
 
-uniform float radius;
+layout(early_fragment_tests) in; //later will be added if it was availble
+
+#ifndef PCF
+out vec2 Output1;
+#else
+out float Output1;
+#endif
 
 void main()
 {
-	if (Actual_Pos.z>0)
-		discard;
-	gl_FragDepth=length(Actual_Pos)/min(radius,10000);
-	if (gl_FragDepth>1)
-		discard;
+#ifndef PCF
+	Output1=vec2(gl_FragCoord.z,gl_FragCoord.z*gl_FragCoord.z);
+#else
+	Output1=gl_FragCoord.z;
+#endif
 }

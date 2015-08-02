@@ -3,7 +3,6 @@
 #include "..\Shared Headers\hstring.h"
 #include "..\Shared Headers\bitmap.h"
 
-
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	hbitmap texture;
@@ -26,19 +25,19 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	point horse_pos,light_pos;
 	horse_pos.build(0.0f, 0.0f, -50.0f);
 	vector light_dir;
-	for (int i = 0; i < 2/*MaxLightNums*/; i++)
+	for (int i = 0; i < /*MaxLightNums*/1; i++)
 	{
 		Engine.lights[i].light_enabled = 1;
 		Engine.last_light_ID++;
 		Engine.lights[i].Attenuation[0] = 0.001f / float(i % 8 + 1);
 		Engine.lights[i].Attenuation[1] = 0.001f / float(i % 5 + 1);
-		Engine.lights[i].Attenuation[2] = 0.01f / float(i % 11 + 1);
+		Engine.lights[i].Attenuation[2] = 0.025f / float(i % 11 + 1);
 		Engine.lights[i].light_color[0] = float(i % 8 + 1) / 8.0f;
 		Engine.lights[i].light_color[1] = float(i % 5 + 1) / 5.0f;;
 		Engine.lights[i].light_color[2] = float(i % 3 + 1) / 3.0f;;
-		Engine.lights[i].light_position[0] = pow(-1.0f, float(i))*float((i * 30 + 50) % 100);
-		Engine.lights[i].light_position[1] = float((i * 40 + 70) % 200);
-		Engine.lights[i].light_position[2] = pow(-1.0f, float(i + 1))*float((i * 20 + 45) % 100);
+		Engine.lights[i].light_position[0] = pow(-1.0f, float(i))*float((i * 30 + 50) % 50);
+		Engine.lights[i].light_position[1] = float((i * 40 + 70) % 100 + 50);
+		Engine.lights[i].light_position[2] = pow(-1.0f, float(i + 1))*float((i * 20 + 45) % 50);
 		light_pos.build(Engine.lights[i].light_position[0], Engine.lights[i].light_position[1], Engine.lights[i].light_position[2]);
 		light_dir.build(light_pos, horse_pos);
 		light_dir = normalize(light_dir);
@@ -46,28 +45,50 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Engine.lights[i].direction[1] = float(light_dir.y);
 		Engine.lights[i].direction[2] = float(light_dir.z);
 		Engine.lights[i].calculate_max_radius();
-		Engine.lights[i].shadow_map = true;
+		Engine.lights[i].shadow_map = false;
 	}
 
 	vector direction;
 	direction.build(0.0f, 0.0f, -1.0f);
 	direction = normalize(direction);
 	Engine.lights[0].light_enabled = 1;
-	Engine.lights[0].Attenuation[0] = 0.001f;
-	Engine.lights[0].Attenuation[1] = 0.001f;
-	Engine.lights[0].Attenuation[2] = 0.001f;
+	Engine.lights[0].Attenuation[0] = 0.0001f;
+	Engine.lights[0].Attenuation[1] = 0.0001f;
+	Engine.lights[0].Attenuation[2] = 0.0001f;
 	Engine.lights[0].light_color[0] = 1.0f;
 	Engine.lights[0].light_color[1] = 1.0f;
 	Engine.lights[0].light_color[2] = 1.0f;
 	Engine.lights[0].light_position[0] = 0.0f;
 	Engine.lights[0].light_position[1] = 100.0f;
-	Engine.lights[0].light_position[2] = 0.0f;
+	Engine.lights[0].light_position[2] = 50.0f;
 	Engine.lights[0].direction[0] = float(direction.x);
 	Engine.lights[0].direction[1] = float(direction.y);
 	Engine.lights[0].direction[2] = float(direction.z);
 	//Engine.lights[0].cut_off_cos = cos(3.14f / 9.0f);
 	Engine.lights[0].calculate_max_radius();
 	Engine.lights[0].shadow_map = true;
+
+	direction.build(-1.0f, -1.0f, 0.0f);
+	direction = normalize(direction);
+
+	Engine.lights[1].light_enabled = 1;
+	Engine.lights[1].Attenuation[0] = 0.0001f;
+	Engine.lights[1].Attenuation[1] = 0.0001f;
+	Engine.lights[1].Attenuation[2] = 0.0001f;
+	Engine.lights[1].light_color[0] = 1.0f;
+	Engine.lights[1].light_color[1] = 1.0f;
+	Engine.lights[1].light_color[2] = 1.0f;
+	Engine.lights[1].light_position[0] = 200.0f;
+	Engine.lights[1].light_position[1] = 300.0f;
+	Engine.lights[1].light_position[2] = 0.0f;
+	Engine.lights[1].direction[0] = float(direction.x);
+	Engine.lights[1].direction[1] = float(direction.y);
+	Engine.lights[1].direction[2] = float(direction.z);
+	//Engine.lights[0].cut_off_cos = cos(3.14f / 9.0f);
+	Engine.lights[1].calculate_max_radius();
+	Engine.lights[1].shadow_map = true;
+
+
 	Engine.light_data_changed = 1;
 	BYTE *data;
 	data = (byte*)malloc(texture.Width[0] * texture.Height[0] * 3);
@@ -128,7 +149,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	vector SpherePos;
 	
-	SpherePos.build(0.0f, 50.0f, -10.0f);
+	SpherePos.build(0.0f, 100.0f, 0.0f);
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
@@ -149,8 +170,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\kernel box.obj");
 
 
-	Engine.cameras[0].camera_position.build(0.0f, 0.0f, 0.0f);//put the camera to x=12
-	Engine.cameras[0].forward.build(-1.0f, 0.0f, 0.0f);//look int x=-1 direction 
+	Engine.cameras[0].camera_position.build(0.0f, 100.0f, -50.0f);//put the camera to x=12
+	Engine.cameras[0].forward.build(0.0f, 0.0f, -1.0f);//look int x=-1 direction 
 	Engine.cameras[0].camera_viewport[2] = GetW();//update view port
 	Engine.cameras[0].camera_viewport[3] = GetH();//update view port
 	Engine.cameras[0].Right = float(GetW()) / float(GetH());//update projection
@@ -200,7 +221,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		OutputDebugString("SphereObj is not valid.\n");
 #endif
 
-	SphereObj.AddVelocity(-40.0, 60.0, 0.0);
+	SphereObj.AddVelocity(0.0, 0.0, -10.0);
 
 	while (msg->message != WM_QUIT)  
 	{

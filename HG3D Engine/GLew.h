@@ -61,6 +61,8 @@ PFNGLCOMPRESSEDTEXIMAGE2DPROC				 glCompressedTexImage2D;
 PFNGLGETUNIFORMBLOCKINDEXPROC				 glGetUniformBlockIndex;
 PFNGLBINDBUFFERBASEPROC						 glBindBufferBase;
 PFNGLUNIFORMBLOCKBINDINGPROC				 glUniformBlockBinding;
+PFNGLGENERATETEXTUREMIPMAPPROC				 glGenerateTextureMipmap;
+PFNGLBINDIMAGETEXTUREPROC					 glBindImageTexture;
 //      glew definitions
 //
 void Init_glew()
@@ -124,6 +126,7 @@ void Init_glew()
 	glGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)wglGetProcAddress("glGetUniformBlockIndex");
 	glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)wglGetProcAddress("glBindBufferBase");
 	glUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)wglGetProcAddress("glUniformBlockBinding");
-
+	glGenerateTextureMipmap = (PFNGLGENERATETEXTUREMIPMAPPROC)wglGetProcAddress("glGenerateTextureMipmap");
+	glBindImageTexture = (PFNGLBINDIMAGETEXTUREPROC)wglGetProcAddress("glBindImageTexture");
 }
 // shader loader
