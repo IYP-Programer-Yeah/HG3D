@@ -3,6 +3,7 @@
 
 #include "BasicIncludes.h"
 #include "..\HG3D Engine\HG3D Engine.h"
+#include "Point.h"
 
 using namespace HG3D_Engine;
 
@@ -23,6 +24,7 @@ namespace Physics
 		float Radius;
 
 		bool DLLEXPORT CheckCollisionWith(CollisionSphere& OtherSphere);
+		bool DLLEXPORT Contains(Point& Point);
 	};
 
 }

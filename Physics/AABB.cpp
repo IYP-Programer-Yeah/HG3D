@@ -37,4 +37,26 @@ namespace Physics
 
 		return true;
 	}
+
+	bool CollisionBox::Contains(Point& p)
+	{
+
+		point Min;
+		point Max;
+
+		Min.x = Center.x - Extends.x;
+		Min.y = Center.y - Extends.y;
+		Min.z = Center.z - Extends.z;
+
+		Max.x = Center.x + Extends.x;
+		Max.y = Center.y + Extends.y;
+		Max.z = Center.z + Extends.z;
+
+		if (p.x > Min.x && p.x < Max.x &&
+			p.y > Min.y && p.y < Max.y &&
+			p.z > Max.z && p.z < Min.z)
+			return true;
+
+		return false;
+	}
 }

@@ -19,4 +19,20 @@ namespace Physics
 
 		return false;
 	}
+
+	bool CollisionSphere::Contains(Point& p)
+	{
+		vector VecCenterToPoint;
+
+		VecCenterToPoint.x = p.x - Center.x;
+		VecCenterToPoint.y = p.y - Center.y;
+		VecCenterToPoint.z = p.z - Center.z;
+
+		float LengthSq = static_cast<float>(VecCenterToPoint.getsizeSq());
+
+		if (LengthSq < Radius*Radius)
+			return true;
+
+		return false;
+	}
 }

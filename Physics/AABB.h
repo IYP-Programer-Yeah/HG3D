@@ -3,6 +3,7 @@
 
 #include "BasicIncludes.h"
 #include "..\HG3D Engine\HG3D Engine.h"
+#include "Point.h"
 
 using namespace HG3D_Engine;
 
@@ -24,6 +25,7 @@ namespace Physics
 		point Extends;
 
 		bool DLLEXPORT CheckCollisionWith(CollisionBox& OtherAABB);
+		bool DLLEXPORT Contains(Point& p);
 	};
 }
 

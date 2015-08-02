@@ -74,10 +74,11 @@ namespace Physics
 			m_ObjectNames.push_back(Names[i]);
 			m_Objects.push_back(Temp);
 		}
+
 		m_RendrerPtr = renderer;
 	}
 
-	PhysicsObject& PhysicsWorld::GetPhysicsObject(const std::string Name)
+	PhysicsObject* PhysicsWorld::GetPhysicsObject(const std::string Name)
 	{
 #ifdef NT_IS_DEBUGGING
 		if (m_Objects.empty() || (m_Objects.size() != m_ObjectNames.size()))
@@ -90,21 +91,15 @@ namespace Physics
 		{
 			if (m_ObjectNames[i] == Name)
 			{
-				return m_Objects[i];
+				return &m_Objects[i];
 			}
 		}
 
-		//return invalid/empty object
-		//Always check if m_Valid is true after using this function
-		PhysicsObject empty;
-
-		empty.m_Valid = false;
-
-		return empty;
+		return nullptr;
 	}
 
 
-	PhysicsObject& PhysicsWorld::GetPhysicsObject(unsigned long int Index)
+	PhysicsObject* PhysicsWorld::GetPhysicsObject(unsigned long int Index)
 	{
 #ifdef NT_IS_DEBUGGING
 		if (Index > m_Objects.size() || m_Objects.empty())
@@ -113,7 +108,7 @@ namespace Physics
 		}
 #endif
 
-		return m_Objects[Index];
+		return &m_Objects[Index];
 	}
 
 

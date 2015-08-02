@@ -46,7 +46,6 @@ namespace Physics
 	public:
 		bool m_ApplyGravity;
 		bool m_Moveable;
-		bool m_Valid;
 		bool m_DoCollision;
 
 

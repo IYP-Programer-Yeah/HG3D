@@ -54,6 +54,9 @@
     <ClInclude Include="defines.h">
       <Filter>Header Files\Others</Filter>
     </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>Header Files\CollisionShapes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sphere.cpp">

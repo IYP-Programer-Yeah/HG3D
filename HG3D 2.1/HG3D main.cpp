@@ -214,14 +214,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	World.LoadWorld(&Engine, Masses, Names, IDs, ARRAYSIZE(Masses)); //or ARRAYSIZE(Names)
 
 
-	Physics::PhysicsObject& SphereObj = World.GetPhysicsObject("Sphere");
+	Physics::PhysicsObject* SphereObj = World.GetPhysicsObject("Sphere");
 
 #ifdef NT_IS_DEBUGGING
-	if (!SphereObj.m_Valid)
+	if (!SphereObj)
 		OutputDebugString("SphereObj is not valid.\n");
 #endif
 
-	SphereObj.AddVelocity(0.0, 0.0, -10.0);
+	SphereObj->AddVelocity(0.0, 0.0, -10.0);
 
 	while (msg->message != WM_QUIT)  
 	{
