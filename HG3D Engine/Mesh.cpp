@@ -32,7 +32,7 @@ namespace HG3D_Engine
 			TF[i] = input.TF[i];
 		}
 		dissolve = input.dissolve;
-		Spec_Exponent = input.Spec_Exponent;
+		Fresnel = input.Fresnel;
 		optical_density = input.optical_density;//copy floats
 		roughness = input.roughness;
 		sharpness = input.sharpness;
@@ -108,7 +108,7 @@ namespace HG3D_Engine
 		indices = (unsigned long int*)faces;//get the pointer it'll be used to draw elements
 
 		have_diff_text = 0;              //have diffuse texture? 
-		have_spec_text = 0;              //have specular texture? 
+		have_roughness_text = 0;         //have roughness texture? 
 		have_NM_text = 0;                //have normals map texture? 
 		have_HM_text = 0;                //have height map texture? 
 		have_mask_text = 0;              //have mask texture? 
@@ -208,7 +208,7 @@ namespace HG3D_Engine
 		total_size = input.total_size;
 
 		text_ID_diff = input.text_ID_diff;
-		text_ID_diff = input.text_ID_spec;
+		text_ID_diff = input.text_ID_roughness;
 		text_ID_normal = input.text_ID_normal;
 		text_ID_height = input.text_ID_height;
 		text_ID_mask = input.text_ID_mask;
@@ -218,7 +218,7 @@ namespace HG3D_Engine
 
 		//copy bools
 		have_diff_text = input.have_diff_text;
-		have_spec_text = input.have_spec_text;
+		have_roughness_text = input.have_roughness_text;
 		have_NM_text = input.have_NM_text;
 		have_HM_text = input.have_HM_text;
 		have_mask_text = input.have_mask_text;
@@ -258,7 +258,7 @@ namespace HG3D_Engine
 		total_size = input.total_size;
 
 		text_ID_diff = input.text_ID_diff;
-		text_ID_diff = input.text_ID_spec;
+		text_ID_roughness = input.text_ID_roughness;
 		text_ID_normal = input.text_ID_normal;
 		text_ID_height = input.text_ID_height;
 		text_ID_mask = input.text_ID_mask;
@@ -268,7 +268,7 @@ namespace HG3D_Engine
 
 		//copy bools
 		have_diff_text = input.have_diff_text;
-		have_spec_text = input.have_spec_text;
+		have_roughness_text = input.have_roughness_text;
 		have_NM_text = input.have_NM_text;
 		have_HM_text = input.have_HM_text;
 		have_mask_text = input.have_mask_text;

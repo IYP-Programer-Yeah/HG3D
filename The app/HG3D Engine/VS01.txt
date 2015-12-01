@@ -1,14 +1,25 @@
-#version 450
+#version 330
+
+#define PCF
 
 in vec3 Vertex;
 in vec3 Normal;
 in vec2 Coord;
 in int bone_ID;
 
+#ifndef PCF
+out vec4 Actual_Pos;
+#endif
+
 uniform mat4 ProjViewMatrix;
 uniform mat4 ModelMatrix;
+uniform mat4 ProjectionMatrix;
+uniform mat4 ViewMatrix;
 
 void main()
 {
 	gl_Position=ProjViewMatrix*(ModelMatrix*vec4(Vertex,1));
+#ifndef PCF
+	Actual_Pos=gl_Position;
+#endif
 }

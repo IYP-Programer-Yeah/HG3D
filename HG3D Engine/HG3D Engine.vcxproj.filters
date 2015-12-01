@@ -82,5 +82,23 @@
     <Text Include="VS01.txt">
       <Filter>Resource Files\Shaders\Vertex</Filter>
     </Text>
+    <Text Include="FS02.txt">
+      <Filter>Resource Files\Shaders\Fragmet</Filter>
+    </Text>
+    <Text Include="VS02.txt">
+      <Filter>Resource Files\Shaders\Vertex</Filter>
+    </Text>
+    <Text Include="FS03.txt">
+      <Filter>Resource Files\Shaders\Fragmet</Filter>
+    </Text>
+    <Text Include="VS03.txt">
+      <Filter>Resource Files\Shaders\Vertex</Filter>
+    </Text>
+    <Text Include="FS04.txt">
+      <Filter>Resource Files\Shaders\Fragmet</Filter>
+    </Text>
+    <Text Include="VS04.txt">
+      <Filter>Resource Files\Shaders\Vertex</Filter>
+    </Text>
   </ItemGroup>
 </Project>

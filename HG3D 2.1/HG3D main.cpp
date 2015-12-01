@@ -2,6 +2,7 @@
 #include <iostream>
 #include "..\Shared Headers\hstring.h"
 #include "..\Shared Headers\bitmap.h"
+#include "..\File_HG_FS\File_HG_FS.h"
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -25,9 +26,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	point horse_pos,light_pos;
 	horse_pos.build(0.0f, 0.0f, -50.0f);
 	vector light_dir;
-	for (int i = 0; i < /*MaxLightNums*/1; i++)
+	for (int i = 0; i < 1; i++)
 	{
-		Engine.lights[i].light_enabled = 1;
+		Engine.lights[i].light_enabled = true;
 		Engine.last_light_ID++;
 		Engine.lights[i].Attenuation[0] = 0.001f / float(i % 8 + 1);
 		Engine.lights[i].Attenuation[1] = 0.001f / float(i % 5 + 1);
@@ -36,7 +37,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Engine.lights[i].light_color[1] = float(i % 5 + 1) / 5.0f;;
 		Engine.lights[i].light_color[2] = float(i % 3 + 1) / 3.0f;;
 		Engine.lights[i].light_position[0] = pow(-1.0f, float(i))*float((i * 30 + 50) % 50);
-		Engine.lights[i].light_position[1] = float((i * 40 + 70) % 100 + 50);
+		Engine.lights[i].light_position[1] = float((i * 40 + 70) % 150);
 		Engine.lights[i].light_position[2] = pow(-1.0f, float(i + 1))*float((i * 20 + 45) % 50);
 		light_pos.build(Engine.lights[i].light_position[0], Engine.lights[i].light_position[1], Engine.lights[i].light_position[2]);
 		light_dir.build(light_pos, horse_pos);
@@ -47,14 +48,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Engine.lights[i].calculate_max_radius();
 		Engine.lights[i].shadow_map = false;
 	}
-
+	
 	vector direction;
 	direction.build(0.0f, 0.0f, -1.0f);
 	direction = normalize(direction);
-	Engine.lights[0].light_enabled = 1;
+	Engine.lights[0].light_enabled = true;
 	Engine.lights[0].Attenuation[0] = 0.0001f;
 	Engine.lights[0].Attenuation[1] = 0.0001f;
-	Engine.lights[0].Attenuation[2] = 0.0001f;
+	Engine.lights[0].Attenuation[2] = 0.0008f;
 	Engine.lights[0].light_color[0] = 1.0f;
 	Engine.lights[0].light_color[1] = 1.0f;
 	Engine.lights[0].light_color[2] = 1.0f;
@@ -65,13 +66,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[0].direction[1] = float(direction.y);
 	Engine.lights[0].direction[2] = float(direction.z);
 	//Engine.lights[0].cut_off_cos = cos(3.14f / 9.0f);
+	//Engine.lights[0].edge_cut_off_cos_delta = cos(3.14f / 10.0f) - cos(3.14f / 9.0f);
 	Engine.lights[0].calculate_max_radius();
 	Engine.lights[0].shadow_map = true;
 
 	direction.build(-1.0f, -1.0f, 0.0f);
 	direction = normalize(direction);
-
-	Engine.lights[1].light_enabled = 1;
+	
+	Engine.lights[1].light_enabled = true;
 	Engine.lights[1].Attenuation[0] = 0.0001f;
 	Engine.lights[1].Attenuation[1] = 0.0001f;
 	Engine.lights[1].Attenuation[2] = 0.0001f;
@@ -84,7 +86,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[1].direction[0] = float(direction.x);
 	Engine.lights[1].direction[1] = float(direction.y);
 	Engine.lights[1].direction[2] = float(direction.z);
-	//Engine.lights[0].cut_off_cos = cos(3.14f / 9.0f);
+	Engine.lights[1].cut_off_cos = cos(3.14f / 9.0f);
+	Engine.lights[1].edge_cut_off_cos_delta = cos(3.14f / 10.0f) - cos(3.14f / 9.0f);
 	Engine.lights[1].calculate_max_radius();
 	Engine.lights[1].shadow_map = true;
 
@@ -157,7 +160,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.meshes[1+8].scale_model(5.0f, 5.0f, 5.0f);
 
 	//=========================================================================//
-	/*
+	
 	vector SpherePos2;
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
@@ -165,9 +168,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SpherePos2.build(0.0f, -6370850.0f, 0.0f);
 	Engine.meshes[2+8].move(SpherePos2);
 	Engine.meshes[2+8].scale_model(6371000.0f, 6371000.0f, 6371000.0f);//earth radius
-	//==========================================================================//*/
+	//==========================================================================//
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\kernel box.obj");
+	Engine.meshes[10].scale_model(1.0f, 1.0f, 1.0f);
 
 
 	Engine.cameras[0].camera_position.build(0.0f, 100.0f, -50.0f);//put the camera to x=12
@@ -304,7 +308,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			}
 			Engine.test_render(); //render scene
-
+			//Engine.render();
 
 		}
 

@@ -1,0 +1,21 @@
+#version 450
+
+in vec3 Vertex;
+in vec3 Normal;
+in vec2 Coord;
+in int bone_ID;
+
+out vec3 normal;
+out vec2 coord;
+
+uniform mat4 ModelMatrix;
+uniform mat4 ProjectionMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 NormalMatrix;
+
+void main()
+{
+	gl_Position=ProjectionMatrix*(ViewMatrix*(ModelMatrix*vec4(Vertex,1)));
+	normal=vec3(NormalMatrix*vec4(Normal,0));
+	coord=Coord;
+}

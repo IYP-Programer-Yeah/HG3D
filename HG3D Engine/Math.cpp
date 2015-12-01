@@ -205,10 +205,12 @@ namespace HG3D_Engine
 		float u = (float)axis.x, v = (float)axis.y, w = (float)axis.z;
 		float u2 = float(axis.x*axis.x), v2 = float(axis.y*axis.y), w2 = float(axis.z*axis.z);
 		float a = (float)origin.x, b = (float)origin.y, c = (float)origin.z;
-		x[0] = (float)u2 + (v2 + w2)*cos(theta);				x[1] = (float)u*v*(1 - cos(theta)) - w*sin(theta);	x[2] = (float)w*u*(1 - cos(theta)) + v*sin(theta);	x[3] = (float)(a*(v2 + w2) - u*(b*v + c*w))*(1 - cos(theta)) + (b*w - c*v)*sin(theta);
-		x[4] = (float)u*v*(1 - cos(theta)) + w*sin(theta);		x[5] = (float)v2 + (u2 + w2)*cos(theta);			x[6] = (float)w*v*(1 - cos(theta)) - u*sin(theta);	x[7] = (float)(b*(u2 + w2) - v*(a*u + c*w))*(1 - cos(theta)) + (c*u - a*w)*sin(theta);
-		x[8] = (float)u*w*(1 - cos(theta)) - v*sin(theta);		x[9] = (float)w*v*(1 - cos(theta)) + u*sin(theta);	x[10] = (float)w2 + (v2 + u2)*cos(theta);			x[11] = (float)(c*(u2 + v2) - w*(b*v + a*u))*(1 - cos(theta)) + (a*v - b*u)*sin(theta);
-		x[12] = (float)0.0;										x[13] = (float)0.0;									x[14] = (float)0.0;									x[15] = (float)1;
+		float CosTheta = float(cos(double(theta)));
+		float SinTheta = float(sin(double(theta)));
+		x[0] = u2 + (v2 + w2)*CosTheta;					x[1] = u*v*(1.0f - CosTheta) - w*SinTheta;	x[2] = w*u*(1.0f - CosTheta) + v*SinTheta;	x[3] = (a*(v2 + w2) - u*(b*v + c*w))*(1.0f - CosTheta) + (b*w - c*v)*SinTheta;
+		x[4] = u*v*(1.0f - CosTheta) + w*SinTheta;		x[5] = v2 + (u2 + w2)*CosTheta;				x[6] = w*v*(1.0f - CosTheta) - u*SinTheta;	x[7] = (b*(u2 + w2) - v*(a*u + c*w))*(1.0f - CosTheta) + (c*u - a*w)*SinTheta;
+		x[8] = u*w*(1.0f - CosTheta) - v*SinTheta;		x[9] = w*v*(1.0f - CosTheta) + u*SinTheta;	x[10] = w2 + (v2 + u2)*CosTheta;			x[11] = (c*(u2 + v2) - w*(b*v + a*u))*(1.0f - CosTheta) + (a*v - b*u)*SinTheta;
+		x[12] = 0.0f;									x[13] = 0.0f;								x[14] = 0.0f;								x[15] = 1.0f;
 	}
 
 	_4x4matrix LookAt(point cam_pos, vector forward, vector up)
@@ -217,8 +219,8 @@ namespace HG3D_Engine
 		vector eye;//campos in vetor shape
 		eye.build(cam_pos.x, cam_pos.y, cam_pos.z);//set eye as campos
 		zaxis = normalize(forward*-1.0f);//set z axis
-		xaxis = normalize(cross(up, zaxis));//get x axis normalized
-		yaxis = cross(zaxis, xaxis); //get y axis (already normalized)
+		yaxis = normalize(up); //get y axis (already normalized)
+		xaxis = normalize(cross(yaxis, zaxis));//get x axis normalized
 		_4x4matrix return_mat;
 		return_mat.x[0] = (float)xaxis.x;					return_mat.x[4] = (float)yaxis.x;					return_mat.x[8] = (float)zaxis.x;				return_mat.x[12] = (float)0.0;
 		return_mat.x[1] = (float)xaxis.y;					return_mat.x[5] = (float)yaxis.y;					return_mat.x[9] = (float)zaxis.y;				return_mat.x[13] = (float)0.0;
@@ -240,7 +242,7 @@ namespace HG3D_Engine
 		return_mat.x[0] = (float)2.0 * nearz / w;    return_mat.x[4] = (float)0.0;                   return_mat.x[8] = (float)0.0;						return_mat.x[12] = (float)0.0;
 		return_mat.x[1] = (float)0.0;                return_mat.x[5] = (float)2.0 * nearz / h;       return_mat.x[9] = (float)0.0;						return_mat.x[13] = (float)0.0;
 		return_mat.x[2] = (float)(right + left) / w; return_mat.x[6] = (float)(top + buttom) / h;    return_mat.x[10] = (float)-1.0*(farz + nearz) / d;	return_mat.x[14] = (float)-1.0;
-		return_mat.x[3] = (float)0.0;                return_mat.x[7] = (float)0.0;                   return_mat.x[11] = (float)-1.0*nearz*farz / d;		return_mat.x[15] = (float)0.0;
+		return_mat.x[3] = (float)0.0;                return_mat.x[7] = (float)0.0;                   return_mat.x[11] = (float)-2.0*nearz*farz / d;		return_mat.x[15] = (float)0.0;
 		return return_mat;
 	}
 
@@ -459,7 +461,7 @@ namespace HG3D_Engine
 			temp_offset[0] += Max_Calculated_Vlaues;
 			for (register unsigned long int k = 0; k < Max_Calculated_Vlaues; k++)//calculate the values for the function
 			{
-				Functions[current_index] = -sqrt(1.0f - XVlues[k] * XVlues[k]) * float(temp_coeeffs[0]) * float(Functions[current_index - temp_offset[0]]);
+				Functions[current_index] = -float(sqrt(float(1.0f - XVlues[k] * XVlues[k]))) * float(temp_coeeffs[0]) * float(Functions[current_index - temp_offset[0]]);
 				current_index++;
 			}
 		}

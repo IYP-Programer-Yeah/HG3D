@@ -1,15 +1,15 @@
-#version 420
+#version 450
 
-#define VSM
+#define PCF
 #define MaxShadowmapsNums  8
-#define MaxCascadessNums   8
+#define MaxCascadessNums   1
 
-#ifdef PCF
-#define delta_intesity        0.1111
-#endif
+#define PI                  3.14159				//pi
+#define log2				0.3010299956639811	//log2
 
 in vec3 normal;
 in vec3 position;
+in vec3 position_LV;
 in vec2 coord;
 in float cascade;
 
@@ -33,7 +33,7 @@ struct light
 
 	vec3 Attenuation;//attenuation values
 
-	float nonesense2;
+	float edge_cut_off_cos_delta;
 
 	vec3 direction;//the direction of light
 
@@ -48,11 +48,245 @@ layout (std140) uniform lights
 
 layout (std140) uniform TSOS
 {
-		vec2 text_offsets[32];
+		vec4 text_offsets[16];
 };
 
-void main() 
+
+float BilinearShadowTest(const vec2 ShadowCoord, const float Depth, const sampler2DArray ShadowMap, const int i, const float MaxRad, const ivec2 TextureSize)
 {
+	const vec2 samples=floor(vec2(TextureSize)*ShadowCoord);
+
+	const vec4 samplesDepth=textureGather(ShadowMap,vec3(samples/vec2(TextureSize),i),0);
+	
+	vec4 SamplesShadowVals;
+
+	float Offseted_Depth=Depth-0.001f/(MaxRad-1.0f);
+
+	if (Offseted_Depth>samplesDepth.w)	
+		SamplesShadowVals[0]=0.0f;
+	else
+		SamplesShadowVals[0]=1.0f;
+	
+	if (Offseted_Depth>samplesDepth.z)	
+		SamplesShadowVals[1]=0.0f;
+	else
+		SamplesShadowVals[1]=1.0f;
+
+	if (Offseted_Depth>samplesDepth.x)		
+		SamplesShadowVals[2]=0.0f;
+	else
+		SamplesShadowVals[2]=1.0f;
+
+	if (Offseted_Depth>samplesDepth.y)	
+		SamplesShadowVals[3]=0.0f;
+	else
+		SamplesShadowVals[3]=1.0f;
+	
+
+	if (samples.x+1.0f>TextureSize.x)
+	{
+		SamplesShadowVals[1]=1.0f;
+		SamplesShadowVals[3]=1.0f;
+	}
+	if (samples.y+1.0f>TextureSize.y)
+	{
+		SamplesShadowVals[2]=1.0f;
+		SamplesShadowVals[3]=1.0f;
+	}
+
+	const vec2 lerpVals=vec2(TextureSize)*ShadowCoord.xy-samples;
+
+	return mix(mix(SamplesShadowVals[0],SamplesShadowVals[1],lerpVals.x),mix(SamplesShadowVals[2],SamplesShadowVals[3],lerpVals.x),lerpVals.y);
+}
+
+float ShadowTest(vec2 ShadowCoord, float Depth, sampler2DArray ShadowMap, int i, float MaxRad, ivec2 TextureSize)
+{
+	const float Offseted_Depth=Depth-0.001f/(MaxRad-1.0f);
+
+	const vec4 samplesDepth=textureGather(ShadowMap,vec3(ShadowCoord,i),0);
+	
+	vec4 SamplesShadowVals;
+
+	if (Offseted_Depth>samplesDepth.w)	
+		SamplesShadowVals[0]=0.0f;
+	else
+		SamplesShadowVals[0]=1.0f;
+	
+	if (Offseted_Depth>samplesDepth.z)	
+		SamplesShadowVals[1]=0.0f;
+	else
+		SamplesShadowVals[1]=1.0f;
+
+	if (Offseted_Depth>samplesDepth.x)		
+		SamplesShadowVals[2]=0.0f;
+	else
+		SamplesShadowVals[2]=1.0f;
+
+	if (Offseted_Depth>samplesDepth.y)	
+		SamplesShadowVals[3]=0.0f;
+	else
+		SamplesShadowVals[3]=1.0f;
+	vec2 SMResRCP=ShadowCoord+vec2(1.0f,1.0)/vec2(TextureSize);
+	if (SMResRCP.x>0.999)
+	{
+		SamplesShadowVals[1]=1.0f;
+		SamplesShadowVals[3]=1.0f;
+	}
+	if (SMResRCP.y>0.999)
+	{
+		SamplesShadowVals[2]=1.0f;
+		SamplesShadowVals[3]=1.0f;
+	}
+	return (SamplesShadowVals[0]+SamplesShadowVals[1]+SamplesShadowVals[2]+SamplesShadowVals[3])/4;
+}
+
+vec3 refract (vec3 I,vec3 N,float eta)
+{
+	/*const vec3 biN = (I - dot(I,N)*N)/n;
+	cos
+	return I;*/
+	float k = 1.0 - eta * eta * (1.0 - dot(N, I) * dot(N, I));
+	if (k < 0.0)
+		return vec3(0.0);       // or genDType(0.0)
+	return (eta * I - (eta * dot(N, I) + sqrt(k)) * N);
+}
+
+float SpecTerm(float a, vec3 L, vec3 V, vec3 N)
+{
+    vec3 H = normalize(L+V);
+
+    float NoV = dot(N, V);
+    float NoL = dot(N, L);
+    float a2 = a*a;
+
+    float D = pow(max(0,dot(N, H)), 2 / (a2 * a2) - 2) / (a2 * a2 * PI);
+    float G = NoL * NoV;
+    float denom = 4 * NoL * NoV;
+
+    float val = /*pow(max(0,-dot(V, reflect(L,N))), 100);//*/D * G / denom;
+    return val;
+}
+
+
+void main()
+{
+	const float roughness=0.6;
+	const float a=roughness*roughness;
+
+	Output1=vec4(0.0);
+
+	vec3 N=normalize(normal);
+
+	for (int i=0;i<Lights_Nums;i++)
+	{
+
+		vec3 L=Light[i].light_position-position;
+		const float L_Length=length(L);
+
+		if (Light[i].max_radius<L_Length)
+			continue;
+
+		L=L/L_Length;
+		const float NoL=dot(L,N);
+
+		if (NoL<0.0)
+			continue;
+		
+		float Cut_Off_Dot;
+		if (Light[i].cut_off_cos==-1.0)
+			Cut_Off_Dot=-1;
+		else
+			Cut_Off_Dot=Light[i].cut_off_cos+dot(L,Light[i].direction);
+
+		if (Cut_Off_Dot>Light[i].edge_cut_off_cos_delta)
+			continue;
+
+		const vec3 V=normalize(position_LV);
+
+		const float Cut_Off_Effect=min(1.0,(Light[i].edge_cut_off_cos_delta-Cut_Off_Dot)/Light[i].edge_cut_off_cos_delta);
+
+		float ShadowValue=1.0, BRDF=1.0, Alpha=1.0;
+
+		const float Attenuation=Light[i].Attenuation[0]+L_Length*(Light[i].Attenuation[1]+L_Length*Light[i].Attenuation[2]);
+
+		BRDF=NoL+SpecTerm(a,L, V, N);
+
+
+
+		vec3 Albedo=vec3(1.0);
+		const vec3 LightColor=Light[i].light_color;
+		
+		if ((i<MaxShadowmapsNums)&&(Light[i].nonesense1>16777215||Light[i].nonesense1<0))
+		{
+			const int Cascade=int(cascade);
+			const vec4 Actual_Pos=light_proj_view_matrix[i*MaxCascadessNums+Cascade]*vec4(position,1);
+			const vec3 SMCoords=(Actual_Pos.xyz/Actual_Pos.w+1)/2;
+			if (!(SMCoords.x<0.001||SMCoords.x>0.999||SMCoords.y<0.001||SMCoords.y>0.999||SMCoords.z<0.001||SMCoords.z>1.0))
+			{
+
+#ifdef VSM
+				////////////////////////////VSM///////////////////////////////////////
+				const float off_set=pow(10.0,floor(log(SMCoords.z)-4.0));
+				const float filter_offset=off_set*20;
+				const float depth=SMCoords.z-off_set;
+				vec2 texture_data=texture(SMTex_Sampler[Cascade],vec3(SMCoords.xy, i) , 0).xy;
+				if (depth<=texture_data.x)
+					{
+						ShadowValue=1.0;
+						vec2 tempSMcoords;
+						for (int j=0;j<8;j++)
+						{
+							tempSMcoords=SMCoords.xy+text_offsets[j].xy;
+							if (!(tempSMcoords.x<0.001||tempSMcoords.x>0.999||tempSMcoords.y<0.001||tempSMcoords.y>0.999))
+							{
+								texture_data=texture(SMTex_Sampler[Cascade],vec3(tempSMcoords,i),0).xy;
+								if (SMCoords.z>texture_data.x+filter_offset)	
+								{				
+									const float variance=texture_data.y-texture_data.x*texture_data.x;
+									const float mD = texture_data.x - SMCoords.z; 
+									const float mD_2 = mD * mD;
+									ShadowValue*=min(1,max(0,variance/(variance+mD_2)));
+								}
+							}						
+						}
+					}
+					else
+						ShadowValue=0.0;
+#endif
+#ifdef PCF
+					/////////////////////////////////////PCF//////////////////////////////
+				const ivec2 TextureSize=textureSize(SMTex_Sampler[Cascade],0).xy;
+				vec2 tempSMcoords;
+				ShadowValue=BilinearShadowTest(SMCoords.xy,SMCoords.z,SMTex_Sampler[Cascade],i,Light[i].max_radius,TextureSize)*text_offsets[0].w;
+				for (int j=0;j<8;j++)
+				{
+					tempSMcoords=SMCoords.xy+text_offsets[j].xy*(length(position_LV)/100.0f+1.0);
+					if (!(tempSMcoords.x<0.0001||tempSMcoords.x>0.9999||tempSMcoords.y<0.0001||tempSMcoords.y>0.9999))
+						ShadowValue+=BilinearShadowTest(tempSMcoords,SMCoords.z,SMTex_Sampler[Cascade],i,Light[i].max_radius,TextureSize)*text_offsets[j].z;
+					else
+						ShadowValue+=text_offsets[j].z;
+				}
+#endif
+			}
+			
+		}
+
+		Output1+=vec4((LightColor*Albedo)*min(1.0,BRDF/Attenuation)*ShadowValue*Cut_Off_Effect,Alpha);
+	}
+
+}
+
+
+void bnmain()
+{
+	float shininess=100;
+	float shininess2=100;
+
+	float roughness=0.8;
+	float a=roughness*roughness;
+
+	float n1=1.0;
+
 	vec3 final_color;
 	final_color=vec3(0,0,0);
 	vec3 Normal=normalize(normal);
@@ -68,21 +302,34 @@ void main()
 		Light_To_Point=Light_To_Point/LTP_Length;
 		if (LTP_Length<currentlightl.max_radius)
 		{	
-			float LTP_N_Dot=dot(Light_To_Point,Normal);
-			if (LTP_N_Dot<=0.0)
+			float LTP_N_Dot=-dot(Light_To_Point,Normal);
+			if (LTP_N_Dot>=0.0)
 			{
 				float Cut_Off_Dot;
 				if (currentlightl.cut_off_cos==-1.0)
 					Cut_Off_Dot=-1;
 				else
 					Cut_Off_Dot=currentlightl.cut_off_cos-dot(Light_To_Point,currentlightl.direction);
-				if (Cut_Off_Dot<0.01)
+				if (Cut_Off_Dot<currentlightl.edge_cut_off_cos_delta)
 				{
-					float Cut_Off_Effect=min(1.0,(0.01-Cut_Off_Dot)*100.0);
+					float Cut_Off_Effect=min(1.0,(currentlightl.edge_cut_off_cos_delta-Cut_Off_Dot)/currentlightl.edge_cut_off_cos_delta);
 					if (i>MaxShadowmapsNums-1)
 					{
 						float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
-						final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation);
+						
+						vec3 CTP=normalize(position_LV);
+						vec3 HW=(Light_To_Point+CTP)/2;
+						vec3 R=reflect(Light_To_Point,Normal);
+
+						float HW_N_Dot=-dot(HW,Normal);
+						float CTP_N_Dot=-dot(CTP,Normal);
+						float CTP_HW_Dot=dot(CTP,HW);
+
+						float P=pow(max(0,dot(R,CTP)),shininess);
+						//P=SpecTerm(a,CTP_N_Dot,HW_N_Dot ,LTP_N_Dot);
+						float P2=pow(max(0,dot(reflect(refract(Light_To_Point,Normal,1.0/n1),Normal),-refract(-CTP,Normal,1.0/n1))),shininess2);
+						
+						final_color+=(currentlightl.light_color/Attenuation*Cut_Off_Effect)*min((LTP_N_Dot+P),1.0);
 					}
 					else if (currentlightl.nonesense1>16777215||currentlightl.nonesense1<0)
 					{
@@ -93,12 +340,25 @@ void main()
 						if (SMCoords.x<0.001||SMCoords.x>0.999||SMCoords.y<0.001||SMCoords.y>0.999||SMCoords.z<0.001||SMCoords.z>1.0)
 						{
 							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
-							final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation);
+													
+							vec3 CTP=-normalize(position_LV);
+							vec3 HW=(-Light_To_Point+CTP)/2;
+							vec3 R=reflect(Light_To_Point,Normal);
+
+							float HW_N_Dot=dot(HW,Normal);
+							float CTP_N_Dot=dot(CTP,Normal);
+							float CTP_HW_Dot=dot(CTP,HW);
+
+							float P=pow(max(0,dot(R,CTP)),shininess);
+							//P=SpecTerm(a,CTP_N_Dot,HW_N_Dot ,LTP_N_Dot);
+							float P2=pow(max(0,dot(reflect(refract(Light_To_Point,Normal,1.0/n1),Normal),-refract(-CTP,Normal,1.0/n1))),shininess2);
+						
+							final_color+=(currentlightl.light_color/Attenuation*Cut_Off_Effect)*min((LTP_N_Dot+P),1.0);
 						}
 						else 
 						{
 							
-#ifndef PCF
+#ifdef VSM
 							////////////////////////////VSM///////////////////////////////////////
 							
 
@@ -136,13 +396,30 @@ void main()
 							vec2 texture_data=texture(SMTex_Sampler[Cascade],vec3(SMCoords.xy, i) , 0).xy;
 							//vec2 texture_data=texelFetch(SMTex_Sampler[0],ivec3(floor(SMCoords.xy*textureSize(SMTex_Sampler[0],0).xy ), i) , 0).xy;
 							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
+
+
+																				
+							vec3 CTP=-normalize(position_LV);
+							vec3 HW=(-Light_To_Point+CTP)/2;
+							vec3 R=reflect(Light_To_Point,Normal);
+
+							float HW_N_Dot=dot(HW,Normal);
+							float CTP_N_Dot=dot(CTP,Normal);
+							float CTP_HW_Dot=dot(CTP,HW);
+
+							float P=pow(max(0,dot(R,CTP)),shininess);
+							//P=SpecTerm(a,CTP_N_Dot,HW_N_Dot ,LTP_N_Dot);
+							float P2=pow(max(0,dot(reflect(refract(Light_To_Point,Normal,1.0/n1),Normal),-refract(-CTP,Normal,1.0/n1))),shininess2);
+						
+
+
 							if (depth<=texture_data.x)
 							{
 								float draw_val=1.0;
 								vec2 tempSMcoords;
 								for (int j=0;j<8;j++)
 								{
-									tempSMcoords=SMCoords.xy+text_offsets[j];
+									tempSMcoords=SMCoords.xy+text_offsets[j].xy;
 									if (!(tempSMcoords.x<0.001||tempSMcoords.x>0.999||tempSMcoords.y<0.001||tempSMcoords.y>0.999))
 									{
 										texture_data=texture(SMTex_Sampler[Cascade],vec3(tempSMcoords,i),0).xy;
@@ -155,41 +432,77 @@ void main()
 										}
 									}						
 								}
-								final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation)*draw_val;
+								final_color+=(currentlightl.light_color/Attenuation*draw_val*Cut_Off_Effect)*min((LTP_N_Dot+P),1.0);
 							}
-#else
+#endif
+#ifdef PCF
 							/////////////////////////////////////PCF//////////////////////////////
 							
-							float off_set=0.1/(currentlightl.max_radius-1.0);
-							float filter_offset=off_set*2;
+							/*if(Cascade==0)
+								final_color+=vec3(0.5,0,0);
+							if(Cascade==1)
+								final_color+=vec3(0.5,0.5,0);
+							if(Cascade==2)
+								final_color+=vec3(0,0.5,0);
+							if(Cascade==3)
+								final_color+=vec3(0,0.5,0.5);
+							if(Cascade==4)
+								final_color+=vec3(0,0,0.5);
+							if(Cascade>4)
+								final_color+=vec3(0.5,0,0.5);*/
+
+							ivec2 TextureSize=textureSize(SMTex_Sampler[Cascade],0).xy;
+							float off_set=pow(10.0,floor(log(SMCoords.z)-4.0));
+							float filter_offset=off_set;
 							float depth=SMCoords.z-off_set;
-							float texture_data=texture(SMTex_Sampler[Cascade],vec3(SMCoords.xy,i)).x;
 							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
-							float draw_val=1;
+							float draw_val;
 							vec2 tempSMcoords;
-							if (depth>texture_data)
-								draw_val-=delta_intesity;
+							draw_val=BilinearShadowTest(SMCoords.xy,SMCoords.z,SMTex_Sampler[Cascade],i,currentlightl.max_radius,TextureSize)*text_offsets[0].w;
 							for (int j=0;j<8;j++)
 							{
-								tempSMcoords=SMCoords.xy+text_offsets[j];
-								if (!(tempSMcoords.x<0.001||tempSMcoords.x>0.999||tempSMcoords.y<0.001||tempSMcoords.y>0.999))
+								tempSMcoords=SMCoords.xy+text_offsets[j].xy*(length(position_LV)/100.0f+1.0);
+								if (!(tempSMcoords.x<0.0001||tempSMcoords.x>0.9999||tempSMcoords.y<0.0001||tempSMcoords.y>0.9999))
 								{
-									texture_data=texture(SMTex_Sampler[Cascade],vec3(tempSMcoords,i)).x;
-									if (SMCoords.z>texture_data+filter_offset)	
-										draw_val-=delta_intesity;
+									draw_val+=BilinearShadowTest(tempSMcoords,SMCoords.z,SMTex_Sampler[Cascade],i,currentlightl.max_radius,TextureSize)*text_offsets[j].z;
 								}
+								else
+									draw_val+=text_offsets[j].z;
 							}
-							final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation)*draw_val;
-							
+							vec3 CTP=-normalize(position_LV);
+							vec3 HW=(-Light_To_Point+CTP)/2;
+							vec3 R=reflect(Light_To_Point,Normal);
+
+							float HW_N_Dot=dot(HW,Normal);
+							float CTP_N_Dot=dot(CTP,Normal);
+							float CTP_HW_Dot=dot(CTP,HW);
+
+							float P=pow(max(0,dot(R,CTP)),shininess);
+							//P=SpecTerm(a,CTP_N_Dot,HW_N_Dot ,LTP_N_Dot);
+							float P2=pow(max(0,dot(reflect(refract(Light_To_Point,Normal,1.0/n1),Normal),-refract(-CTP,Normal,1.0/n1))),shininess2);
+
+							final_color+=(currentlightl.light_color/Attenuation*draw_val*Cut_Off_Effect)*min((LTP_N_Dot+P),1.0);
 #endif
 						}
 					}
 					else
 					{
 						float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
-						final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation);
+						
+						vec3 CTP=normalize(position_LV);
+						vec3 HW=(Light_To_Point+CTP)/2;
+						vec3 R=reflect(Light_To_Point,Normal);
+
+						float HW_N_Dot=-dot(HW,Normal);
+						float CTP_N_Dot=-dot(CTP,Normal);
+						float CTP_HW_Dot=dot(CTP,HW);
+
+						float P=pow(max(0,dot(R,CTP)),shininess);
+						//P=SpecTerm(a,CTP_N_Dot,HW_N_Dot ,LTP_N_Dot);
+						float P2=pow(max(0,dot(reflect(refract(Light_To_Point,Normal,1.0/n1),Normal),-refract(-CTP,Normal,1.0/n1))),shininess2);
+						
+						final_color+=(currentlightl.light_color/Attenuation*Cut_Off_Effect)*min((LTP_N_Dot+P),1.0);
 					}
-					final_color*=Cut_Off_Effect;
 				}
 			}
 		}

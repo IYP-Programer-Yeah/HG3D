@@ -32,6 +32,7 @@ PFNGLUNIFORM1IVPROC                          glUniform1iv;
 PFNGLUNIFORM1FPROC                           glUniform1f;
 PFNGLUNIFORM1FVPROC                          glUniform1fv;
 PFNGLUNIFORM3FVPROC                          glUniform3fv;
+PFNGLUNIFORM3FPROC                           glUniform3f;
 PFNGLUNIFORMMATRIX4FVPROC                    glUniformMatrix4fv;
 PFNGLACTIVETEXTUREPROC                       glActiveTexture;
 PFNGLBINDSAMPLERPROC                         glBindSampler;
@@ -97,6 +98,7 @@ void Init_glew()
 	glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
 	glUniform1fv = (PFNGLUNIFORM1FVPROC)wglGetProcAddress("glUniform1fv");
 	glUniform3fv = (PFNGLUNIFORM3FVPROC)wglGetProcAddress("glUniform3fv");
+	glUniform3f = (PFNGLUNIFORM3FPROC)wglGetProcAddress("glUniform3f");
 	glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)wglGetProcAddress("glUniformMatrix4fv");
 	glActiveTexture = (PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture");
 	glBindSampler = (PFNGLBINDSAMPLERPROC)wglGetProcAddress("glBindSampler");

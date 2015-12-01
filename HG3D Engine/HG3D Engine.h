@@ -4,6 +4,7 @@
 #include <gl/glu.h>
 #include <math.h>
 #include <xmmintrin.h>
+#include <time.h>
 
 // load GL libs
 #pragma comment(lib, "opengl32.lib")
@@ -30,14 +31,17 @@
 
 #define MaxLightNums	   32
 #define MaxShadowmapsNums  8
-#define MaxCascadessNums   8
+#define MaxCascadessNums   1
+#define MaxSoftShadowDepth 1
 
-#define Shadowmap_Res			   2048						 //shadow map resolution 
+#define Shadowmap_Res			   4096						 //shadow map resolution 
+
+#define GBufferTextNums			   2		
 
 #define lights_UBO_binding_point 1							 //the binding point of the lights
 #define text_offsets_UBO_binding_point 2					 //the binding point of the texture sampling offset
 
-#define VSM													 //use PCF instead of VSMs
+#define PCF//use PCF instead of VSMs
 
 namespace HG3D_Engine
 {
@@ -84,6 +88,7 @@ namespace HG3D_Engine
 		union
 		{
 #ifdef _M_X64
+
 			__declspec(align(16)) float x[16];
 			__declspec(align(16)) float xy[4][4];
 			__declspec(align(16)) __m128 data_row[4];
@@ -192,7 +197,7 @@ namespace HG3D_Engine
 		float Emission[3];//Emission color
 		float TF[3];//transmission filter color
 		float dissolve;//transparancy 
-		float Spec_Exponent;//specular reflection exponent range 1 to 10000
+		float Fresnel;//Fresnel of the material
 		float optical_density;//optical density (light bending throgh the mat) range 0.001 to 1
 		float roughness;//roughness of the surface
 		float sharpness;//sharpness of the reflection 0 to 1000
@@ -214,7 +219,7 @@ namespace HG3D_Engine
 		unsigned long int *indices;       //vert indices
 
 		unsigned long int text_ID_diff;               //diffuse texture ID
-		unsigned long int text_ID_spec;               //specular texture ID
+		unsigned long int text_ID_roughness;          //roughness texture ID
 		unsigned long int text_ID_normal;             //normal map texure ID
 		unsigned long int text_ID_height;             //height map texture ID
 		unsigned long int text_ID_mask;               //mask texture ID
@@ -225,7 +230,7 @@ namespace HG3D_Engine
 		unsigned char MeshID[4];          //mesh id for defered shading
 
 		bool have_diff_text;              //have diffuse texture? 
-		bool have_spec_text;              //have specular texture? 
+		bool have_roughness_text;         //have roughness texture? 
 		bool have_NM_text;                //have normals map texture? 
 		bool have_HM_text;                //have height map texture? 
 		bool have_mask_text;              //have mask texture? 
@@ -282,9 +287,18 @@ namespace HG3D_Engine
 		vector up;//up vector
 
 		bool needs_update;//camera needs an update
+
+		GLuint GBufferID;
+
+#ifdef DeferredSM
+		GLuint DeferredShadowText[MaxShadowmapsNums];
+		GLuint DeferredFilteredShadowText;
+		GLuint DeferredShadow_RBO_ID;
+		GLuint DeferredShadow_FBO_ID;
+#endif
+		void __declspec(dllexport) init();//initialize the camera
 		void __declspec(dllexport) update_camera();//update camera
 		void __declspec(dllexport) fps_camera(float pitch,float yaw,vector head_up);//pith and yaw the camera in fps mode
-
 	};
 	//end of camera class
 	//texture class
@@ -327,13 +341,13 @@ namespace HG3D_Engine
 
 		float Attenuation[3];//attenuation values
 
-		float nonesense2;
+		float edge_cut_off_cos_delta;
 
 		float direction[3];//the direction of light
 
 		bool light_enabled;//is the light enabled
 		bool update_shadow_maps;//does the shadow map need update
-		bool nonesense1;
+		bool directional;//light is diretional
 		bool shadow_map;//does it use shadow maps?
 
 		
@@ -363,7 +377,7 @@ namespace HG3D_Engine
 		unsigned long int mesh_nums;			//number of meshs
 		unsigned long int vert_nums;			//total number of verts
 		unsigned long int total_size;			//total size of the verts data
-		unsigned long int rendere_ID;			//will be initialized in init
+		unsigned long int renderer_ID;			//will be initialized in init
 		unsigned long int texture_nums;         //number of textures
 		unsigned long int last_light_ID;        //last light id
 
@@ -371,6 +385,10 @@ namespace HG3D_Engine
 		unsigned long int *current_cameras;		//current used cameras
 
 		bool light_data_changed;				//lights need to be updated
+
+		GLuint ScreenQuadVAO;					//screen mesh
+		GLuint ScreenQuadVBO;					//screen mesh
+
 
 		GLuint text_offset_UBO_ID;				//the id of texture sampling offset 
 		GLuint light_data_UBO_ID;				//the id of light data 
@@ -388,10 +406,12 @@ namespace HG3D_Engine
 		GLuint Normal_Matrix_Location[50];			//the loaction of normal matrix in shader
 		GLuint Projection_Matrix_Location[50];		//the loaction of projection matrix in shader
 		GLuint View_Matrix_Location[50];			//the loaction of view matrix in shader
+		GLuint Camera_Position_Location[50];			//the loaction of view matrix in shader
 		GLuint Lights_Nums_Location[50];			//the loaction of Lights Nums in shader
 		GLuint Lights_Proj_View_Matrix_Location[50];//the loaction of Lights view matrix in shader
 		GLuint Shadowmap_Sampler_Location[50];		//the loaction of Lights view matrix in shader
 		GLuint CSM_Data_Location[50];				//the location of Ext's
+
 
 
 		GLuint Shadow_Maps_Tex_ID[MaxCascadessNums]; //the shadow map textures an array of cascades

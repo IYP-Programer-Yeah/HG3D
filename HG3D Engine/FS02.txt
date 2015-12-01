@@ -1,0 +1,75 @@
+#version 450
+
+layout(early_fragment_tests) in; //later will be added if it was availble
+
+in vec3 normal;
+in vec2 coord;
+
+out vec4 Output1;
+out vec4 Output2;
+
+uniform float MatID;
+uniform sampler2D Diffuse_Texture;
+
+
+#define _2pow23  8388608
+#define log10_2pow23_1 6.923689f
+float rgba_to_float(vec4 imp)
+{
+	float inp = (255.0f * (imp.b + (imp.g + imp.r * 256.0f) * 256.0f) - float(_2pow23))*pow(10.0f, imp.a * 255.0f - 128.0f);
+	return inp;
+}
+vec4 float_to_rgba(float inp)
+{
+	vec4 rgba;
+	if (inp == 0.0f)
+	{
+		rgba[0] = 0;
+		rgba[1] = 0;
+		rgba[2] = 0;
+		rgba[3] = 0.5;
+		return rgba;
+	}
+	rgba[3] = float(int(log(abs(inp))/log(10.0f) - log10_2pow23_1)) / 255.0f;
+	int _24bit_int = int(inp*pow(10, -255.0f*rgba[3])) + _2pow23-1; //make it positive
+	rgba[3] = float(int(log(abs(inp))/log(10.0f) - log10_2pow23_1)+128) / 255.0f;
+	rgba[2] = float(_24bit_int % 256) / 255.0f;
+	_24bit_int = int(float(_24bit_int) / 256.0f);
+	rgba[1] = float(_24bit_int % 256) / 255.0f;
+	_24bit_int = int(float(_24bit_int) / 256.0f);
+	rgba[0] = float(_24bit_int % 256) / 255.0f;
+	return  rgba;
+}
+
+
+float log10(float inp)
+{
+	return log(inp)/2.302585f;
+}
+float rgb_to_float(vec3 inp)
+{
+	ivec3 ShortInt=ivec3(round(inp*255.0f));
+	float ret=(ShortInt.x*256+ShortInt.y)*256+ShortInt.z;
+	ret*=0.00000001f;
+	return ret;
+}
+vec3 float_to_rgb(float inp)
+{
+	float FinalFloat=inp*100000000f;
+	int MainInt=int(FinalFloat);
+	ivec3 ShorInt;
+	ShorInt.z=MainInt%256;
+	MainInt/=256;
+	ShorInt.y=MainInt%256;
+	MainInt/=256;
+	ShorInt.x=MainInt%256;
+	vec3 rgb=vec3(ShorInt)/255.0f;
+	return  rgb;
+}
+
+void main()
+{
+	Output1=vec4(normalize(normal.xyz)/2.0f+0.5f,MatID);
+	Output2.xyz=float_to_rgb(rgb_to_float(texture(Diffuse_Texture,coord).xyz));
+	Output2.w=0.0f;
+}
