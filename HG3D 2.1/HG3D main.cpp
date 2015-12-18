@@ -48,7 +48,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Engine.lights[i].calculate_max_radius();
 		Engine.lights[i].shadow_map = false;
 	}
-	
+
 	vector direction;
 	direction.build(0.0f, 0.0f, -1.0f);
 	direction = normalize(direction);
@@ -72,7 +72,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	direction.build(-1.0f, -1.0f, 0.0f);
 	direction = normalize(direction);
-	
+
 	Engine.lights[1].light_enabled = true;
 	Engine.lights[1].Attenuation[0] = 0.0001f;
 	Engine.lights[1].Attenuation[1] = 0.0001f;
@@ -218,14 +218,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	World.LoadWorld(&Engine, Masses, Names, IDs, ARRAYSIZE(Masses)); //or ARRAYSIZE(Names)
 
 
-	Physics::PhysicsObject& SphereObj = World.GetPhysicsObject("Sphere");
+	Physics::PhysicsObject* SphereObj = World.GetPhysicsObject("Sphere");
 
 #ifdef NT_IS_DEBUGGING
-	if (!SphereObj.m_Valid)
+	if (!SphereObj)
 		OutputDebugString("SphereObj is not valid.\n");
 #endif
 
-	SphereObj.AddVelocity(0.0, 0.0, -10.0);
+	SphereObj->AddVelocity(0.0, 0.0, -10.0);
 
 	while (msg->message != WM_QUIT)  
 	{
@@ -301,12 +301,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			current_time = clock();
 
 			long double dt = (current_time - last_time) / 1000.0f;
+
 			if (Get_Mouse_Stat(Mouse_Left_Stat))
 			{
 			    World.UpdateCollision();
 				World.Update(dt); 
 
 			}
+
 			Engine.test_render(); //render scene
 			//Engine.render();
 
