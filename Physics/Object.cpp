@@ -46,7 +46,6 @@ namespace Physics
 
 		m_Moveable = true;
 		m_ApplyGravity = false;
-		m_Valid = true;
 		m_DoCollision = true;
 
 		m_LastFrameDataInitialized = false;
