@@ -1,6 +1,6 @@
 #version 450
 
-#define PCF
+#define VSM
 
 layout(early_fragment_tests) in; //later will be added if it was availble
 

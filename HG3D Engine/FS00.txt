@@ -1,6 +1,6 @@
 #version 450
 
-#define PCF
+#define VSM
 #define MaxShadowmapsNums  8
 #define MaxCascadessNums   1
 

@@ -26,7 +26,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	point horse_pos,light_pos;
 	horse_pos.build(0.0f, 0.0f, -50.0f);
 	vector light_dir;
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 32; i++)
 	{
 		Engine.lights[i].light_enabled = true;
 		Engine.last_light_ID++;

@@ -41,7 +41,7 @@
 #define lights_UBO_binding_point 1							 //the binding point of the lights
 #define text_offsets_UBO_binding_point 2					 //the binding point of the texture sampling offset
 
-#define PCF//use PCF instead of VSMs
+#define VSM//use PCF instead of VSMs
 
 namespace HG3D_Engine
 {
