@@ -1,16 +1,26 @@
 #version 450
 
-#define VSM
+#define PCF
 #define MaxShadowmapsNums  8
 #define MaxCascadessNums   1
 
 #define PI                  3.14159				//pi
 #define log2				0.3010299956639811	//log2
+#define sample_count		128					//number of samples
+
+#define sample_count_RCP	1.0/sample_count
+#define TAU					0.0003
+#define PHI					10000000.0
+#define PI_RCP				0.31830988618379067153776752674503
+#define Fog_Const			TAU * (PHI * 0.25 * PI_RCP)
+
+#define MaxCascadessNums   1
 
 in vec3 normal;
 in vec3 position;
 in vec3 position_LV;
 in vec2 coord;
+in vec3 start;
 in float cascade;
 
 out vec4 Output1;
@@ -20,6 +30,9 @@ layout(early_fragment_tests) in; //will try this later
 uniform int Lights_Nums;
 uniform sampler2DArray SMTex_Sampler[MaxCascadessNums];
 uniform mat4 light_proj_view_matrix[MaxCascadessNums*MaxShadowmapsNums];
+uniform vec3 Camera_Position;
+uniform mat4 ViewMatrix;
+
 
 struct light
 {
@@ -160,11 +173,18 @@ float SpecTerm(float a, vec3 L, vec3 V, vec3 N)
     float a2 = a*a;
 
     float D = pow(max(0,dot(N, H)), 2 / (a2 * a2) - 2) / (a2 * a2 * PI);
+    //float D = pow(max(0,dot(V,L)), 2 / (a2 * a2) - 2) / (a2 * a2 * PI);
     float G = NoL * NoV;
     float denom = 4 * NoL * NoV;
 
-    float val = /*pow(max(0,-dot(V, reflect(L,N))), 100);//*/D * G / denom;
+	if (denom==0)
+		return 0;
+    float val = D * G / denom;
     return val;
+}
+
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
 
@@ -177,8 +197,14 @@ void main()
 
 	vec3 N=normalize(normal);
 
+	vec3 Fog;
+
 	for (int i=0;i<Lights_Nums;i++)
 	{
+
+		const vec3 LightColor=Light[i].light_color;
+
+		Fog=vec3(0.0);
 
 		vec3 L=Light[i].light_position-position;
 		const float L_Length=length(L);
@@ -188,6 +214,74 @@ void main()
 
 		L=L/L_Length;
 		const float NoL=dot(L,N);
+
+		if ((i<MaxShadowmapsNums)&&(Light[i].nonesense1>16777215||Light[i].nonesense1<0))
+		{
+
+
+
+
+
+
+
+
+
+
+
+
+			//const vec3 randomizer=normalize(position_LV)*(-abs(rand(position.xy)));
+			const vec3 step=(-position_LV)/float(sample_count);
+			const float step_length=length(step);
+
+			vec3 current_pos=Camera_Position+step*abs(rand(position.xy)+rand(position.xz)+rand(position.yz))/3;
+
+			vec4 ShadowMapNDC;
+			vec3 ShadowMapCoord;
+
+			float FogIntensity=0;
+
+			for (int j=0;j<sample_count;j++)
+			{
+				vec3 LTS=current_pos-Light[i].light_position;
+				float LTS_Length=length(LTS);
+
+				if (dot(LTS,Light[i].direction)/LTS_Length>Light[i].cut_off_cos)
+				{
+
+					vec4 temp_position=ViewMatrix*vec4(current_pos,1);
+					const int Cascade=int(abs(-temp_position.z-1.0)/999.0*float(MaxCascadessNums*MaxCascadessNums));
+
+					bool shadowed=true;
+
+					ShadowMapNDC=light_proj_view_matrix[i*MaxCascadessNums+Cascade]*vec4(current_pos,1);
+					ShadowMapCoord=(ShadowMapNDC.xyz/ShadowMapNDC.w+1)/2;
+
+					if (!(ShadowMapCoord.x<0.001||ShadowMapCoord.x>0.999||ShadowMapCoord.y<0.001||ShadowMapCoord.y>0.999||ShadowMapCoord.z<0.001||ShadowMapCoord.z>1.0))
+					{
+						float texture_data=texture(SMTex_Sampler[Cascade],vec3(ShadowMapCoord.xy, i) , 0).x;
+						if (ShadowMapCoord.z<=texture_data)
+							shadowed=false;
+					}
+					else
+						shadowed=false;
+
+					if (!shadowed&&LTS_Length!=0)
+					{
+						float AttenuationEffect=Light[i].Attenuation[0]+LTS_Length*(Light[i].Attenuation[1]+LTS_Length*Light[i].Attenuation[2]);
+						FogIntensity+= Fog_Const/LTS_Length/LTS_Length * exp( (LTS_Length+(sample_count-i)*step_length) * -TAU )*step_length/AttenuationEffect;
+					}
+				}
+				current_pos+=step;
+			}
+
+			Fog=FogIntensity*LightColor;
+			Output1+=vec4(Fog,0.0);
+
+
+
+		}
+
+
 
 		if (NoL<0.0)
 			continue;
@@ -214,7 +308,6 @@ void main()
 
 
 		vec3 Albedo=vec3(1.0);
-		const vec3 LightColor=Light[i].light_color;
 		
 		if ((i<MaxShadowmapsNums)&&(Light[i].nonesense1>16777215||Light[i].nonesense1<0))
 		{
@@ -271,241 +364,6 @@ void main()
 			
 		}
 
-		Output1+=vec4((LightColor*Albedo)*min(1.0,BRDF/Attenuation)*ShadowValue*Cut_Off_Effect,Alpha);
+		Output1+=vec4((LightColor*Albedo)*BRDF/Attenuation*ShadowValue*Cut_Off_Effect,Alpha);
 	}
-
 }
-
-
-void bnmain()
-{
-	float shininess=100;
-	float shininess2=100;
-
-	float roughness=0.8;
-	float a=roughness*roughness;
-
-	float n1=1.0;
-
-	vec3 final_color;
-	final_color=vec3(0,0,0);
-	vec3 Normal=normalize(normal);
-	light currentlightl;
-	/*vec2 text_offsets[8];
-	text_offsets[0]=vec2(0.00025,0.0);text_offsets[1]=vec2(-0.00025,0.0);text_offsets[2]=vec2(0.0,0.00025);text_offsets[3]=vec2(0.0,-0.00025);
-	text_offsets[4]=vec2(0.00017,0.00017);text_offsets[5]=vec2(-0.00017,0.00017);text_offsets[6]=vec2(-0.00017,-0.00017);text_offsets[7]=vec2(0.00017,-0.00017);*/
-	for (int i=0;i<Lights_Nums;i++)
-	{
-		currentlightl=Light[i];
-		vec3 Light_To_Point=position-currentlightl.light_position;
-		float LTP_Length=length(Light_To_Point);
-		Light_To_Point=Light_To_Point/LTP_Length;
-		if (LTP_Length<currentlightl.max_radius)
-		{	
-			float LTP_N_Dot=-dot(Light_To_Point,Normal);
-			if (LTP_N_Dot>=0.0)
-			{
-				float Cut_Off_Dot;
-				if (currentlightl.cut_off_cos==-1.0)
-					Cut_Off_Dot=-1;
-				else
-					Cut_Off_Dot=currentlightl.cut_off_cos-dot(Light_To_Point,currentlightl.direction);
-				if (Cut_Off_Dot<currentlightl.edge_cut_off_cos_delta)
-				{
-					float Cut_Off_Effect=min(1.0,(currentlightl.edge_cut_off_cos_delta-Cut_Off_Dot)/currentlightl.edge_cut_off_cos_delta);
-					if (i>MaxShadowmapsNums-1)
-					{
-						float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
-						
-						vec3 CTP=normalize(position_LV);
-						vec3 HW=(Light_To_Point+CTP)/2;
-						vec3 R=reflect(Light_To_Point,Normal);
-
-						float HW_N_Dot=-dot(HW,Normal);
-						float CTP_N_Dot=-dot(CTP,Normal);
-						float CTP_HW_Dot=dot(CTP,HW);
-
-						float P=pow(max(0,dot(R,CTP)),shininess);
-						//P=SpecTerm(a,CTP_N_Dot,HW_N_Dot ,LTP_N_Dot);
-						float P2=pow(max(0,dot(reflect(refract(Light_To_Point,Normal,1.0/n1),Normal),-refract(-CTP,Normal,1.0/n1))),shininess2);
-						
-						final_color+=(currentlightl.light_color/Attenuation*Cut_Off_Effect)*min((LTP_N_Dot+P),1.0);
-					}
-					else if (currentlightl.nonesense1>16777215||currentlightl.nonesense1<0)
-					{
-						int Cascade=int(cascade);
-						vec4 Actual_Pos=light_proj_view_matrix[i*MaxCascadessNums+Cascade]*vec4(position,1);
-						vec3 SMCoords=(Actual_Pos.xyz/Actual_Pos.w+1)/2;
-
-						if (SMCoords.x<0.001||SMCoords.x>0.999||SMCoords.y<0.001||SMCoords.y>0.999||SMCoords.z<0.001||SMCoords.z>1.0)
-						{
-							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
-													
-							vec3 CTP=-normalize(position_LV);
-							vec3 HW=(-Light_To_Point+CTP)/2;
-							vec3 R=reflect(Light_To_Point,Normal);
-
-							float HW_N_Dot=dot(HW,Normal);
-							float CTP_N_Dot=dot(CTP,Normal);
-							float CTP_HW_Dot=dot(CTP,HW);
-
-							float P=pow(max(0,dot(R,CTP)),shininess);
-							//P=SpecTerm(a,CTP_N_Dot,HW_N_Dot ,LTP_N_Dot);
-							float P2=pow(max(0,dot(reflect(refract(Light_To_Point,Normal,1.0/n1),Normal),-refract(-CTP,Normal,1.0/n1))),shininess2);
-						
-							final_color+=(currentlightl.light_color/Attenuation*Cut_Off_Effect)*min((LTP_N_Dot+P),1.0);
-						}
-						else 
-						{
-							
-#ifdef VSM
-							////////////////////////////VSM///////////////////////////////////////
-							
-
-							/*float off_set=0.1/currentlightl.max_radius;
-							float depth=SMCoords.z-off_set;
-							vec2 texture_data=textureLod(SMTex_Sampler[i],SMCoords.xy, 1).xy;
-							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
-							float draw_val=1;
-							if (depth>texture_data.x)
-							{
-								float variance=texture_data.y-texture_data.x*texture_data.x;
-								float mD = texture_data.x - SMCoords.z; 
-								float mD_2 = mD * mD;
-								draw_val*=min(1,max(0,variance/(variance+mD_2)));
-							}
-							final_color-=currentlightl.light_color*(LTP_N_Dot/Attenuation)*draw_val;
-							*/
-
-							/*if(Cascade==0)
-								final_color+=vec3(0.5,0,0);
-							if(Cascade==1)
-								final_color+=vec3(0.5,0.5,0);
-							if(Cascade==2)
-								final_color+=vec3(0,0.5,0);
-							if(Cascade==3)
-								final_color+=vec3(0,0.5,0.5);
-							if(Cascade==4)
-								final_color+=vec3(0,0,0.5);
-							if(Cascade>4)
-								final_color+=vec3(0.5,0,0.5);*/
-
-							float off_set=pow(10.0,floor(log(SMCoords.z)-4.0));
-							float filter_offset=off_set*20;
-							float depth=SMCoords.z-off_set;
-							vec2 texture_data=texture(SMTex_Sampler[Cascade],vec3(SMCoords.xy, i) , 0).xy;
-							//vec2 texture_data=texelFetch(SMTex_Sampler[0],ivec3(floor(SMCoords.xy*textureSize(SMTex_Sampler[0],0).xy ), i) , 0).xy;
-							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
-
-
-																				
-							vec3 CTP=-normalize(position_LV);
-							vec3 HW=(-Light_To_Point+CTP)/2;
-							vec3 R=reflect(Light_To_Point,Normal);
-
-							float HW_N_Dot=dot(HW,Normal);
-							float CTP_N_Dot=dot(CTP,Normal);
-							float CTP_HW_Dot=dot(CTP,HW);
-
-							float P=pow(max(0,dot(R,CTP)),shininess);
-							//P=SpecTerm(a,CTP_N_Dot,HW_N_Dot ,LTP_N_Dot);
-							float P2=pow(max(0,dot(reflect(refract(Light_To_Point,Normal,1.0/n1),Normal),-refract(-CTP,Normal,1.0/n1))),shininess2);
-						
-
-
-							if (depth<=texture_data.x)
-							{
-								float draw_val=1.0;
-								vec2 tempSMcoords;
-								for (int j=0;j<8;j++)
-								{
-									tempSMcoords=SMCoords.xy+text_offsets[j].xy;
-									if (!(tempSMcoords.x<0.001||tempSMcoords.x>0.999||tempSMcoords.y<0.001||tempSMcoords.y>0.999))
-									{
-										texture_data=texture(SMTex_Sampler[Cascade],vec3(tempSMcoords,i),0).xy;
-										if (SMCoords.z>texture_data.x+filter_offset)	
-										{				
-											float variance=texture_data.y-texture_data.x*texture_data.x;
-											float mD = texture_data.x - SMCoords.z; 
-											float mD_2 = mD * mD;
-											draw_val*=min(1,max(0,variance/(variance+mD_2)));
-										}
-									}						
-								}
-								final_color+=(currentlightl.light_color/Attenuation*draw_val*Cut_Off_Effect)*min((LTP_N_Dot+P),1.0);
-							}
-#endif
-#ifdef PCF
-							/////////////////////////////////////PCF//////////////////////////////
-							
-							/*if(Cascade==0)
-								final_color+=vec3(0.5,0,0);
-							if(Cascade==1)
-								final_color+=vec3(0.5,0.5,0);
-							if(Cascade==2)
-								final_color+=vec3(0,0.5,0);
-							if(Cascade==3)
-								final_color+=vec3(0,0.5,0.5);
-							if(Cascade==4)
-								final_color+=vec3(0,0,0.5);
-							if(Cascade>4)
-								final_color+=vec3(0.5,0,0.5);*/
-
-							ivec2 TextureSize=textureSize(SMTex_Sampler[Cascade],0).xy;
-							float off_set=pow(10.0,floor(log(SMCoords.z)-4.0));
-							float filter_offset=off_set;
-							float depth=SMCoords.z-off_set;
-							float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
-							float draw_val;
-							vec2 tempSMcoords;
-							draw_val=BilinearShadowTest(SMCoords.xy,SMCoords.z,SMTex_Sampler[Cascade],i,currentlightl.max_radius,TextureSize)*text_offsets[0].w;
-							for (int j=0;j<8;j++)
-							{
-								tempSMcoords=SMCoords.xy+text_offsets[j].xy*(length(position_LV)/100.0f+1.0);
-								if (!(tempSMcoords.x<0.0001||tempSMcoords.x>0.9999||tempSMcoords.y<0.0001||tempSMcoords.y>0.9999))
-								{
-									draw_val+=BilinearShadowTest(tempSMcoords,SMCoords.z,SMTex_Sampler[Cascade],i,currentlightl.max_radius,TextureSize)*text_offsets[j].z;
-								}
-								else
-									draw_val+=text_offsets[j].z;
-							}
-							vec3 CTP=-normalize(position_LV);
-							vec3 HW=(-Light_To_Point+CTP)/2;
-							vec3 R=reflect(Light_To_Point,Normal);
-
-							float HW_N_Dot=dot(HW,Normal);
-							float CTP_N_Dot=dot(CTP,Normal);
-							float CTP_HW_Dot=dot(CTP,HW);
-
-							float P=pow(max(0,dot(R,CTP)),shininess);
-							//P=SpecTerm(a,CTP_N_Dot,HW_N_Dot ,LTP_N_Dot);
-							float P2=pow(max(0,dot(reflect(refract(Light_To_Point,Normal,1.0/n1),Normal),-refract(-CTP,Normal,1.0/n1))),shininess2);
-
-							final_color+=(currentlightl.light_color/Attenuation*draw_val*Cut_Off_Effect)*min((LTP_N_Dot+P),1.0);
-#endif
-						}
-					}
-					else
-					{
-						float Attenuation=currentlightl.Attenuation[0]+LTP_Length*(currentlightl.Attenuation[1]+LTP_Length*currentlightl.Attenuation[2]);
-						
-						vec3 CTP=normalize(position_LV);
-						vec3 HW=(Light_To_Point+CTP)/2;
-						vec3 R=reflect(Light_To_Point,Normal);
-
-						float HW_N_Dot=-dot(HW,Normal);
-						float CTP_N_Dot=-dot(CTP,Normal);
-						float CTP_HW_Dot=dot(CTP,HW);
-
-						float P=pow(max(0,dot(R,CTP)),shininess);
-						//P=SpecTerm(a,CTP_N_Dot,HW_N_Dot ,LTP_N_Dot);
-						float P2=pow(max(0,dot(reflect(refract(Light_To_Point,Normal,1.0/n1),Normal),-refract(-CTP,Normal,1.0/n1))),shininess2);
-						
-						final_color+=(currentlightl.light_color/Attenuation*Cut_Off_Effect)*min((LTP_N_Dot+P),1.0);
-					}
-				}
-			}
-		}
-	}
-	Output1=vec4(final_color,1);
-} 

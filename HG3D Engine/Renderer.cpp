@@ -231,9 +231,11 @@ namespace HG3D_Engine
 				format = GL_RG;
 			else if (number_of_components == 1)
 				format = GL_R;
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, rgba);//set the data
 			if (generate_mipmaps)//creat the miomaps if wanted
-				gluBuild2DMipmaps(GL_TEXTURE_2D, format, width, height, format, GL_UNSIGNED_BYTE, rgba);
+				glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, true);
+			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, rgba);//set the data
+			/*if (generate_mipmaps)//creat the miomaps if wanted
+				gluBuild2DMipmaps(GL_TEXTURE_2D, format, width, height, format, GL_UNSIGNED_BYTE, rgba);*/
 		}
 		else
 		{

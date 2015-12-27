@@ -26,7 +26,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	point horse_pos,light_pos;
 	horse_pos.build(0.0f, 0.0f, -50.0f);
 	vector light_dir;
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		Engine.lights[i].light_enabled = true;
 		Engine.last_light_ID++;
@@ -65,8 +65,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[0].direction[0] = float(direction.x);
 	Engine.lights[0].direction[1] = float(direction.y);
 	Engine.lights[0].direction[2] = float(direction.z);
-	//Engine.lights[0].cut_off_cos = cos(3.14f / 9.0f);
-	//Engine.lights[0].edge_cut_off_cos_delta = cos(3.14f / 10.0f) - cos(3.14f / 9.0f);
+	Engine.lights[0].cut_off_cos = cos(3.14f / 6.0f);
+	Engine.lights[0].edge_cut_off_cos_delta = cos(3.14f / 7.0f) - cos(3.14f / 6.0f);
 	Engine.lights[0].calculate_max_radius();
 	Engine.lights[0].shadow_map = true;
 
@@ -236,7 +236,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DispatchMessage(msg);
 			int MWD = Get_Mouse_Wheel_Delta();
 
-			if (MWD != 0 && !Get_Mouse_Stat(Mouse_Right_Stat))//check if mouse will moved
+			if (MWD != 0 && !Get_Mouse_Stat(Mouse_Right_Stat))//check if mouse will move
 			{
 				HG3D_Engine::point LastPos;//last pos
 
@@ -250,7 +250,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 				Engine.cameras[0].needs_update = true;//need update
 			}
-			if (MWD != 0 && Get_Mouse_Stat(Mouse_Right_Stat))//check if mouse will moved
+			if (MWD != 0 && Get_Mouse_Stat(Mouse_Right_Stat))//check if mouse will move
 			{
 				HG3D_Engine::point LastPos;//last pos
 

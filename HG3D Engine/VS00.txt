@@ -11,6 +11,8 @@ out vec3 normal;
 out vec3 position;
 out vec3 position_LV;
 out vec2 coord;
+out vec3 start;
+//out vec3 end;
 out float cascade;
 
 
