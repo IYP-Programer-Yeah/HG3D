@@ -939,7 +939,7 @@ namespace HG3D_Engine
 			forward.build(lights_in_the_scene[i].direction[0], lights_in_the_scene[i].direction[1], lights_in_the_scene[i].direction[2]);//build the light direction vector
 			_4x4matrix temp_view_mat,light_view_inv;
 			int the_crosser;
-			if (abs(lights_in_the_scene[i].light_position[1]) < 0.01f&&abs(lights_in_the_scene[i].light_position[2]) < 0.01f)//check not to let later errors and then calculate the view matrix
+			if (abs(lights_in_the_scene[i].direction[1]) < 0.01f&&abs(lights_in_the_scene[i].direction[2]) < 0.01f)//check not to let later errors and then calculate the view matrix
 				the_crosser = 1;
 			else
 				the_crosser = 0;
@@ -990,6 +990,9 @@ namespace HG3D_Engine
 				light_proj_view[i*MaxCascadessNums + m] = Projection(Exts[m][0], Exts[m][1], Exts[m][2], Exts[m][3], 1.0f, min(-min(deepestZ[m], deepestZ[m + 1]) + 100.0f, lights_in_the_scene[i].max_radius))*temp_view_mat;
 
 				glUniformMatrix4fv(View_Matrix_Location[1], 1, 1, light_proj_view[i*MaxCascadessNums + m].x);//set view matrix
+				HG3D_Engine::point  a;
+				a.build(0.0f, 100.0f, 50.0f- lights[0].max_radius);
+				a = light_proj_view[i*MaxCascadessNums + m] * a;
 #ifdef VSM
 				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Shadow_Maps_Tex_ID[m], 0, i);//set the texture as color buffer and start drawing
 #endif

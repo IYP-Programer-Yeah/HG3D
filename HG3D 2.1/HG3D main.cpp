@@ -65,8 +65,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[0].direction[0] = float(direction.x);
 	Engine.lights[0].direction[1] = float(direction.y);
 	Engine.lights[0].direction[2] = float(direction.z);
-	Engine.lights[0].cut_off_cos = cos(3.14f / 6.0f);
-	Engine.lights[0].edge_cut_off_cos_delta = cos(3.14f / 7.0f) - cos(3.14f / 6.0f);
+	Engine.lights[0].cut_off_cos = cos(3.14f / 7.0f);
+	Engine.lights[0].edge_cut_off_cos_delta = cos(3.14f / 7.0f) - cos(3.14f / 6.0);
 	Engine.lights[0].calculate_max_radius();
 	Engine.lights[0].shadow_map = true;
 
@@ -80,16 +80,16 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[1].light_color[0] = 1.0f;
 	Engine.lights[1].light_color[1] = 1.0f;
 	Engine.lights[1].light_color[2] = 1.0f;
-	Engine.lights[1].light_position[0] = 200.0f;
-	Engine.lights[1].light_position[1] = 300.0f;
-	Engine.lights[1].light_position[2] = 0.0f;
+	Engine.lights[1].light_position[0] = 0.0f;
+	Engine.lights[1].light_position[1] = 100.0f;
+	Engine.lights[1].light_position[2] = 50.0f;
 	Engine.lights[1].direction[0] = float(direction.x);
 	Engine.lights[1].direction[1] = float(direction.y);
 	Engine.lights[1].direction[2] = float(direction.z);
-	Engine.lights[1].cut_off_cos = cos(3.14f / 9.0f);
-	Engine.lights[1].edge_cut_off_cos_delta = cos(3.14f / 10.0f) - cos(3.14f / 9.0f);
+	//Engine.lights[1].cut_off_cos = cos(3.14f / 9.0f);
+	//Engine.lights[1].edge_cut_off_cos_delta = cos(3.14f / 10.0f) - cos(3.14f / 9.0f);
 	Engine.lights[1].calculate_max_radius();
-	Engine.lights[1].shadow_map = true;
+	//Engine.lights[1].shadow_map = true;
 
 
 	Engine.light_data_changed = 1;
@@ -174,8 +174,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.meshes[10].scale_model(1.0f, 1.0f, 1.0f);
 
 
-	Engine.cameras[0].camera_position.build(0.0f, 100.0f, -50.0f);//put the camera to x=12
-	Engine.cameras[0].forward.build(0.0f, 0.0f, -1.0f);//look int x=-1 direction 
+	Engine.cameras[0].camera_position.build(0.0f, 100.0f, -80.0f);//put the camera to x=12
+	Engine.cameras[0].forward.build(0.0f, 0.0f, 1.0f);//look int x=-1 direction 
 	Engine.cameras[0].camera_viewport[2] = GetW();//update view port
 	Engine.cameras[0].camera_viewport[3] = GetH();//update view port
 	Engine.cameras[0].Right = float(GetW()) / float(GetH());//update projection
