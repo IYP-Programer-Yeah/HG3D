@@ -29,6 +29,7 @@ layout(early_fragment_tests) in; //will try this later
 uniform int Lights_Nums;
 uniform sampler2DArray SMTex_Sampler[MaxCascadessNums];
 uniform mat4 light_proj_view_matrix[MaxCascadessNums*MaxShadowmapsNums];
+uniform mat4 inv_light_proj_view_matrix[MaxCascadessNums*MaxShadowmapsNums];
 uniform vec3 Camera_Position;
 uniform mat4 ViewMatrix;
 
@@ -268,20 +269,18 @@ void main()
 
 					vec3 ray=end-start;
 
-					float ratios[4];
-					ratios[0]=(0-start.x)/ray.x;
-					ratios[1]=(1-start.x)/ray.x;
-
-					ratios[2]=(0-start.y)/ray.y;
-					ratios[3]=(1-start.y)/ray.y;
-
 					float interections[4];
+					interections[0]=(0-start.x)/ray.x;
+					interections[1]=(1-start.x)/ray.x;
+
+					interections[2]=(0-start.y)/ray.y;
+					interections[3]=(1-start.y)/ray.y;
 
 					int intersection_count=0;
 					for (int i=0;i<4;i++)
-						if (ratios[i]>0.0&&ratios[i]<1.0)
+						if (interections[i]>0.0&&interections[i]<1.0)
 						{
-							interections[intersection_count]=ratios[i];
+							interections[intersection_count]=interections[i];
 							intersection_count++;
 						}
 
@@ -320,25 +319,21 @@ void main()
 					const vec3 step=(end-start)/float(sample_count);
 
 					vec3 current_pos=start+step*abs(rand(position.xy)+rand(position.xz)+rand(position.yz))/3.0;
-
-					mat4 inv_SM_VP=inverse(light_proj_view_matrix[i*MaxCascadessNums+CascadeIndex]);
-
-
-					vec3 last_sample=Camera_Position,current_position=Camera_Position;
+					
+					vec3 last_sample;
+					vec4 current_position=vec4(Camera_Position,1.0);
 
 
 					for (int j=0;j<sample_count;j++)
 					{
 						if (!(current_pos.x<0.001||current_pos.x>0.999||current_pos.y<0.001||current_pos.y>0.999||current_pos.z<0.001||current_pos.z>1.0))
 						{
-							last_sample=current_position;
+							last_sample=current_position.xyz;
 
-							vec4 temp_sample=inv_SM_VP*vec4(current_pos*2.0-1.0,1.0);
-							temp_sample=temp_sample/temp_sample.w;
+							current_position=inv_light_proj_view_matrix[i*MaxCascadessNums+CascadeIndex]*vec4(current_pos*2.0-1.0,1.0);
+							current_position=current_position/current_position.w;
 
-							current_position=temp_sample.xyz;
-
-							float step_length=length(current_position-last_sample);
+							float step_length=length(current_position.xyz-last_sample);
 
 
 							vec3 LTS=current_position.xyz-Light[i].light_position;
@@ -370,8 +365,8 @@ void main()
 				}
 			
 			}
-
-
+			
+			
 			
 
 
@@ -399,7 +394,7 @@ void main()
 					bool shadowed=true;
 
 					ShadowMapNDC=light_proj_view_matrix[i*MaxCascadessNums+Cascade]*vec4(current_pos,1);
-					ShadowMapCoord=(ShadowMapNDC.xyz/ShadowMapNDC.w+1)/2;
+					ShadowMapCoord=(ShadowMapNDC.xyz/ShadowMapNDC.w+1.0)*0.5;
 
 					if (!(ShadowMapCoord.x<0.001||ShadowMapCoord.x>0.999||ShadowMapCoord.y<0.001||ShadowMapCoord.y>0.999||ShadowMapCoord.z<0.001||ShadowMapCoord.z>1.0))
 					{
@@ -418,12 +413,12 @@ void main()
 				}
 				current_pos+=step;
 			}
+			
 			*/
 
 
 
-
-
+			
 
 
 

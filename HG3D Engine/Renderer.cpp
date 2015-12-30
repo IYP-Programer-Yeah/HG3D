@@ -388,6 +388,7 @@ namespace HG3D_Engine
 		Camera_Position_Location[0] = glGetUniformLocation(Shaders[0], "Camera_Position");
 		Lights_Nums_Location[0] = glGetUniformLocation(Shaders[0], "Lights_Nums");
 		Lights_Proj_View_Matrix_Location[0] = glGetUniformLocation(Shaders[0], "light_proj_view_matrix");
+		Inv_Lights_Proj_View_Matrix_Location[0] = glGetUniformLocation(Shaders[0], "inv_light_proj_view_matrix");
 		Shadowmap_Sampler_Location[0] = glGetUniformLocation(Shaders[0], "SMTex_Sampler");
 #ifdef VSM
 		float invsqrt2 = 1.0f / sqrt(2.0f);
@@ -1039,6 +1040,10 @@ namespace HG3D_Engine
 			glBindTexture(GL_TEXTURE_2D_ARRAY, Shadow_Maps_Tex_ID[i]);
 		}
 		glUniformMatrix4fv(Lights_Proj_View_Matrix_Location[0], MaxShadowmapsNums*MaxCascadessNums, 1, (float*)light_proj_view);//set view and projection matrices
+		_4x4matrix inv_light_proj_view[MaxShadowmapsNums*MaxCascadessNums];
+		for (int i = 0; i < MaxShadowmapsNums*MaxCascadessNums; i++)
+			inv_light_proj_view[i] = Inverse(light_proj_view[i]);
+		glUniformMatrix4fv(Inv_Lights_Proj_View_Matrix_Location[0], MaxShadowmapsNums*MaxCascadessNums, 1, (float*)inv_light_proj_view);//set view and projection matrices
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		for (register unsigned long int j = 0; j < current_camera_nums; j++)
