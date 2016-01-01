@@ -190,10 +190,10 @@ float SpecTerm(float a, vec3 L, vec3 V, vec3 N)
     return val;
 }
 
-float rand(vec2 co){
+float rand(vec2 co)
+{
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
-
 
 void main()
 {
@@ -222,41 +222,38 @@ void main()
 		L=L/L_Length;
 		const float NoL=dot(L,N);
 
-		if ((i<MaxShadowmapsNums)&&(Light[i].nonesense1>16777215||Light[i].nonesense1<0))
+		const bool SMAvailble=(i<MaxShadowmapsNums)&&(Light[i].nonesense1>16777215||Light[i].nonesense1<0);
+
+		const int Cascade=int(cascade);
+		vec4 Actual_Pos;
+
+		if (SMAvailble)
 		{
 
-
-
-
-
-
-
-
-
-
-
-			
+			Actual_Pos=light_proj_view_matrix[i*MaxCascadessNums+int(cascade)]*vec4(position,1.0);
 			float FogIntensity=0;
 
 
 
 			
 			
+
+
+
+			
 			int CascadeIndex=MaxCascadessNums==0?0:int(abs(-(ViewMatrix*vec4(Camera_Position,1)).z-1.0)/999.0*float(MaxCascadessNums*MaxCascadessNums));
 			vec4 temp_vec4s=light_proj_view_matrix[i*MaxCascadessNums+CascadeIndex]*vec4(Camera_Position,1);
 			
-
-			CascadeIndex=MaxCascadessNums==0?0:int(abs(-(ViewMatrix*vec4(position,1)).z-1.0)/999.0*float(MaxCascadessNums*MaxCascadessNums));
-			vec4 temp_vec4e=light_proj_view_matrix[i*MaxCascadessNums+CascadeIndex]*vec4(position,1);
+			vec4 temp_vec4e=Actual_Pos;
 
 			const vec4 RayInNDC=temp_vec4e-temp_vec4s;
 
 			if (temp_vec4s.w>1.0||temp_vec4e.w>1.0)
 			{
 				if (temp_vec4s.w>1.0&&temp_vec4e.w<1.0)
-					temp_vec4e=temp_vec4s+RayInNDC*((1.001-temp_vec4s.w)/(RayInNDC.w));
+					temp_vec4e=temp_vec4s+RayInNDC*((1.0-temp_vec4s.w)/(RayInNDC.w));
 				else if (temp_vec4e.w>1.0&&temp_vec4s.w<1.0)
-					temp_vec4s=temp_vec4s+RayInNDC*((1.001-temp_vec4s.w)/(RayInNDC.w));
+					temp_vec4s=temp_vec4s+RayInNDC*((1.0-temp_vec4s.w)/(RayInNDC.w));
 
 				vec3 start=temp_vec4s.xyz/(temp_vec4s.w*2.0)+0.5;
 				vec3 end=temp_vec4e.xyz/(temp_vec4e.w*2.0)+0.5;
@@ -292,12 +289,16 @@ void main()
 								interections[j]=interections[j+1];
 								interections[j+1]=temp;
 							}
+					
+					const bool start_in=start.x<1.0&&start.x>0.0&&start.y>0.0&&start.y<1.0;
+					const bool end_in=end.x<1.0&&end.x>0.0&&end.y>0.0&&end.y<1.0;
 
-					if (!(start.x<1.0&&start.x>0.0&&start.y>0.0&&start.y<1.0&&end.x<1.0&&end.x>0.0&&end.y>0.0&&end.y<1.0))
+
+					if (!(start_in&&end_in))
 					{
-						if (start.x<1.0&&start.x>0.0&&start.y>0.0&&start.y<1.0)
+						if (start_in)
 							end=start+interections[0]*ray;
-						else if (end.x<1.0&&end.x>0.0&&end.y>0.0&&end.y<1.0)
+						else if (end_in)
 							start=start+interections[intersection_count-1]*ray;
 						else
 						{
@@ -314,49 +315,59 @@ void main()
 							}
 						}
 					}
+					
+					const vec3 Start2End=(end-start);
+					int sample_NO=int(min(length(vec2(textureSize(SMTex_Sampler[0],0).xy)*ray.xy),sample_count-1));
+					const vec3 step=Start2End/float(sample_NO);
 
+					const float a=rand(position.xy),b=rand(position.xz),c=rand(position.yz);
 
-					const vec3 step=(end-start)/float(sample_count);
-
-					vec3 current_pos=start+step*abs(rand(position.xy)+rand(position.xz)+rand(position.yz))/3.0;
+					vec3 current_pos=start+step*(abs(a+b+c)/6.0+(int(position.x*b+position.y*c+position.z*a)%2==1?0.5:0.0));
 					
 					vec3 last_sample;
 					vec4 current_position=vec4(Camera_Position,1.0);
 
 
-					for (int j=0;j<sample_count;j++)
+					for (int j=0;j<=sample_NO;j++)
 					{
-						if (!(current_pos.x<0.001||current_pos.x>0.999||current_pos.y<0.001||current_pos.y>0.999||current_pos.z<0.001||current_pos.z>1.0))
+						last_sample=current_position.xyz;
+
+
+						if (j!=sample_NO)
 						{
-							last_sample=current_position.xyz;
-
 							current_position=inv_light_proj_view_matrix[i*MaxCascadessNums+CascadeIndex]*vec4(current_pos*2.0-1.0,1.0);
-							current_position=current_position/current_position.w;
+							current_position.xyz/=current_position.w;
+						}
+						else
+						{
+							current_position.xyz=position;
+							current_pos=end-step*0.2;
+						}
 
-							float step_length=length(current_position.xyz-last_sample);
+						const vec3 middle=(current_position.xyz+last_sample)*0.5;
+
+						const float step_length=length(current_position.xyz-last_sample);
 
 
-							vec3 LTS=current_position.xyz-Light[i].light_position;
-							float LTS_Length=length(LTS);
+						vec3 LTS=middle-Light[i].light_position;
+						float LTS_Length=length(LTS);
 
-							if (dot(LTS,Light[i].direction)/LTS_Length>Light[i].cut_off_cos-Light[i].edge_cut_off_cos_delta)
+						if (dot(LTS,Light[i].direction)/LTS_Length>Light[i].cut_off_cos-Light[i].edge_cut_off_cos_delta)
+						{
+							const int Cascade=MaxCascadessNums==0?0:int(abs(-(ViewMatrix*vec4(current_pos,1)).z-1.0)/999.0*float(MaxCascadessNums*MaxCascadessNums));
+							bool shadowed=true;
+							float texture_data=texture(SMTex_Sampler[Cascade],vec3(current_pos.xy, i) , 0).x;
+							if (current_pos.z<=texture_data)
+								shadowed=false;
+
+							if (!shadowed&&LTS_Length!=0)
 							{
-								const int Cascade=MaxCascadessNums==0?0:int(abs(-(ViewMatrix*vec4(current_pos,1)).z-1.0)/999.0*float(MaxCascadessNums*MaxCascadessNums));
+								float AttenuationEffect=Light[i].Attenuation[0]+LTS_Length*(Light[i].Attenuation[1]+LTS_Length*Light[i].Attenuation[2]);
+								FogIntensity+= Fog_Const/LTS_Length/LTS_Length * exp( (LTS_Length+(sample_NO-j)*step_length) * -TAU )*step_length/AttenuationEffect;
 
-								bool shadowed=true;
-
-								float texture_data=texture(SMTex_Sampler[Cascade],vec3(current_pos.xy, i) , 0).x;
-								if (current_pos.z<=texture_data)
-									shadowed=false;
-
-								if (!shadowed&&LTS_Length!=0)
-								{
-									float AttenuationEffect=Light[i].Attenuation[0]+LTS_Length*(Light[i].Attenuation[1]+LTS_Length*Light[i].Attenuation[2]);
-									FogIntensity+= Fog_Const/LTS_Length/LTS_Length * exp( (LTS_Length+(sample_count-i)*step_length) * -TAU )*step_length/AttenuationEffect;
-
-								}
 							}
 						}
+
 						current_pos+=step;
 					}
 
@@ -372,6 +383,11 @@ void main()
 
 
 			
+			
+
+
+
+
 			/*
 			const vec3 step=(-position_LV)/float(sample_count);
 			const float step_length=length(step);
@@ -408,13 +424,13 @@ void main()
 					if (!shadowed&&LTS_Length!=0)
 					{
 						float AttenuationEffect=Light[i].Attenuation[0]+LTS_Length*(Light[i].Attenuation[1]+LTS_Length*Light[i].Attenuation[2]);
-						FogIntensity+= Fog_Const/LTS_Length/LTS_Length * exp( (LTS_Length+(sample_count-i)*step_length) * -TAU )*step_length/AttenuationEffect;
+						FogIntensity+= Fog_Const/LTS_Length/LTS_Length * exp( (LTS_Length+(sample_count-j)*step_length) * -TAU )*step_length/AttenuationEffect;
 					}
 				}
 				current_pos+=step;
 			}
-			
 			*/
+			
 
 
 
@@ -477,10 +493,8 @@ void main()
 
 		vec3 Albedo=vec3(1.0);
 		
-		if ((i<MaxShadowmapsNums)&&(Light[i].nonesense1>16777215||Light[i].nonesense1<0))
+		if (SMAvailble)
 		{
-			const int Cascade=int(cascade);
-			const vec4 Actual_Pos=light_proj_view_matrix[i*MaxCascadessNums+Cascade]*vec4(position,1);
 			const vec3 SMCoords=(Actual_Pos.xyz/Actual_Pos.w+1)/2;
 			if (!(SMCoords.x<0.001||SMCoords.x>0.999||SMCoords.y<0.001||SMCoords.y>0.999||SMCoords.z<0.001||SMCoords.z>1.0))
 			{
