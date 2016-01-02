@@ -8,7 +8,6 @@
 #define log2				0.3010299956639811	//log2
 #define sample_count		32					//number of samples
 
-#define sample_count_RCP	1.0/sample_count
 #define TAU					0.0003
 #define PHI					10000000.0
 #define PI_RCP				0.31830988618379067153776752674503
@@ -392,7 +391,8 @@ void main()
 			const vec3 step=(-position_LV)/float(sample_count);
 			const float step_length=length(step);
 
-			vec3 current_pos=Camera_Position+step*abs(rand(position.xy)+rand(position.xz)+rand(position.yz))/3;
+			const float a=rand(position.xy),b=rand(position.xz),c=rand(position.yz);
+			vec3 current_pos=Camera_Position+step*(abs(a+b+c)/6.0+(int(position.x*b+position.y*c+position.z*a)%2==1?0.5:0.0));
 
 			vec4 ShadowMapNDC;
 			vec3 ShadowMapCoord;

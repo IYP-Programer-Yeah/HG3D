@@ -227,6 +227,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SphereObj->AddVelocity(0.0, 0.0, -10.0);
 
+
 	while (msg->message != WM_QUIT)  
 	{
 		if (PeekMessage(msg, NULL, 0, 0, PM_REMOVE))
@@ -310,6 +311,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 
 			Engine.test_render(); //render scene
+			
+			point O;
+			O.build(0.0f, 0.0f, 0.0f);
+			Engine.cameras[0].camera_position.rotate(O, 0.0f, 0.05f*float(dt), 0.0f);
+			Engine.cameras[0].forward.build(O.x - Engine.cameras[0].camera_position.x, 0.0, O.z - Engine.cameras[0].camera_position.z);
+			Engine.cameras[0].forward = normalize(Engine.cameras[0].forward);
+			Engine.cameras[0].needs_update = true;
+
 			//Engine.render();
 
 		}
