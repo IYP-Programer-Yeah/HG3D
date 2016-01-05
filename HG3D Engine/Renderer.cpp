@@ -1136,7 +1136,7 @@ namespace HG3D_Engine
 
 		counter++;
 
-		if (counter == 1)
+		if (counter == 100)
 		{
 			counter = 0;
 			E = clock();
