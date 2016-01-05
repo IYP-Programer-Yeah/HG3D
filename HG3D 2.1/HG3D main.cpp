@@ -53,9 +53,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	direction.build(0.0f, 0.0f, -1.0f);
 	direction = normalize(direction);
 	Engine.lights[0].light_enabled = true;
-	Engine.lights[0].Attenuation[0] = 0.0001f;
-	Engine.lights[0].Attenuation[1] = 0.0001f;
-	Engine.lights[0].Attenuation[2] = 0.0008f;
+	Engine.lights[0].Attenuation[0] = 7.0f;
+	Engine.lights[0].Attenuation[1] = 0.01f;
+	Engine.lights[0].Attenuation[2] = 0.0008f*0;
 	Engine.lights[0].light_color[0] = 1.0f;
 	Engine.lights[0].light_color[1] = 1.0f;
 	Engine.lights[0].light_color[2] = 1.0f;
@@ -73,7 +73,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	direction.build(-1.0f, -1.0f, 0.0f);
 	direction = normalize(direction);
 
-	Engine.lights[1].light_enabled = true;
+	Engine.lights[1].light_enabled = false;
 	Engine.lights[1].Attenuation[0] = 0.0001f;
 	Engine.lights[1].Attenuation[1] = 0.0001f;
 	Engine.lights[1].Attenuation[2] = 0.0001f;
@@ -147,31 +147,39 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 
-
+	int temp;
 
 
 	vector SpherePos;
 	
 	SpherePos.build(0.0f, 100.0f, 0.0f);
 
-	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
+	temp = Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
-	Engine.meshes[1+8].move(SpherePos);
-	Engine.meshes[1+8].scale_model(5.0f, 5.0f, 5.0f);
+	Engine.meshes[temp].move(SpherePos);
+	Engine.meshes[temp].scale_model(5.0f, 5.0f, 5.0f);
 
 	//=========================================================================//
 	
 	vector SpherePos2;
 
-	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
+	temp = Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\sphere.obj");
 
 	SpherePos2.build(0.0f, -6370850.0f, 0.0f);
-	Engine.meshes[2+8].move(SpherePos2);
-	Engine.meshes[2+8].scale_model(6371000.0f, 6371000.0f, 6371000.0f);//earth radius
+	Engine.meshes[temp].move(SpherePos2);
+	Engine.meshes[temp].scale_model(6371000.0f, 6371000.0f, 6371000.0f);//earth radius
 	//==========================================================================//
 
-	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\kernel box.obj");
-	Engine.meshes[10].scale_model(1.0f, 1.0f, 1.0f);
+	temp = Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\kernel box.obj");
+	Engine.meshes[temp].scale_model(1.0f, 1.0f, 1.0f);
+
+
+	temp = Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\bridge.obj");
+	vector bridge;
+	bridge.build(0.0f, 70.0f, -50.0f);
+	Engine.meshes[temp].move(bridge);
+	Engine.meshes[temp].scale_model(5.0f, 5.0f, 5.0f);
+
 
 
 	Engine.cameras[0].camera_position.build(0.0f, 100.0f, -80.0f);//put the camera to x=12
@@ -312,12 +320,12 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			Engine.test_render(); //render scene
 			
-			point O;
+			/*point O;
 			O.build(0.0f, 0.0f, 0.0f);
 			Engine.cameras[0].camera_position.rotate(O, 0.0f, 0.05f*float(dt), 0.0f);
 			Engine.cameras[0].forward.build(O.x - Engine.cameras[0].camera_position.x, 0.0, O.z - Engine.cameras[0].camera_position.z);
 			Engine.cameras[0].forward = normalize(Engine.cameras[0].forward);
-			Engine.cameras[0].needs_update = true;
+			Engine.cameras[0].needs_update = true;*/
 
 			//Engine.render();
 

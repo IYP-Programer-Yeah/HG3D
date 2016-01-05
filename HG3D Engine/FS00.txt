@@ -391,8 +391,7 @@ void main()
 			const vec3 step=(-position_LV)/float(sample_count);
 			const float step_length=length(step);
 
-			const float a=rand(position.xy),b=rand(position.xz),c=rand(position.yz);
-			vec3 current_pos=Camera_Position+step*(abs(a+b+c)/6.0+(int(position.x*b+position.y*c+position.z*a)%2==1?0.5:0.0));
+			vec3 current_pos=Camera_Position+step*(float(int(gl_FragCoord.x)%8+(int(gl_FragCoord.y)%8)*8)/64.0);
 
 			vec4 ShadowMapNDC;
 			vec3 ShadowMapCoord;
@@ -423,8 +422,8 @@ void main()
 
 					if (!shadowed&&LTS_Length!=0)
 					{
-						float AttenuationEffect=Light[i].Attenuation[0]+LTS_Length*(Light[i].Attenuation[1]+LTS_Length*Light[i].Attenuation[2]);
-						FogIntensity+= Fog_Const/LTS_Length/LTS_Length * exp( (LTS_Length+(sample_count-j)*step_length) * -TAU )*step_length/AttenuationEffect;
+						const float AttenuationEffect=(Light[i].Attenuation[0]+LTS_Length*(Light[i].Attenuation[1]+LTS_Length*Light[i].Attenuation[2]))*LTS_Length*LTS_Length;//attenation with rcp pow to of LTS length
+						FogIntensity+= Fog_Const * exp( (LTS_Length+(sample_count-j)*step_length) * -TAU )*step_length/AttenuationEffect;
 					}
 				}
 				current_pos+=step;
@@ -547,5 +546,6 @@ void main()
 		}
 
 		Output1+=vec4((LightColor*Albedo)*BRDF/Attenuation*ShadowValue*Cut_Off_Effect,Alpha);
+
 	}
 }

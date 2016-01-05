@@ -1136,12 +1136,12 @@ namespace HG3D_Engine
 
 		counter++;
 
-		if (counter == 100)
+		if (counter == 1)
 		{
 			counter = 0;
 			E = clock();
 			if (E - S > 0.001)
-				Final_str[0] = inttostring(int(floor(100000.0 / (E - S))));
+				Final_str[0] = doubletostring(1000.0 / (E - S));
 			else
 				Final_str[0] = inttostring(60);
 			Final_str[0] = Final_str[0] + "   ";
