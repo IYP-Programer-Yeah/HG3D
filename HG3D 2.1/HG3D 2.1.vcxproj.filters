@@ -60,4 +60,12 @@
       <Filter>Resource Files\Models</Filter>
     </Media>
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="Resource\Models\bridge.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="Resource\Models\kernel box.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+  </ItemGroup>
 </Project>
