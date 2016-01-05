@@ -64,8 +64,12 @@
     </Media>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="Resource\Models\bridge.obj" />
-    <Object Include="Resource\Models\kernel box.obj" />
+    <Media Include="Resource\Models\bridge.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\kernel box.obj">
+      <FileType>Document</FileType>
+    </Media>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{857E8D8A-D5A8-4665-A5B9-3B70F5911480}</ProjectGuid>
