@@ -16,7 +16,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Physics::PhysicsWorld World;
 
 	Engine.hdc = hdc[0];
-	Engine.init();
+	Engine.test_init();
+	//Engine.init();
 
 	MSG *msg = GetMSG();
 	Engine.add_camera();
@@ -65,8 +66,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[0].direction[0] = float(direction.x);
 	Engine.lights[0].direction[1] = float(direction.y);
 	Engine.lights[0].direction[2] = float(direction.z);
-	Engine.lights[0].cut_off_cos = cos(3.14f / 7.0f);
-	Engine.lights[0].edge_cut_off_cos_delta = cos(3.14f / 7.0f) - cos(3.14f / 6.0);
+	Engine.lights[0].cut_off_cos = cos(3.14f / 5.0f);
+	Engine.lights[0].edge_cut_off_cos_delta = cos(3.14f / 5.0f) - cos(3.14f / 4.0f);
 	Engine.lights[0].calculate_max_radius();
 	Engine.lights[0].shadow_map = true;
 
@@ -94,14 +95,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Engine.light_data_changed = 1;
 	BYTE *data;
-	data = (byte*)malloc(texture.Width[0] * texture.Height[0] * 3);
+	data = (BYTE*)malloc(size_t(texture.Width[0] * texture.Height[0] * 3));
 	for (register int i = 0; i < texture.Width[0] * texture.Height[0]; i++)
 	{
 		data[i * 3] = texture.rgb[i].r;
 		data[i * 3 + 1] = texture.rgb[i].g;
 		data[i * 3 + 2] = texture.rgb[i].b;
 	}
-	Engine.add_texture(data, texture.Width[0], texture.Height[0], 3, 0, 0, 0);
+	Engine.add_texture(data, unsigned (texture.Width[0]), unsigned(texture.Height[0]), 3, 0, 0, 0);
 
 	//===========================================================/
 
@@ -176,10 +177,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	temp = Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\bridge.obj");
 	vector bridge;
-	bridge.build(0.0f, 70.0f, -50.0f);
+	bridge.build(5.0f, 80.0f, 40.0f);
 	Engine.meshes[temp].move(bridge);
 	Engine.meshes[temp].scale_model(5.0f, 5.0f, 5.0f);
-
+	Engine.meshes[temp].rotate_model_AIC(PI / 4.0f, axis);
 
 
 	Engine.cameras[0].camera_position.build(0.0f, 100.0f, -80.0f);//put the camera to x=12
@@ -188,7 +189,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.cameras[0].camera_viewport[3] = GetH();//update view port
 	Engine.cameras[0].Right = float(GetW()) / float(GetH());//update projection
 	Engine.cameras[0].Left = -1.0f*float(GetW()) / float(GetH());//update projection
-	Engine.cameras[0].update_camera();//update camera
+	Engine.cameras[0].needs_update = true;
 
 
 	Engine.cameras[1].camera_position.build(0.0f, 0.0f, 0.0f);//put the camera to x=12
@@ -197,7 +198,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.cameras[1].camera_viewport[1] = GetH() - 400;//update view port
 	Engine.cameras[1].camera_viewport[2] = 400;//update view port
 	Engine.cameras[1].camera_viewport[3] = 400;//update view port
-	Engine.cameras[1].update_camera();//update camera
+	Engine.cameras[1].needs_update = true;
 
 
 	long double last_time = clock(), current_time = clock();
@@ -290,7 +291,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			Engine.cameras[1].camera_viewport[3] = 400;//update view port
 
-
 			if (Get_Mouse_Stat(Mouse_Middle_Stat))///check if the mddile button is pressed
 			{
 				Engine.cameras[0].fps_camera(float(Get_Mouse_X() - Get_Mouse_Last_X()) / 180.0f, 
@@ -319,14 +319,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 
 			Engine.test_render(); //render scene
-			
-			/*point O;
+			/*
+			point O;
 			O.build(0.0f, 0.0f, 0.0f);
-			Engine.cameras[0].camera_position.rotate(O, 0.0f, 0.05f*float(dt), 0.0f);
+			Engine.cameras[0].camera_position.rotate(O, 0.0f, 0.01f, 0.0f);
 			Engine.cameras[0].forward.build(O.x - Engine.cameras[0].camera_position.x, 0.0, O.z - Engine.cameras[0].camera_position.z);
 			Engine.cameras[0].forward = normalize(Engine.cameras[0].forward);
-			Engine.cameras[0].needs_update = true;*/
-
+			Engine.cameras[0].needs_update = true;
+			*/
 			//Engine.render();
 
 		}

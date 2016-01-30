@@ -1,0 +1,51 @@
+#version 450
+
+#define GBufferTextNums			   3
+
+out vec4 Output1;
+
+uniform sampler2D GBuffer[GBufferTextNums-1];
+uniform usampler2D GBufferMatID;
+uniform sampler2D GBufferDepthMap;
+uniform vec3 CameraPos;
+uniform float CameraFar;
+uniform float CameraNear;
+
+struct light
+{
+	vec3 light_position;//light pos
+
+	float max_radius;//the maximum radius of light contribution
+
+	vec3 light_color;//light color
+
+	float cut_off_cos;//cosine of the the the cut of angle 
+
+	vec3 Attenuation;//attenuation values
+
+	float edge_cut_off_cos_delta;
+
+	vec3 direction;//the direction of light
+
+	int nonesense1;
+		
+};
+
+layout (std140) uniform lights
+{
+		light Light[32];
+};
+
+
+void main()
+{
+	vec3 normal=texture(GBuffer[0],gl_FragCoord.xy/vec2(1366,768)).xyz;
+	const float depth=texture(GBufferDepthMap,gl_FragCoord.xy/vec2(1366,768)).x;
+
+	const float DepthConstant=(CameraFar-CameraNear)/CameraFar;
+
+	const float z=CameraNear/(depth*DepthConstant-CameraNear);
+
+	Output1=vec4((-z-CameraNear)/(CameraFar-CameraNear));
+
+}

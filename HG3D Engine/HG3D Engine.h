@@ -5,6 +5,7 @@
 #include <math.h>
 #include <xmmintrin.h>
 #include <time.h>
+#include <algorithm>
 
 // load GL libs
 #pragma comment(lib, "opengl32.lib")
@@ -36,15 +37,27 @@
 
 #define Shadowmap_Res			   4096						 //shadow map resolution 
 
-#define GBufferTextNums			   2		
+#define GBufferTextNums			   3		
 
 #define lights_UBO_binding_point 1							 //the binding point of the lights
 #define text_offsets_UBO_binding_point 2					 //the binding point of the texture sampling offset
 
 #define PCF//use PCF instead of VSMs
+//#define Deferred
 
 namespace HG3D_Engine
 {
+	template <class TypeA, class TypeB> struct Couple
+	{
+		TypeA A;
+		TypeB B;
+
+		bool __declspec(dllexport) __fastcall operator > (Couple<TypeA, TypeB> inp);
+		bool __declspec(dllexport) __fastcall operator < (Couple<TypeA, TypeB> inp);
+		bool __declspec(dllexport) __fastcall operator == (Couple<TypeA, TypeB> inp);
+		void __declspec(dllexport) __fastcall operator = (Couple<TypeA, TypeB> inp);
+	};
+
 	//math libs
 	class point //point class
 	{
@@ -288,8 +301,16 @@ namespace HG3D_Engine
 
 		bool needs_update;//camera needs an update
 
-		GLuint GBufferID;
+#ifdef Deferred
+		GLint CurrentTexWidth;//the current text width fir the GBuffer
+		GLint CurrentTexHeight;//the current tex height for the GBuffer
 
+		GLuint GBuffer_Depth;
+
+		GLuint GBuffer_FBO_ID;
+
+		GLuint GBufferID[GBufferTextNums];//GBuffer for each camera
+#endif
 #ifdef DeferredSM
 		GLuint DeferredShadowText[MaxShadowmapsNums];
 		GLuint DeferredFilteredShadowText;
@@ -381,7 +402,6 @@ namespace HG3D_Engine
 		unsigned long int texture_nums;         //number of textures
 		unsigned long int last_light_ID;        //last light id
 
-		unsigned long int *mesh_draw_order;		//the order in which meshs are drawn
 		unsigned long int *current_cameras;		//current used cameras
 
 		bool light_data_changed;				//lights need to be updated
@@ -406,15 +426,21 @@ namespace HG3D_Engine
 		GLuint Normal_Matrix_Location[50];					//the loaction of normal matrix in shader
 		GLuint Projection_Matrix_Location[50];				//the loaction of projection matrix in shader
 		GLuint View_Matrix_Location[50];					//the loaction of view matrix in shader
-		GLuint Camera_Position_Location[50];				//the loaction of view matrix in shader
+		GLuint Camera_Position_Location[50];				//the loaction of camera position in shader
+		GLuint Camera_Far_Location[50];						//the loaction of camera far in shader
+		GLuint Camera_Near_Location[50];					//the loaction of camera near in shader
 		GLuint Lights_Nums_Location[50];					//the loaction of Lights Nums in shader
 		GLuint Lights_Proj_View_Matrix_Location[50];		//the loaction of Lights view matrix in shader
-		GLuint Inv_Lights_Proj_View_Matrix_Location[50];		//the loaction of Lights view matrix in shader
+		GLuint Inv_Lights_Proj_View_Matrix_Location[50];	//the loaction of Lights view matrix in shader
 		GLuint Shadowmap_Sampler_Location[50];				//the loaction of Lights view matrix in shader
 		GLuint CSM_Data_Location[50];						//the location of Ext's
-
-
-
+		GLuint Mat_ID_Location[50];							//the location of the material ID in shader
+		GLuint GBuffer_Sampler_loaction[50];				//the location of the GBuffer sampler in shader
+		GLuint GBuffer_Mat_ID_Sampler_loaction[50];			//the location of the GBuffer sampler in shader
+		GLuint GBuffer_Depth_Buffer_Sampler_loaction[50];	//the location of the GBuffer sampler in shader
+#ifdef Deferred
+		Couple<unsigned long int, long double> *mesh_draw_order;	//the order in which meshs are drawn
+#endif
 		GLuint Shadow_Maps_Tex_ID[MaxCascadessNums]; //the shadow map textures an array of cascades
 
 
@@ -436,6 +462,7 @@ namespace HG3D_Engine
 		/******************************************************************/
 		/******************************************************************/
 		void __declspec(dllexport) test_render();
+		void __declspec(dllexport) test_init();
 		/******************************************************************/
 		/******************************************************************/
 		/**************************test functions**************************/

@@ -432,6 +432,7 @@ namespace HG3D_Engine
 	ALP::~ALP()
 	{
 		free(Functions);
+		free(XVlues);
 	}
 	void ALP::Calculate_Function(unsigned long int L, unsigned long int M, unsigned long int X)//calculate the function to the point givven
 	{

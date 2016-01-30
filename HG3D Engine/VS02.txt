@@ -13,9 +13,10 @@ uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 NormalMatrix;
 
+
 void main()
 {
-	gl_Position=ProjectionMatrix*(ViewMatrix*(ModelMatrix*vec4(Vertex,1)));
-	normal=vec3(NormalMatrix*vec4(Normal,0));
+	gl_Position=ProjectionMatrix*(ViewMatrix*(ModelMatrix*vec4(Vertex,1.0f)));
+	normal=vec3(ViewMatrix*(NormalMatrix*vec4(Normal,0.0f)));
 	coord=Coord;
 }
