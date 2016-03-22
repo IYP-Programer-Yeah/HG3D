@@ -14,36 +14,53 @@
 #ifndef HG3D_ENG  //check if included before
 #define HG3D_ENG
 
-#define Max_Facts			  100							//max factorial input
+#define Max_Facts					100									//max factorial input
 
-#define Max_Band			  10							//max ALP bands
-#define Max_Calculated_Vlaues 10000							//max number of calculated values of the function
+#define Max_Band					10									//max ALP bands
+#define Max_Calculated_Vlaues		10000								//max number of calculated values of the function
 
 #ifndef PI
-#define PI                    3.1415926535897				//pi
+#define PI							3.1415926535897						//pi
 #endif
 
-#define Vert_Pos_Size      12                                //size of positions
-#define Vert_Normal_Size   12                                //size of normals
-#define Vert_Coord_Size    8                                 //size of coord
-#define Vert_Bone_ID_Size  4                                 //size of coord
-#define vertex_size        36                                //vertex size
-#define face_size          12								 //face size
+#define Vert_Pos_Size				12									//size of positions
+#define Vert_Normal_Size			12									//size of normals
+#define Vert_Coord_Size				8									//size of coord
+#define Vert_Bone_ID_Size			4									//size of coord
+#define vertex_size					36									//vertex size
+#define face_size					12									//face size
 
-#define MaxLightNums	   32
-#define MaxShadowmapsNums  8
-#define MaxCascadessNums   1
-#define MaxSoftShadowDepth 1
+#define MaxLightNums				32									//maximum number of lights in the scene
+#define MaxShadowmapsNums			8									//maximum number of the lights with shadow maps
+#define MaxCascadessNums			1									//maximum number of cascades for each shadow map
+#define MaxSoftShadowDepth			1									//maximum number of shadow maps for shadow mapping
 
-#define Shadowmap_Res			   4096						 //shadow map resolution 
+#define MaxDepth 10e15f
 
-#define GBufferTextNums			   3		
+#define Shadowmap_Res				4096								//shadow map resolution 
 
-#define lights_UBO_binding_point 1							 //the binding point of the lights
-#define text_offsets_UBO_binding_point 2					 //the binding point of the texture sampling offset
+#define GBufferTextNums				3									//number of render targets in GBuffer
+
+#define ShadingTechniquesNum		1
+
+#define lights_UBO_binding_point				1				//the binding point of the lights
+#define text_offsets_UBO_binding_point			2				//the binding point of the texture sampling offset
+#define camera_data_UBO_binding_point			3				//the binding point of the camera data
+#define mesh_data_UBO_binding_point				4				//the binding point of the mesh data
 
 #define PCF//use PCF instead of VSMs
-//#define Deferred
+#define Deferred
+
+#ifdef Deferred
+//sampler for GBuffer textures
+#define GBuffer0_Sampler			0			//normal map
+#define GBuffer1_Sampler			1			//texure and other stuff
+#define GBuffer2_Sampler			2			//material ID
+#define GBuffer3_Sampler			3			//depth map
+//samplers for prepass GBuffer generator
+#define Diff_Tex_Sampler			0			//diffuse texture sampler
+#endif
+
 
 namespace HG3D_Engine
 {
@@ -281,6 +298,21 @@ namespace HG3D_Engine
 		void __declspec(dllexport) operator=(Mesh input);		//= operator
 		void __declspec(dllexport) clone_NMA(Mesh input);		//clone with the same memory allocation (no new memory is allocated)
 	};
+	struct MeshData
+	{
+		_4x4matrix model_matrix;          //model matrix will be sent to shader
+		_4x4matrix normal_matrix;
+		unsigned int MatID;
+		unsigned int have_diff_text;              //have diffuse texture? 
+		unsigned int have_roughness_text;         //have roughness texture? 
+		unsigned int have_NM_text;                //have normals map texture? 
+		unsigned int have_HM_text;                //have height map texture? 
+		unsigned int have_mask_text;              //have mask texture? 
+		unsigned int have_alphamap_text;		  //have alpha map texture?
+		unsigned int have_dispmap_text;			  //have displacement map texture?
+		unsigned int have_TFmap_text;			  //have transmision filter map texture?
+		unsigned int Padding[23];
+	};
 	//end of mesh class
 	//end of mesh libs
 
@@ -308,8 +340,14 @@ namespace HG3D_Engine
 		GLuint GBuffer_Depth;
 
 		GLuint GBuffer_FBO_ID;
+		GLuint Gather_FBO_ID;
+		GLuint Ping_FBO_ID;
 
 		GLuint GBufferID[GBufferTextNums];//GBuffer for each camera
+		GLuint GatherTexID;
+		GLuint PingTexID;
+
+		GLuint GatherPassDepthBufferRBO;
 #endif
 #ifdef DeferredSM
 		GLuint DeferredShadowText[MaxShadowmapsNums];
@@ -320,6 +358,16 @@ namespace HG3D_Engine
 		void __declspec(dllexport) init();//initialize the camera
 		void __declspec(dllexport) update_camera();//update camera
 		void __declspec(dllexport) fps_camera(float pitch,float yaw,vector head_up);//pith and yaw the camera in fps mode
+	};
+	struct CameraData
+	{
+		_4x4matrix ViewMatrix;//modelview matrix
+		_4x4matrix ProjectionMatrix;//projection
+		float camera_viewport[4];//view port property
+
+		float Left, Right, Buttom, Top, Near, Far;//projection property
+		float x, y, z;
+		float data[19];
 	};
 	//end of camera class
 	//texture class
@@ -393,18 +441,18 @@ namespace HG3D_Engine
 
 		light lights[100];						//no more than 32 ligts at a scene will be rendered and 8 will be shadow mapped
 
-		unsigned long int current_camera_nums;	//number of current used camera
-		unsigned long int cameras_nums;			//number of cameras
-		unsigned long int mesh_nums;			//number of meshs
-		unsigned long int vert_nums;			//total number of verts
-		unsigned long int total_size;			//total size of the verts data
-		unsigned long int renderer_ID;			//will be initialized in init
-		unsigned long int texture_nums;         //number of textures
-		unsigned long int last_light_ID;        //last light id
+		unsigned long int current_camera_nums;		//number of current used camera
+		unsigned long int cameras_nums;				//number of cameras
+		unsigned long int mesh_nums;				//number of meshs
+		unsigned long int vert_nums;				//total number of verts
+		unsigned long int total_size;				//total size of the verts data
+		unsigned long int renderer_ID;				//will be initialized in init
+		unsigned long int texture_nums;				//number of textures
+		unsigned long int last_light_ID;			//last light id
 
-		unsigned long int *current_cameras;		//current used cameras
+		unsigned long int *current_cameras;			//current used cameras
 
-		bool light_data_changed;				//lights need to be updated
+		bool light_data_changed;					//lights need to be updated
 
 		GLuint ScreenQuadVAO;					//screen mesh
 		GLuint ScreenQuadVBO;					//screen mesh
@@ -413,35 +461,40 @@ namespace HG3D_Engine
 		GLuint text_offset_UBO_ID;				//the id of texture sampling offset 
 		GLuint light_data_UBO_ID;				//the id of light data 
 		GLuint mat_data_UBO_ID;					//the id of material data
+		GLuint camera_data_UBO_ID;				//the id of the camera data
+		GLuint mesh_data_UBO_ID;				//the id of the mesh data
 		GLuint Gbuffer_textIDS;                 //id of Gbuffer textures
 		GLuint Gbuffer_FBO_ID;					//id of the Gbuffer textures
 		GLuint Shadowmap_FBO_ID;				//id of shadowmap fbo
 		GLuint Shadowmap_RBO_ID;				//id of shadowmap rbo
 
 
-		GLuint Shaders[50];									//max 100 shaders 20 is rendered in the scene
-		GLuint Text_Offset_Block_Index[50];					//the index of light block in shader
-		GLuint Light_Block_Index[50];						//the index of light block in shader
-		GLuint Model_Matrix_Location[50];					//the loaction of model matrix in shader
-		GLuint Normal_Matrix_Location[50];					//the loaction of normal matrix in shader
-		GLuint Projection_Matrix_Location[50];				//the loaction of projection matrix in shader
-		GLuint View_Matrix_Location[50];					//the loaction of view matrix in shader
-		GLuint Camera_Position_Location[50];				//the loaction of camera position in shader
-		GLuint Camera_Far_Location[50];						//the loaction of camera far in shader
-		GLuint Camera_Near_Location[50];					//the loaction of camera near in shader
-		GLuint Lights_Nums_Location[50];					//the loaction of Lights Nums in shader
-		GLuint Lights_Proj_View_Matrix_Location[50];		//the loaction of Lights view matrix in shader
-		GLuint Inv_Lights_Proj_View_Matrix_Location[50];	//the loaction of Lights view matrix in shader
-		GLuint Shadowmap_Sampler_Location[50];				//the loaction of Lights view matrix in shader
-		GLuint CSM_Data_Location[50];						//the location of Ext's
-		GLuint Mat_ID_Location[50];							//the location of the material ID in shader
-		GLuint GBuffer_Sampler_loaction[50];				//the location of the GBuffer sampler in shader
-		GLuint GBuffer_Mat_ID_Sampler_loaction[50];			//the location of the GBuffer sampler in shader
-		GLuint GBuffer_Depth_Buffer_Sampler_loaction[50];	//the location of the GBuffer sampler in shader
+		GLuint Shaders[50];											//max 100 shaders 20 is rendered in the scene
+		GLuint Text_Offset_Block_Index[50];							//the index of light block in shader
+		GLuint Light_Block_Index[50];								//the index of texture sampling offset block in shader
+		GLuint Camera_Data_Block_Index[50];							//the index of camera data block in shader
+		GLuint Mesh_Data_Block_Index[50];							//the index of mesh data block in shader
+		GLuint Model_Matrix_Location[50];							//the loaction of model matrix in shader
+		GLuint Normal_Matrix_Location[50];							//the loaction of normal matrix in shader
+		GLuint Projection_Matrix_Location[50];						//the loaction of projection matrix in shader
+		GLuint View_Matrix_Location[50];							//the loaction of view matrix in shader
+		GLuint Camera_Position_Location[50];						//the loaction of camera position in shader
+		GLuint Lights_Nums_Location[50];							//the loaction of Lights Nums in shader
+		GLuint Lights_Proj_View_Matrix_Location[50];				//the loaction of Lights view matrix in shader
+		GLuint Inv_Lights_Proj_View_Matrix_Location[50];			//the loaction of Lights view matrix in shader
+		GLuint Shadowmap_Sampler_Location[50];						//the loaction of Lights view matrix in shader
+		GLuint CSM_Data_Location[50];								//the location of Ext's
+		GLuint GBuffer_Normal_Map_Sampler_Location[50];				//the location of the material ID in shader
+		GLuint GBuffer_Sampler_loaction[50];						//the location of the GBuffer sampler in shader
+		GLuint GBuffer_Mat_ID_Sampler_loaction[50];					//the location of the GBuffer sampler in shader
+		GLuint GBuffer_Depth_Buffer_Sampler_loaction[50];			//the location of the GBuffer sampler in shader
+		GLuint Current_Light_Location[50];							//the location of the index of the light that the process is being done on
+		GLuint Diffuse_Texture_Sampler_Location[50];				//the location of the GBuffer sampler in shader
+		GLuint Texture_Sampler_Location[50];						//the location of the texture sampler in shader
 #ifdef Deferred
 		Couple<unsigned long int, long double> *mesh_draw_order;	//the order in which meshs are drawn
 #endif
-		GLuint Shadow_Maps_Tex_ID[MaxCascadessNums]; //the shadow map textures an array of cascades
+		GLuint Shadow_Maps_Tex_ID[MaxCascadessNums];		//the shadow map textures an array of cascades
 
 
 

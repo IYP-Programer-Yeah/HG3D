@@ -100,5 +100,17 @@
     <Text Include="VS04.txt">
       <Filter>Resource Files\Shaders\Vertex</Filter>
     </Text>
+    <Text Include="FS05.txt">
+      <Filter>Resource Files\Shaders\Fragmet</Filter>
+    </Text>
+    <Text Include="VS05.txt">
+      <Filter>Resource Files\Shaders\Vertex</Filter>
+    </Text>
+    <Text Include="FS06.txt">
+      <Filter>Resource Files\Shaders\Fragmet</Filter>
+    </Text>
+    <Text Include="VS06.txt">
+      <Filter>Resource Files\Shaders\Vertex</Filter>
+    </Text>
   </ItemGroup>
 </Project>

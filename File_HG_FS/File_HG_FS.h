@@ -20,18 +20,18 @@ namespace File_HG_FS
 		}
 		bool compressed;//is file compressed?
 		string path;//path
-		UINT64 size;
+		unsigned long int size;
 		char *data;
-		void __declspec(dllexport) MND(UINT64 x, UINT64 l);//mske new data at x with length of l
-		void __declspec(dllexport) DSD(UINT64 x, UINT64 l);//delete some data at x with length of l
-		void __declspec(dllexport) new_file(const char *ipath, UINT64 isize = 0);//make new flw
+		void __declspec(dllexport) MND(unsigned long int x, unsigned long int l);//mske new data at x with length of l
+		void __declspec(dllexport) DSD(unsigned long int x, unsigned long int l);//delete some data at x with length of l
+		void __declspec(dllexport) new_file(const char *ipath, unsigned long int isize = 0);//make new flw
 		void __declspec(dllexport) open(const char *ipath);//open a file from path
 		void __declspec(dllexport) save();//save the file on the current path
 		void __declspec(dllexport) save_as(const char *ipath);//save as the file on new path
-		void __declspec(dllexport) code(UINT64 code);//encrypt the file
-		void __declspec(dllexport) decode(UINT64 code);//decrypt the file
-		void __declspec(dllexport) *RLFX(UINT64 x, UINT64 l);//read l data from x
-		void __declspec(dllexport) CLFX(UINT64 x, UINT64 l, void *idata);//copy l data to file from x
+		void __declspec(dllexport) code(unsigned long int code);//encrypt the file
+		void __declspec(dllexport) decode(unsigned long int code);//decrypt the file
+		void __declspec(dllexport) *RLFX(unsigned long int x, unsigned long int l);//read l data from x
+		void __declspec(dllexport) CLFX(unsigned long int x, unsigned long int l, void *idata);//copy l data to file from x
 		void __declspec(dllexport) compress();//compress the file
 		void __declspec(dllexport) decompress();//decompress the file
 	};

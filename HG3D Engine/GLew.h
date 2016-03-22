@@ -31,6 +31,7 @@ PFNGLUNIFORM1IPROC                           glUniform1i;
 PFNGLUNIFORM1UIPROC                          glUniform1ui;
 PFNGLUNIFORM1IVPROC                          glUniform1iv;
 PFNGLUNIFORM1FPROC                           glUniform1f;
+PFNGLUNIFORM2FPROC                           glUniform2f;
 PFNGLUNIFORM1FVPROC                          glUniform1fv;
 PFNGLUNIFORM3FVPROC                          glUniform3fv;
 PFNGLUNIFORM3FPROC                           glUniform3f;
@@ -99,6 +100,7 @@ void Init_glew()
 	glUniform1ui = (PFNGLUNIFORM1UIPROC)wglGetProcAddress("glUniform1ui");
 	glUniform1iv = (PFNGLUNIFORM1IVPROC)wglGetProcAddress("glUniform1iv");
 	glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
+	glUniform2f = (PFNGLUNIFORM2FPROC)wglGetProcAddress("glUniform2f");
 	glUniform1fv = (PFNGLUNIFORM1FVPROC)wglGetProcAddress("glUniform1fv");
 	glUniform3fv = (PFNGLUNIFORM3FVPROC)wglGetProcAddress("glUniform3fv");
 	glUniform3f = (PFNGLUNIFORM3FPROC)wglGetProcAddress("glUniform3f");

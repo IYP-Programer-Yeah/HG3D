@@ -154,11 +154,15 @@
     <Text Include="FS02.txt" />
     <Text Include="FS03.txt" />
     <Text Include="FS04.txt" />
+    <Text Include="FS05.txt" />
+    <Text Include="FS06.txt" />
     <Text Include="VS00.txt" />
     <Text Include="VS01.txt" />
     <Text Include="VS02.txt" />
     <Text Include="VS03.txt" />
     <Text Include="VS04.txt" />
+    <Text Include="VS05.txt" />
+    <Text Include="VS06.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\File_HG_FS\File_HG_FS.vcxproj">

@@ -16,8 +16,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Physics::PhysicsWorld World;
 
 	Engine.hdc = hdc[0];
-	Engine.test_init();
-	//Engine.init();
+	//Engine.test_init();
+	Engine.init();
 
 	MSG *msg = GetMSG();
 	Engine.add_camera();
@@ -27,7 +27,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	point horse_pos,light_pos;
 	horse_pos.build(0.0f, 0.0f, -50.0f);
 	vector light_dir;
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		Engine.lights[i].light_enabled = true;
 		Engine.last_light_ID++;
@@ -74,16 +74,16 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	direction.build(-1.0f, -1.0f, 0.0f);
 	direction = normalize(direction);
 
-	Engine.lights[1].light_enabled = false;
-	Engine.lights[1].Attenuation[0] = 0.0001f;
-	Engine.lights[1].Attenuation[1] = 0.0001f;
-	Engine.lights[1].Attenuation[2] = 0.0001f;
+	Engine.lights[1].light_enabled = true;
+	Engine.lights[1].Attenuation[0] = 5.0f;
+	Engine.lights[1].Attenuation[1] = 0.0f;
+	Engine.lights[1].Attenuation[2] = 0.0f;
 	Engine.lights[1].light_color[0] = 1.0f;
 	Engine.lights[1].light_color[1] = 1.0f;
 	Engine.lights[1].light_color[2] = 1.0f;
-	Engine.lights[1].light_position[0] = 0.0f;
-	Engine.lights[1].light_position[1] = 100.0f;
-	Engine.lights[1].light_position[2] = 50.0f;
+	Engine.lights[1].light_position[0] = 200.0f;
+	Engine.lights[1].light_position[1] = 300.0f;
+	Engine.lights[1].light_position[2] = 0.0f;
 	Engine.lights[1].direction[0] = float(direction.x);
 	Engine.lights[1].direction[1] = float(direction.y);
 	Engine.lights[1].direction[2] = float(direction.z);
@@ -92,6 +92,25 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[1].calculate_max_radius();
 	//Engine.lights[1].shadow_map = true;
 
+	direction.build(0.0f, -1.0f, 0.0f);
+	Engine.lights[2].light_enabled = true;
+	Engine.lights[2].Attenuation[0] = 1.0f;
+	Engine.lights[2].Attenuation[1] = 0.0f;
+	Engine.lights[2].Attenuation[2] = 0.0f;
+	Engine.lights[2].light_color[0] = 1.0f;
+	Engine.lights[2].light_color[1] = 1.0f;
+	Engine.lights[2].light_color[2] = 1.0f;
+	Engine.lights[2].light_position[0] = 1000.0f;
+	Engine.lights[2].light_position[1] = 1500.0f;
+	Engine.lights[2].light_position[2] = 0.0f;
+	Engine.lights[2].direction[0] = float(direction.x);
+	Engine.lights[2].direction[1] = float(direction.y);
+	Engine.lights[2].direction[2] = float(direction.z);
+	//Engine.lights[1].cut_off_cos = cos(3.14f / 9.0f);
+	//Engine.lights[1].edge_cut_off_cos_delta = cos(3.14f / 10.0f) - cos(3.14f / 9.0f);
+	Engine.lights[2].calculate_max_radius();
+	//Engine.lights[1].shadow_map = true;
+	Engine.lights[2].directional = 1;
 
 	Engine.light_data_changed = 1;
 	BYTE *data;
@@ -183,8 +202,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.meshes[temp].rotate_model_AIC(PI / 4.0f, axis);
 
 
-	Engine.cameras[0].camera_position.build(0.0f, 100.0f, -80.0f);//put the camera to x=12
-	Engine.cameras[0].forward.build(0.0f, 0.0f, 1.0f);//look int x=-1 direction 
+	//Engine.cameras[0].camera_position.build(/*0.0f*/6.0f, 100.0f, /*-80.0f*/0.0f);//put the camera to x=12
+	Engine.cameras[0].camera_position.build(1100.0f, 600.0f, 0.0f);//put the camera to x=12
+	Engine.cameras[0].forward.build(1.0f, 0.0f, 0.0f);//look int x=-1 direction 
 	Engine.cameras[0].camera_viewport[2] = GetW();//update view port
 	Engine.cameras[0].camera_viewport[3] = GetH();//update view port
 	Engine.cameras[0].Right = float(GetW()) / float(GetH());//update projection
@@ -235,7 +255,452 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #endif
 
 	SphereObj->AddVelocity(0.0, 0.0, -10.0);
+	hbitmap Bitmap;
+	vector Sponza;
+	Sponza.build(1000.0f, 500.0f, 0.0f);
+	string Path;
+	Path = "..\\HG3D 2.1\\Resource\\Models\\Sponza\\sponza";
+	unsigned long int TexIndex;
+	int W = 2048, H = 2048;
+	unsigned char *RGBA = (unsigned char*)malloc(H * W * 3);
+	for (int i = 0; i < 26; i++)
+	{
+		temp = Engine.add_mesh((Path+inttostring(i)+"\'.obj").string1);
+		Engine.meshes[temp].move(Sponza);
+		Engine.meshes[temp].scale_model(0.5, 0.5, 0.5);
+	}
 
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\roof.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+	Engine.textures[TexIndex].Repeat_X = true;
+	Engine.textures[TexIndex].Repeat_Y = true;
+	Engine.meshes[temp].have_diff_text = true;
+	Engine.meshes[temp].text_ID_diff = TexIndex;
+	temp--;
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\lion.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp].have_diff_text = true;
+	Engine.meshes[temp].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\vase_h.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 1].have_diff_text = true;
+	Engine.meshes[temp - 1].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\vase_hanging.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 2].have_diff_text = true;
+	Engine.meshes[temp - 2].text_ID_diff = TexIndex;
+	
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\curtain_green.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+	
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+	
+	Engine.meshes[temp - 4].have_diff_text = true;
+	Engine.meshes[temp - 4].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\curtain_blue.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 5].have_diff_text = true;
+	Engine.meshes[temp - 5].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\curtain_red.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 6].have_diff_text = true;
+	Engine.meshes[temp - 6].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\fabric_green.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+	Engine.textures[TexIndex].Repeat_X = true;
+	Engine.textures[TexIndex].Repeat_Y = true;
+	Engine.meshes[temp - 7].have_diff_text = true;
+	Engine.meshes[temp - 7].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\fabric_red.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+	Engine.textures[TexIndex].Repeat_X = true;
+	Engine.textures[TexIndex].Repeat_Y = true;
+	Engine.meshes[temp - 8].have_diff_text = true;
+	Engine.meshes[temp - 8].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\fabric_blue.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+	Engine.textures[TexIndex].Repeat_X = true;
+	Engine.textures[TexIndex].Repeat_Y = true;
+	Engine.meshes[temp - 9].have_diff_text = true;
+	Engine.meshes[temp - 9].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\flagpole.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 10].have_diff_text = true;
+	Engine.meshes[temp - 10].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\details.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 11].have_diff_text = true;
+	Engine.meshes[temp - 11].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\column_r_b.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 12].have_diff_text = true;
+	Engine.meshes[temp - 12].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\details.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 13].have_diff_text = true;
+	Engine.meshes[temp - 13].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\column_s_c.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 14].have_diff_text = true;
+	Engine.meshes[temp - 14].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\floor.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+	Engine.textures[TexIndex].Repeat_X = true;
+	Engine.textures[TexIndex].Repeat_Y = true;
+	Engine.meshes[temp - 15].have_diff_text = true;
+	Engine.meshes[temp - 15].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\column_h_a.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 16].have_diff_text = true;
+	Engine.meshes[temp - 16].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\ceiling.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+	Engine.textures[TexIndex].Repeat_X = true;
+	Engine.textures[TexIndex].Repeat_Y = true;
+	Engine.meshes[temp - 17].have_diff_text = true;
+	Engine.meshes[temp - 17].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\arch.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 18].have_diff_text = true;
+	Engine.meshes[temp - 18].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\bricks.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+	Engine.textures[TexIndex].Repeat_X = true;
+	Engine.textures[TexIndex].Repeat_Y = true;
+	Engine.meshes[temp - 19].have_diff_text = true;
+	Engine.meshes[temp - 19].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\fabric_red.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 20].have_diff_text = true;
+	Engine.meshes[temp - 20].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\lionb.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 21].have_diff_text = true;
+	Engine.meshes[temp - 21].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\vase_round.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 22].have_diff_text = true;
+	Engine.meshes[temp - 22].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\fabric_red.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 23].have_diff_text = true;
+	Engine.meshes[temp - 23].text_ID_diff = TexIndex;
+
+	Bitmap.getimage("..\\HG3D 2.1\\Resource\\Models\\Sponza\\textures\\fabric_green.bmp");
+	W = Bitmap.Width[0];
+	H = Bitmap.Height[0];
+
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < W; j++)
+		{
+			RGBA[(i * W + j) * 3] = Bitmap.rgb[i * W + j].r;
+			RGBA[(i * W + j) * 3 + 1] = Bitmap.rgb[i * W + j].g;
+			RGBA[(i * W + j) * 3 + 2] = Bitmap.rgb[i * W + j].b;
+		}
+	TexIndex = Engine.add_texture(RGBA, W, H, 3, false, 0, 0);
+	free(Bitmap.rgb);
+
+	Engine.meshes[temp - 24].have_diff_text = true;
+	Engine.meshes[temp - 24].text_ID_diff = TexIndex;
 
 	while (msg->message != WM_QUIT)  
 	{
@@ -318,7 +783,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			}
 
-			Engine.test_render(); //render scene
+			//Engine.test_render(); //render scene
 			/*
 			point O;
 			O.build(0.0f, 0.0f, 0.0f);
@@ -327,7 +792,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			Engine.cameras[0].forward = normalize(Engine.cameras[0].forward);
 			Engine.cameras[0].needs_update = true;
 			*/
-			//Engine.render();
+			Engine.render();
 
 		}
 
