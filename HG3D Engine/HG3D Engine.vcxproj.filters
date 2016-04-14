@@ -68,6 +68,9 @@
     <ClInclude Include="GLew.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GLSL Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="FS00.txt">
@@ -110,6 +113,24 @@
       <Filter>Resource Files\Shaders\Fragmet</Filter>
     </Text>
     <Text Include="VS06.txt">
+      <Filter>Resource Files\Shaders\Vertex</Filter>
+    </Text>
+    <Text Include="VS07.txt">
+      <Filter>Resource Files\Shaders\Vertex</Filter>
+    </Text>
+    <Text Include="FS07.txt">
+      <Filter>Resource Files\Shaders\Fragmet</Filter>
+    </Text>
+    <Text Include="FS08.txt">
+      <Filter>Resource Files\Shaders\Fragmet</Filter>
+    </Text>
+    <Text Include="VS08.txt">
+      <Filter>Resource Files\Shaders\Vertex</Filter>
+    </Text>
+    <Text Include="FS09.txt">
+      <Filter>Resource Files\Shaders\Fragmet</Filter>
+    </Text>
+    <Text Include="VS09.txt">
       <Filter>Resource Files\Shaders\Vertex</Filter>
     </Text>
   </ItemGroup>

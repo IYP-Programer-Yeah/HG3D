@@ -31,6 +31,36 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\HG3D.ico" />
+    <Image Include="Resource\Models\Sponza\textures\arch.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\arch_normal_map.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\bricks.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\bricks_normal_map.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\ceiling.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\column_h_a.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\column_h_a_normal_map.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\column_r_b.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\column_r_b_normal_map.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\column_s_c.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\column_s_c_normal_map.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\curtain_blue.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\curtain_green.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\curtain_red.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\details.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\fabric_blue.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\fabric_green.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\fabric_red.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\flagpole.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\floor.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\lion.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\lionb.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\lionb_normal_map.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\lion_normal_map.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\roof.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\vase_h.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\vase_hanging.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\vase_h_normal_map.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\vase_round.bmp" />
+    <Image Include="Resource\Models\Sponza\textures\vase_round_normal_map.bmp" />
     <Image Include="Resource\Prestart.bmp" />
     <Image Include="Resource\Test Texture.bmp" />
   </ItemGroup>
@@ -68,6 +98,86 @@
       <FileType>Document</FileType>
     </Media>
     <Media Include="Resource\Models\kernel box.obj">
+      <FileType>Document</FileType>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Resource\Models\Sponza\sponza0%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza1%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza10%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza11%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza12%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza13%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza14%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza15%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza16%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza17%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza18%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza19%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza2%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza20%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza21%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza22%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza23%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza24%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza25%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza3%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza4%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza5%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza6%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza7%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza8%27.obj">
+      <FileType>Document</FileType>
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza9%27.obj">
       <FileType>Document</FileType>
     </Media>
   </ItemGroup>

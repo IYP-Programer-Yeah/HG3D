@@ -2,10 +2,7 @@
 
 out vec3 Output1;
 
-uniform isampler2D GBufferNormalMap;
-uniform usampler2D GBufferMatID;
-uniform sampler2D GBufferDepthMap;
-uniform sampler2D Texture;
+uniform sampler2D AliasedImage;
 
 struct CameraData
 {
@@ -29,20 +26,20 @@ float luma(vec3 RGB)
 void main()
 {
 	const vec2 FragCoord=gl_FragCoord.xy/CurrentCamera.veiwport_dimensions.zw;
-	const vec2 Diff=vec2(1.0f,0.0f)/CurrentCamera.veiwport_dimensions.z;
+
 	const vec2 DiffX=vec2(1.0f,0.0f)/CurrentCamera.veiwport_dimensions.z;
 	const vec2 DiffY=vec2(0.0f,1.0f)/CurrentCamera.veiwport_dimensions.w;
-	Output1=texture(Texture,FragCoord).xyz;
+
 	vec3 colors[9];
-	colors[0]=texture(Texture,FragCoord).xyz;
-	colors[1]=texture(Texture,FragCoord+DiffX).xyz;
-	colors[2]=texture(Texture,FragCoord+DiffX*2.0f).xyz;
-	colors[3]=texture(Texture,FragCoord+DiffY).xyz;
-	colors[4]=texture(Texture,FragCoord+DiffY*2.0f).xyz;
-	colors[5]=texture(Texture,FragCoord-DiffX).xyz;
-	colors[6]=texture(Texture,FragCoord-DiffY).xyz;
-	colors[7]=texture(Texture,FragCoord-DiffX*2.0f).xyz;
-	colors[8]=texture(Texture,FragCoord-DiffY*2.0f).xyz;
+	colors[0]=texture(AliasedImage,FragCoord).xyz;
+	colors[1]=texture(AliasedImage,FragCoord+DiffX).xyz;
+	colors[2]=texture(AliasedImage,FragCoord+DiffX*2.0f).xyz;
+	colors[3]=texture(AliasedImage,FragCoord+DiffY).xyz;
+	colors[4]=texture(AliasedImage,FragCoord+DiffY*2.0f).xyz;
+	colors[5]=texture(AliasedImage,FragCoord-DiffX).xyz;
+	colors[6]=texture(AliasedImage,FragCoord-DiffY).xyz;
+	colors[7]=texture(AliasedImage,FragCoord-DiffX*2.0f).xyz;
+	colors[8]=texture(AliasedImage,FragCoord-DiffY*2.0f).xyz;
 	float c[8];
 	c[0]=luma(abs(colors[0]-colors[1]));
 	c[1]=luma(abs(colors[1]-colors[2]));
@@ -65,40 +62,4 @@ void main()
 	{
 		Output1+=vec3(0.0,1.0,0.0);
 	}
-	/*unsigned int MatIDs[3];
-	MatIDs[0]=texture(GBufferMatID,FragCoord+DiffX).x;
-	MatIDs[1]=texture(GBufferMatID,FragCoord).x;
-	MatIDs[2]=texture(GBufferMatID,FragCoord+DiffY).x;
-	if (MatIDs[0]!=MatIDs[1])
-	{
-		Output1+=vec3(1.0,0.0,0.0);
-	}
-	if (MatIDs[1]!=MatIDs[2])
-	{
-		Output1+=vec3(0.0,1.0,0.0);
-	}
-	vec3 normals[3];
-	normals[0]=normalize(vec3(texture(GBufferNormalMap,FragCoord-Diff).xyz));
-	normals[1]=normalize(vec3(texture(GBufferNormalMap,FragCoord).xyz));
-	normals[2]=normalize(vec3(texture(GBufferNormalMap,FragCoord+Diff).xyz));
-	if (dot(normals[0],normals[1])<0.8)
-	{
-		Output1+=vec3(1.0,0.0,0.0);
-	}
-	if (dot(normals[2],normals[1])<0.8)
-	{
-		Output1+=vec3(0.0,1.0,0.0);
-	}
-	float Depths[3];
-	Depths[0]=texture(GBufferDepthMap,FragCoord-Diff).x;
-	Depths[1]=texture(GBufferDepthMap,FragCoord).x;
-	Depths[2]=texture(GBufferDepthMap,FragCoord+Diff).x;
-	if (abs(Depths[0]-Depths[1])>0.01)
-	{
-		Output1=vec3(1.0,0.0,0.0);
-	}
-	if (abs(Depths[2]-Depths[1])>0.01)
-	{
-		Output1=vec3(0.0,1.0,0.0);
-	}*/
 }

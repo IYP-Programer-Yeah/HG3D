@@ -24,10 +24,10 @@
 #endif
 
 #define Vert_Pos_Size				12									//size of positions
-#define Vert_Normal_Size			12									//size of normals
+#define Vert_Normal_Size			3									//size of normals
 #define Vert_Coord_Size				8									//size of coord
-#define Vert_Bone_ID_Size			4									//size of coord
-#define vertex_size					36									//vertex size
+#define Vert_Bone_ID_Size			1									//size of coord
+#define vertex_size					24									//vertex size
 #define face_size					12									//face size
 
 #define MaxLightNums				32									//maximum number of lights in the scene
@@ -59,6 +59,14 @@
 #define GBuffer3_Sampler			3			//depth map
 //samplers for prepass GBuffer generator
 #define Diff_Tex_Sampler			0			//diffuse texture sampler
+//samplers for bloom mix
+#define High_Pass_Texture_Sampler	0			//high pass texture sampler
+//
+#define Bloom_Texture_Sampler		0			//bloom texture sampler
+#define Normal_Texture_Sampler		1			//normal texture sampler
+//samplers for AA
+#define Aliased_Image_Sampler		0			//aiased image sampler
+#define Edge_Texture_Sampler		1			//detected edges
 #endif
 
 
@@ -210,9 +218,9 @@ namespace HG3D_Engine
 	{
 	public:
 		float x, y, z;				//positions
-		float nx, ny, nz;			//normals
+		INT8 nx, ny, nz;			//normals
+		UINT8 bone_ID;				//bone ID
 		float cx, cy;				//coords
-		unsigned int bone_ID;		//bone ID
 		void __declspec(dllexport) operator=(vertex input);//= operator
 	};
 	//end of vertex class
@@ -341,13 +349,17 @@ namespace HG3D_Engine
 
 		GLuint GBuffer_FBO_ID;
 		GLuint Gather_FBO_ID;
-		GLuint Ping_FBO_ID;
+		GLuint Temp_FBO_ID;
+		GLuint Edge_FBO_ID;
+		GLuint HDRScreen_FBO_ID;
 
 		GLuint GBufferID[GBufferTextNums];//GBuffer for each camera
 		GLuint GatherTexID;
-		GLuint PingTexID;
+		GLuint TempTexID;
+		GLuint EdgeTexID;
+		GLuint HDRScreenTexID;
 
-		GLuint GatherPassDepthBufferRBO;
+		GLuint ScreenDepthRBO;
 #endif
 #ifdef DeferredSM
 		GLuint DeferredShadowText[MaxShadowmapsNums];
@@ -491,6 +503,9 @@ namespace HG3D_Engine
 		GLuint Current_Light_Location[50];							//the location of the index of the light that the process is being done on
 		GLuint Diffuse_Texture_Sampler_Location[50];				//the location of the GBuffer sampler in shader
 		GLuint Texture_Sampler_Location[50];						//the location of the texture sampler in shader
+		GLuint Edge_Texture_Sampler_Location[50];					//the location of the edge texture sampler in shader
+		GLuint Aliased_Image_Texture_Sampler_Location[50];			//the location of the aliased image texture sampler in shader
+		GLuint Blur_Pass_Location[50];								//the location of the blur pass in shader
 #ifdef Deferred
 		Couple<unsigned long int, long double> *mesh_draw_order;	//the order in which meshs are drawn
 #endif

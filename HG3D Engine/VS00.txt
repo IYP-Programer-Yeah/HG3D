@@ -3,7 +3,7 @@
 #define MaxCascadessNums   1
 
 in vec3 Vertex;
-in vec3 Normal;
+in ivec3 Normal;
 in vec2 Coord;
 in int bone_ID;
 
@@ -31,5 +31,5 @@ void main()
 	gl_Position=ProjectionMatrix*temp_position;
 	
 	coord=Coord;
-	normal=(NormalMatrix*vec4(Normal.xyz,0)).xyz;
+	normal=(NormalMatrix*vec4(normalize(vec3(Normal.xyz)),0)).xyz;
 }

@@ -1,3 +1,4 @@
+#include "GLSL Math.h"
 #include "HG3D Engine.h"
 #include "objLoader.h"
 #include <allocators>
@@ -83,9 +84,27 @@ namespace HG3D_Engine
 						min[k] = (float)MeshObj.vertexList[MeshObj.faceList[i]->vertex_index[j]]->e[k];//reset min
 				}
 				//load vert normals
+
+				const GLSL_Math::vec3 normal = GLSL_Math::vec3((float)MeshObj.normalList[MeshObj.faceList[i]->normal_index[j]]->e[0],
+					(float)MeshObj.normalList[MeshObj.faceList[i]->normal_index[j]]->e[1],
+					(float)MeshObj.normalList[MeshObj.faceList[i]->normal_index[j]]->e[2]);
+
+				const GLSL_Math::vec3 ABSNormal = GLSL_Math::abs(normal);
+				const float MaxYZ = max(ABSNormal.y, ABSNormal.z);
+				const float MaxComponent = max(ABSNormal.x, MaxYZ);
+				const float SecondMaxFract = (MaxComponent == ABSNormal.x ? MaxYZ : max(ABSNormal.x, min(ABSNormal.y, ABSNormal.z))) / MaxComponent;
+				const float Coef = min(1.0f / min(SecondMaxFract, 1.0f - SecondMaxFract), 127.0f);
+
+				const GLSL_Math::vec3 BFN = GLSL_Math::round(normal*(round(floor(127.0f / Coef)*Coef) / MaxComponent));
+
+				/*
 				verts[i * 3 + j].nx = (float)MeshObj.normalList[MeshObj.faceList[i]->normal_index[j]]->e[0];
 				verts[i * 3 + j].ny = (float)MeshObj.normalList[MeshObj.faceList[i]->normal_index[j]]->e[1];
 				verts[i * 3 + j].nz = (float)MeshObj.normalList[MeshObj.faceList[i]->normal_index[j]]->e[2];
+				*/
+				verts[i * 3 + j].nx = (INT8)int(BFN.x);
+				verts[i * 3 + j].ny = (INT8)int(BFN.y);
+				verts[i * 3 + j].nz = (INT8)int(BFN.z);
 				//load vert coords
 				if (MeshObj.textureCount > 0)
 				{
@@ -180,11 +199,11 @@ namespace HG3D_Engine
 		glEnableVertexAttribArray(0);//set the index 0
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertex_size, 0);//set position first pos: 0-Vert_Pos_Size
 		glEnableVertexAttribArray(1);//set the index 1
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)Vert_Pos_Size);//set normals first normal: Vert_Pos_Size-Vert_Normal_Size + Vert_Pos_Size 
+		glVertexAttribIPointer(1, 3, GL_BYTE, vertex_size, (void*)Vert_Pos_Size);//set normals first normal: Vert_Pos_Size-Vert_Normal_Size + Vert_Pos_Size 
 		glEnableVertexAttribArray(2);//set the index 2
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertex_size, (void*)(Vert_Pos_Size + Vert_Normal_Size));//set position first pos: Vert_Normal_Size + Vert_Pos_Size -Vert_Normal_Size + Vert_Pos_Size + Vert_Coord_Size
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertex_size, (void*)(Vert_Pos_Size + Vert_Normal_Size + Vert_Bone_ID_Size));//set position first pos: Vert_Normal_Size + Vert_Pos_Size -Vert_Normal_Size + Vert_Pos_Size + Vert_Coord_Size
 		glEnableVertexAttribArray(3);//set the index 3
-		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, vertex_size, (void*)(Vert_Pos_Size + Vert_Normal_Size + Vert_Coord_Size));//vertex bone ID
+		glVertexAttribIPointer(3, 1, GL_UNSIGNED_BYTE, vertex_size, (void*)(Vert_Pos_Size + Vert_Normal_Size));//vertex bone ID
 		glBindBuffer(GL_ARRAY_BUFFER, 0);//unbinde vbo
 		glBindVertexArray(0);//unbind vao
 		needs_update = 0;

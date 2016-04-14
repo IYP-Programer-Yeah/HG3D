@@ -16,6 +16,12 @@
     <Filter Include="Resource Files\Models">
       <UniqueIdentifier>{d37d92f3-3c4b-4bd6-a743-aaf4db11aa60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Models\Sponza Model">
+      <UniqueIdentifier>{52e43f40-d8ed-4997-93a8-cd725385464e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Models\Sponza Model\Textures">
+      <UniqueIdentifier>{469c315e-2692-4fb2-9c51-80d71602daeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HG3D main.cpp">
@@ -48,6 +54,96 @@
     <Image Include="Resource\Test Texture.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resource\Models\Sponza\textures\arch.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\arch_normal_map.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\bricks.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\bricks_normal_map.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\ceiling.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\column_h_a.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\column_h_a_normal_map.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\column_r_b.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\column_r_b_normal_map.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\column_s_c.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\column_s_c_normal_map.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\curtain_blue.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\curtain_green.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\curtain_red.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\details.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\fabric_blue.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\fabric_green.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\fabric_red.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\flagpole.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\floor.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\lion.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\lion_normal_map.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\lionb.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\lionb_normal_map.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\roof.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\vase_h.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\vase_h_normal_map.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\vase_hanging.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\vase_round.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Models\Sponza\textures\vase_round_normal_map.bmp">
+      <Filter>Resource Files\Models\Sponza Model\Textures</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Media Include="Resource\Models\horse.obj">
@@ -65,5 +161,85 @@
     <Media Include="Resource\Models\kernel box.obj">
       <Filter>Resource Files\Models</Filter>
     </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Resource\Models\Sponza\sponza0%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza1%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza2%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza4%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza5%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza7%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza11%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza14%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza17%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza15%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza3%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza6%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza8%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza9%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza10%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza12%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza13%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza16%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza18%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza20%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza19%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza21%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza22%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza23%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza24%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
+    <Object Include="Resource\Models\Sponza\sponza25%27.obj">
+      <Filter>Resource Files\Models\Sponza Model</Filter>
+    </Object>
   </ItemGroup>
 </Project>

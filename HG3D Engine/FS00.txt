@@ -10,7 +10,7 @@
 
 #define PI                  3.14159f			//pi
 #define log2				0.3010299956639811f	//log2
-#define sample_count		128					//number of samples
+#define sample_count		32					//number of samples
 
 #define TAU					0.0001f
 #define PHI					10000000.0f
@@ -556,7 +556,7 @@ void main()
 				ShadowValue=BilinearShadowTest(SMCoords.xy,SMCoords.z,SMTex_Sampler[Cascade],i,Light[i].max_radius,TextureSize)*text_offsets[0].w;
 				for (int j=0;j<8;j++)
 				{
-					tempSMcoords=SMCoords.xy+text_offsets[j].xy*(length(position_LV)/100.0f+1.0);
+					tempSMcoords=SMCoords.xy+text_offsets[j].xy/**(length(position_LV)/100.0f+1.0)*/;
 					if (!(tempSMcoords.x<0.0001||tempSMcoords.x>0.9999||tempSMcoords.y<0.0001||tempSMcoords.y>0.9999))
 						ShadowValue+=BilinearShadowTest(tempSMcoords,SMCoords.z,SMTex_Sampler[Cascade],i,Light[i].max_radius,TextureSize)*text_offsets[j].z;
 					else

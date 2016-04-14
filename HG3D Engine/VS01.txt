@@ -1,7 +1,7 @@
 #version 450
 
 in vec3 Vertex;
-in vec3 Normal;
+in ivec3 Normal;
 in vec2 Coord;
 in int bone_ID;
 

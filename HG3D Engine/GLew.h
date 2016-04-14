@@ -57,6 +57,7 @@ PFNGLBINDVERTEXARRAYPROC                     glBindVertexArray;
 PFNGLGENVERTEXARRAYSPROC                     glGenVertexArrays;
 PFNGLDELETEVERTEXARRAYSPROC                  glDeleteVertexArrays;
 PFNGLVERTEXATTRIBPOINTERPROC                 glVertexAttribPointer;
+PFNGLVERTEXATTRIBIPOINTERPROC                glVertexAttribIPointer;
 PFNGLBINDATTRIBLOCATIONPROC                  glBindAttribLocation;
 PFNGLENABLEVERTEXATTRIBARRAYPROC             glEnableVertexAttribArray;
 PFNGLBINDFRAGDATALOCATIONPROC                glBindFragDataLocation;
@@ -126,6 +127,7 @@ void Init_glew()
 	glGenVertexArrays = (PFNGLGENVERTEXARRAYSPROC)wglGetProcAddress("glGenVertexArrays");
 	glDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSPROC)wglGetProcAddress("glDeleteVertexArrays");
 	glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)wglGetProcAddress("glVertexAttribPointer");
+	glVertexAttribIPointer = (PFNGLVERTEXATTRIBIPOINTERPROC)wglGetProcAddress("glVertexAttribIPointer");
 	glBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)wglGetProcAddress("glBindAttribLocation");
 	glEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glEnableVertexAttribArray");
 	glBindFragDataLocation = (PFNGLBINDFRAGDATALOCATIONPROC)wglGetProcAddress("glBindFragDataLocation");

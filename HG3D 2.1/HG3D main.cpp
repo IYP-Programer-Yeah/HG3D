@@ -702,6 +702,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.meshes[temp - 24].have_diff_text = true;
 	Engine.meshes[temp - 24].text_ID_diff = TexIndex;
 
+	bool trigered = false;
+
+	point O;
+
 	while (msg->message != WM_QUIT)  
 	{
 		if (PeekMessage(msg, NULL, 0, 0, PM_REMOVE))
@@ -710,6 +714,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			TranslateMessage(msg);
 			DispatchMessage(msg);
 			int MWD = Get_Mouse_Wheel_Delta();
+			if (Get_Mouse_Stat(Mouse_Right_Stat))
+			{
+				trigered = !trigered;
+				point temp_point = Engine.cameras[0].camera_position;
+				temp_point.move(Engine.cameras[0].forward.x*200.0, Engine.cameras[0].forward.y*200.0, Engine.cameras[0].forward.z*200.0);
+
+				O = temp_point;
+			}
 
 			if (MWD != 0 && !Get_Mouse_Stat(Mouse_Right_Stat))//check if mouse will move
 			{
@@ -784,14 +796,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 
 			//Engine.test_render(); //render scene
-			/*
-			point O;
-			O.build(0.0f, 0.0f, 0.0f);
-			Engine.cameras[0].camera_position.rotate(O, 0.0f, 0.01f, 0.0f);
-			Engine.cameras[0].forward.build(O.x - Engine.cameras[0].camera_position.x, 0.0, O.z - Engine.cameras[0].camera_position.z);
-			Engine.cameras[0].forward = normalize(Engine.cameras[0].forward);
-			Engine.cameras[0].needs_update = true;
-			*/
+
+			if (trigered)
+			{
+				Engine.cameras[0].camera_position.rotate(O, 0.0f, 0.05f*float(dt), 0.0f);
+				Engine.cameras[0].forward.build(O.x - Engine.cameras[0].camera_position.x, 0.0, O.z - Engine.cameras[0].camera_position.z);
+				Engine.cameras[0].forward = normalize(Engine.cameras[0].forward);
+				Engine.cameras[0].needs_update = true;
+			}
 			Engine.render();
 
 		}
