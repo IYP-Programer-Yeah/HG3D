@@ -1,6 +1,5 @@
+//bloom shader
 #version 450
-
-#define MinLuma 0.0
 
 out vec3 Output1;
 

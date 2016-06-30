@@ -6,6 +6,10 @@
 
 #define MaxLightNums	   32
 
+#define PCF
+#define MaxShadowmapsNums  8
+#define MaxCascadessNums   1
+
 
 out vec3 Output1;
 
@@ -13,6 +17,7 @@ uniform sampler2D GBuffer[GBufferTextNums-2];
 uniform isampler2D GBufferNormalMap;
 uniform usampler2D GBufferMatID;
 uniform sampler2D GBufferDepthMap;
+uniform sampler2DArray SMTex_Sampler[MaxCascadessNums];
 
 uniform int CurrentLightIndex;
 
@@ -34,6 +39,11 @@ struct light
 
 	int nonesense1;
 		
+};
+
+layout (std140) uniform lights_mat
+{
+		mat4 LightMat[MaxShadowmapsNums*2];
 };
 
 layout (std140) uniform lights
@@ -111,6 +121,25 @@ void main()
 	/****************************************************************************/
 	/****************************************************************************/
 
+
+	const bool SMAvailble=(CurrentLightIndex<MaxShadowmapsNums)&&(CurrentLight.nonesense1>16777215||CurrentLight.nonesense1<0);
+
+	if (SMAvailble)
+	{
+		const mat4 ViewMat = LightMat[CurrentLightIndex * 2];
+		const mat4 ProjMat = LightMat[CurrentLightIndex * 2 + 1];
+		const vec4 SMVSPos = ViewMat * vec4(VSPos,1.0f);
+		const vec4 SMCoord = ProjMat *SMVSPos;
+
+		if (SMCoord.x<1.0f && SMCoord.y<1.0f && SMCoord.y>0.0f && SMCoord.x>0.0f && SMCoord.z<1.0f && SMCoord.z>0.0f)
+		{
+			Output1=texture(SMTex_Sampler[0],vec3(SMCoord.xy,0)).xyz/1000;
+			return;
+		}
+
+		
+	}
+
 	/****************************************************************************/
 	/****************************************************************************/
 	/************************discard the unwanted fragment***********************/
@@ -157,4 +186,5 @@ void main()
 	Output1+=vec3(SpecTerm(a,L,V,normal));
 
 	Output1=max(Output1*CurrentLight.light_color*Texture.xyz/Attenuation,vec3(0.0f));
+	
 }

@@ -335,7 +335,7 @@ namespace HG3D_Engine
 
 			//texture color for gather pass
 			glBindTexture(GL_TEXTURE_2D, TempTexID);//bind the texture
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, camera_viewport[2], camera_viewport[3], 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, camera_viewport[2], camera_viewport[3], 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//linear filter (we'll use it)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
@@ -589,6 +589,13 @@ namespace HG3D_Engine
 		
 		glGenBuffers(1, &mesh_data_UBO_ID);
 		glBindBufferBase(GL_UNIFORM_BUFFER, mesh_data_UBO_binding_point, mesh_data_UBO_ID);
+
+		glGenBuffers(1, &SM_mat_UBO_ID);
+		glBindBufferBase(GL_UNIFORM_BUFFER, SM_mat_data_UBO_binding_point, SM_mat_UBO_ID);
+
+		glGenBuffers(1, &text_offset_UBO_ID);//generate the UBO
+		glBindBufferBase(GL_UNIFORM_BUFFER, text_offsets_UBO_binding_point, text_offset_UBO_ID);
+
 		/******************************************************************/
 		/***************************Gen The UBO****************************/
 		/******************************************************************/
@@ -648,18 +655,30 @@ namespace HG3D_Engine
 		GBuffer_Mat_ID_Sampler_loaction[3] = glGetUniformLocation(Shaders[3], "GBufferMatID");
 		GBuffer_Depth_Buffer_Sampler_loaction[3] = glGetUniformLocation(Shaders[3], "GBufferDepthMap");
 		Current_Light_Location[3] = glGetUniformLocation(Shaders[3], "CurrentLightIndex");
+		Shadowmap_Sampler_Location[3] = glGetUniformLocation(Shaders[3], "SMTex_Sampler");
 
 		Light_Block_Index[3] = glGetUniformBlockIndex(Shaders[3], "lights");//get lights index
 		glUniformBlockBinding(Shaders[3], Light_Block_Index[3], lights_UBO_binding_point);
 		
-		Camera_Data_Block_Index[3]= glGetUniformBlockIndex(Shaders[3], "camera");//get CurrentCamera index
+		Camera_Data_Block_Index[3] = glGetUniformBlockIndex(Shaders[3], "camera");//get CurrentCamera inde
 		glUniformBlockBinding(Shaders[3], Camera_Data_Block_Index[3], camera_data_UBO_binding_point);
 		
+		SM_Mat_Data_Block_Index[3] = glGetUniformBlockIndex(Shaders[3], "lights_mat");//get CurrentCamera inde
+		glUniformBlockBinding(Shaders[3], SM_Mat_Data_Block_Index[3], SM_mat_data_UBO_binding_point);
+
+		Text_Offset_Block_Index[3] = glGetUniformBlockIndex(Shaders[3], "TSOS");//get lights index
+		glUniformBlockBinding(Shaders[3], Text_Offset_Block_Index[3], text_offsets_UBO_binding_point);
+
+
 		glUseProgram(Shaders[3]);
 		glUniform1i(GBuffer_Normal_Map_Sampler_Location[3], GBuffer0_Sampler);//fill the samplers
 		glUniform1i(GBuffer_Sampler_loaction[3], GBuffer1_Sampler);
 		glUniform1i(GBuffer_Mat_ID_Sampler_loaction[3], GBuffer2_Sampler);
 		glUniform1i(GBuffer_Depth_Buffer_Sampler_loaction[3], GBuffer3_Sampler);
+		for (register int i = 0; i < MaxCascadessNums; i++)
+		{
+			glUniform1i(Shadowmap_Sampler_Location[3] + i, Shadow_Map_Sampler + i);
+		}
 		glUseProgram(0);
 		/******************************************************************/
 		/**************************test console****************************/
@@ -675,6 +694,7 @@ namespace HG3D_Engine
 		GBuffer_Mat_ID_Sampler_loaction[4] = glGetUniformLocation(Shaders[4], "GBufferMatID");
 		GBuffer_Depth_Buffer_Sampler_loaction[4] = glGetUniformLocation(Shaders[4], "GBufferDepthMap");
 		Current_Light_Location[4] = glGetUniformLocation(Shaders[4], "CurrentLightIndex");
+		Shadowmap_Sampler_Location[4] = glGetUniformLocation(Shaders[4], "SMTex_Sampler");
 
 		Light_Block_Index[4] = glGetUniformBlockIndex(Shaders[4], "lights");//get lights index
 		glUniformBlockBinding(Shaders[4], Light_Block_Index[4], lights_UBO_binding_point);
@@ -682,11 +702,18 @@ namespace HG3D_Engine
 		Camera_Data_Block_Index[4] = glGetUniformBlockIndex(Shaders[4], "camera");//get CurrentCamera index
 		glUniformBlockBinding(Shaders[4], Camera_Data_Block_Index[4], camera_data_UBO_binding_point);
 
+		SM_Mat_Data_Block_Index[4] = glGetUniformBlockIndex(Shaders[4], "lights_mat");//get CurrentCamera inde
+		glUniformBlockBinding(Shaders[4], SM_Mat_Data_Block_Index[4], SM_mat_data_UBO_binding_point);
+
 		glUseProgram(Shaders[4]);
 		glUniform1i(GBuffer_Normal_Map_Sampler_Location[4], GBuffer0_Sampler);//fill the samplers
 		glUniform1i(GBuffer_Sampler_loaction[4], GBuffer1_Sampler);
 		glUniform1i(GBuffer_Mat_ID_Sampler_loaction[4], GBuffer2_Sampler);
 		glUniform1i(GBuffer_Depth_Buffer_Sampler_loaction[4], GBuffer3_Sampler);
+		for (register int i = 0; i < MaxCascadessNums; i++)
+		{
+			glUniform1i(Shadowmap_Sampler_Location[4] + i, Shadow_Map_Sampler + i);
+		}
 		glUseProgram(0);
 		/******************************************************************/
 		/**************************test console****************************/
@@ -785,6 +812,53 @@ namespace HG3D_Engine
 		/******************************************************************/
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		//load the shadow map shader
+		Shaders[10] = LoadShaders("..\\HG3D Engine\\VS10.txt", "..\\HG3D Engine\\FS10.txt");//load shaders
+		Projection_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ProjMatrix");
+		Model_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ModelMatrix");
+		View_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ViewMatrix");
+		/******************************************************************/
+		/**************************test console****************************/
+		/******************************************************************/
+		/******************************************************************/
+		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+
+
+		/******************************************************************/
+		/************************generate shadowmaps***********************/
+		/******************************************************************/
+		/******************************************************************/
+		int LayerRes = Shadowmap_Res;
+		for (register int i = 0; i < MaxCascadessNums; i++)
+		{
+			glGenTextures(1, &Shadow_Maps_Tex_ID[i]);//generate the texture so you can free it
+			glBindTexture(GL_TEXTURE_2D_ARRAY, Shadow_Maps_Tex_ID[i]);//bind the texture
+#ifdef PCF
+			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R32F, LayerRes, LayerRes, MaxShadowmapsNums, 0, GL_RED, GL_FLOAT, NULL);
+			//glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, LayerRes, LayerRes, MaxShadowmapsNums, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+#endif
+#ifdef VSM
+			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG32F, LayerRes, LayerRes, MaxShadowmapsNums, 0, GL_RG, GL_FLOAT, NULL);
+#endif
+#ifdef DeferredSM
+			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32, LayerRes, LayerRes, MaxShadowmapsNums, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+#endif
+#ifdef HGSM
+			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R32F, LayerRes, LayerRes, MaxShadowmapsNums, 0,GL_RED, GL_FLOAT, NULL);
+#endif
+			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//linear filter (we'll use it)
+			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
+			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			LayerRes /= 2;
+		}
+		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);//unbind the texture
+		/******************************************************************/
+		/******************************************************************/
+		/************************generate shadowmaps***********************/
+		/******************************************************************/
+
 
 		/********************the FPS data, test console********************/
 		COORD textcoord, pos;
@@ -828,6 +902,69 @@ namespace HG3D_Engine
 		/******************************************************************/
 		/******************************************************************/
 		//CheckForGLErrors();
+		/******************************************************************/
+		/******************************************************************/
+		/**************************set up SM FBO***************************/
+		/******************************************************************/
+		glGenFramebuffers(1, &Shadowmap_FBO_ID);//set the fbo
+#ifdef HGSM
+		glGenRenderbuffers(1, &Shadowmap_RBO_ID);
+		glBindRenderbuffer(GL_RENDERBUFFER, Shadowmap_RBO_ID);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Shadowmap_Res, Shadowmap_Res);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, Shadowmap_FBO_ID);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, Shadowmap_RBO_ID);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#endif
+#ifdef PCF
+		glGenRenderbuffers(1, &Shadowmap_RBO_ID);
+		glBindRenderbuffer(GL_RENDERBUFFER, Shadowmap_RBO_ID);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Shadowmap_Res, Shadowmap_Res);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, Shadowmap_FBO_ID);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, Shadowmap_RBO_ID);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#endif
+		/******************************************************************/
+		/**************************set up SM FBO***************************/
+		/******************************************************************/
+		/******************************************************************/
+
+#ifdef PCF
+		float GNDF[3];
+		float GDNFSum = 0.0f;
+		float StandardDeviation = 0.840896f;
+		for (int i = 0; i < 3; i++)
+		{
+			GNDF[i] = (float)exp(float(-min(i*i, 1)) / (2.0f * StandardDeviation*StandardDeviation)) / sqrt(2.0f * PI* StandardDeviation*StandardDeviation);
+			if (i == 2)
+				GNDF[i] *= GNDF[i];
+			else
+				GNDF[i] *= GNDF[0];
+			if (i == 0)
+				GDNFSum += GNDF[i];
+			else
+				GDNFSum += GNDF[i] * 4.0f;
+		}
+		for (int i = 0; i < 3; i++)
+			GNDF[i] /= GDNFSum;
+		float invSMres = 1.0f / float(Shadowmap_Res);
+		float text_offsets[64] = {
+			invSMres,			 0.0f,				 GNDF[1], GNDF[0],
+			0.0f,				 invSMres,			 GNDF[1], 0.0f,
+			invSMres,			 invSMres,			 GNDF[2], 0.0f,
+			invSMres,			 -invSMres,			 GNDF[2], 0.0f,
+			-invSMres,			 0.0f,				 GNDF[1], 0.0f,
+			0.0f,				 -invSMres,			 GNDF[1], 0.0f,
+			-invSMres,			 -invSMres,			 GNDF[2], 0.0f,
+			-invSMres,			 invSMres,			 GNDF[2], 0.0f
+		};
+		glBindBuffer(GL_UNIFORM_BUFFER, text_offset_UBO_ID);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 64, (void*)text_offsets, GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+#endif
+
+
 	}
 #endif
 	unsigned long int Renderer::add_mesh(char* path)	//add a mesh 
@@ -1053,6 +1190,156 @@ namespace HG3D_Engine
 			/************************update lights**************************/
 			/***************************************************************/
 
+			_4x4matrix SMMats[MaxShadowmapsNums];
+
+			/***************************************************************/
+			/***************************************************************/
+			/************************writing shadow maps********************/
+			/***************************************************************/
+			glEnable(GL_DEPTH_TEST); //enable 
+			glDepthMask(0xffffffff);
+
+			glViewport(0,//set the view port
+				0,
+				Shadowmap_Res,
+				Shadowmap_Res);
+			glUseProgram(Shaders[10]);
+			glBindFramebuffer(GL_FRAMEBUFFER, Shadowmap_FBO_ID);//back to main buffer
+
+			glCullFace(GL_FRONT);
+
+			for (register unsigned long int j = 0; j < shadowmapped_lights_num; j++)
+			{
+				light CurrentLight = lights[lights_in_the_scene_index[j]];
+				point pos;
+				pos.build(CurrentLight.light_position[0], CurrentLight.light_position[1], CurrentLight.light_position[2]);
+				vector dir;
+				dir.build(CurrentLight.direction[0], CurrentLight.direction[1], CurrentLight.direction[2]);
+				vector up;
+				vector left;
+				left.build(1.0f, 0.0f, 0.0f);
+				if (abs(dot(dir, left)) > 0.9)
+					left.build(0.0f, 1.0f, 0.0f);
+				up = cross(dir, left);
+
+				float Near = 1.0f;
+				float Far = CurrentLight.max_radius;
+
+				_4x4matrix SMViewMat = LookAt(pos, dir, up);
+				_4x4matrix SMProjMat = Projection(-Near, Near, -Near, Near, Near, Far);
+
+				SMMats[j] = Transpose(SMProjMat * SMViewMat * Inverse(curent_cam.ViewMatrix));
+
+				/***************************************************************/
+				/***************************************************************/
+				/***********************frustum culling*************************/
+				/***************************************************************/
+				unsigned long int meshs_in_the_scene = 0;//number of objects in the scene
+
+				point temp_point, ftemp_points[2];
+				float AABB[2][3];
+
+				for (register unsigned long int i = 0; i < mesh_nums; i++)//go through each mesh
+				{
+					for (register int k = 0; k < 8; k++)//go through the 8 points of the cube
+					{
+						temp_point = SMViewMat*(meshes[i].model_matrix*meshes[i].mesh_cube[k]);
+						if (k == 0)
+						{
+							//preset for comparision
+							AABB[0][0] = float(temp_point.x);
+							AABB[0][1] = float(temp_point.y);
+							AABB[0][2] = float(temp_point.z);
+							AABB[1][0] = float(temp_point.x);
+							AABB[1][1] = float(temp_point.y);
+							AABB[1][2] = float(temp_point.z);
+						}
+						else
+						{
+							//get the AABB values, max and min x and y
+							AABB[0][0] = min(AABB[0][0], float(temp_point.x));
+							AABB[0][1] = min(AABB[0][1], float(temp_point.y));
+							AABB[0][2] = min(AABB[0][2], float(temp_point.z));
+							AABB[1][0] = max(AABB[1][0], float(temp_point.x));
+							AABB[1][1] = max(AABB[1][1], float(temp_point.y));
+							AABB[1][2] = max(AABB[1][2], float(temp_point.z));
+						}
+						float Z_value = float(temp_point.z);//the point z
+						if (Z_value <= -Near)//the point is out of the scene skip
+							temp_point = SMProjMat*temp_point;
+						if (Z_value <= -Near&& temp_point.y <= 1.0 && temp_point.x <= 1.0 &&temp_point.y >= -1.0 && temp_point.x >= -1.0)//mesh is in the scene
+						{
+							mesh_draw_order[meshs_in_the_scene].A = i;//put the mesh to the draw order
+							vector TempVector;
+							TempVector.build(pos, meshes[i].model_matrix*meshes[i].mesh_center);
+							mesh_draw_order[meshs_in_the_scene].B = TempVector.getsizeSq();
+							meshs_in_the_scene++;//a mesh is added
+							break;
+						}
+						else if (k == 7 && AABB[0][2] <= -Near&&AABB[1][2] >= -Far)//frustum in mesh
+						{
+							ftemp_points[0].build(AABB[0][0], AABB[0][1], max(AABB[0][2], -Far));//2 max points
+							ftemp_points[1].build(AABB[1][0], AABB[1][1], max(AABB[0][2], -Far));
+							ftemp_points[0] = SMProjMat*ftemp_points[0];
+							ftemp_points[1] = SMProjMat*ftemp_points[1];
+							if (((ftemp_points[0].x <= 1.0 && ftemp_points[1].x >= 1.0) || (ftemp_points[0].x <= -1.0 && ftemp_points[1].x >= -1.0) || (ftemp_points[0].x >= -1.0 && ftemp_points[1].x <= 1.0)) && ((ftemp_points[0].y <= 1.0 && ftemp_points[1].y >= 1.0) || (ftemp_points[0].y <= -1.0 && ftemp_points[1].y >= -1.0) || (ftemp_points[0].y >= -1.0 && ftemp_points[1].y <= 1.0)))//the frustum is in mesh
+							{
+								mesh_draw_order[meshs_in_the_scene].A = i;//put the mesh to the draw order
+								vector TempVector;
+								TempVector.build(pos, meshes[i].model_matrix*meshes[i].mesh_center);
+								mesh_draw_order[meshs_in_the_scene].B = TempVector.getsizeSq();
+								meshs_in_the_scene++;//a mesh is added
+							}
+						}
+					}
+				}
+				/***************************************************************/
+				/***********************frustum culling*************************/
+				/***************************************************************/
+				/***************************************************************/
+
+
+
+				/***************************************************************/
+				/***************************************************************/
+				/********************front to back sorting**********************/
+				/***************************************************************/
+				std::sort(mesh_draw_order, mesh_draw_order + meshs_in_the_scene);
+				/***************************************************************/
+				/********************front to back sorting**********************/
+				/***************************************************************/
+				/***************************************************************/
+
+
+				glUniformMatrix4fv(Projection_Matrix_Location[10], 1, 1, SMProjMat.x);//set proj matrix
+				glUniformMatrix4fv(View_Matrix_Location[10], 1, 1, SMViewMat.x);//set view matrix
+
+				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Shadow_Maps_Tex_ID[0], 0, j);//set the texture as color buffer and start drawing
+
+				glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+				glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+				for (register unsigned long int i = 0; i < meshs_in_the_scene; i++)//go through the meshs in the scene
+				{
+					glUniformMatrix4fv(Model_Matrix_Location[10], 1, 1, meshes[mesh_draw_order[i].A].model_matrix.x);//set model matrix
+					if (meshes[mesh_draw_order[i].A].needs_update)//update data if needed
+						meshes[mesh_draw_order[i].A].update_vbo();
+					if (meshes[mesh_draw_order[i].A].subdata_changed)//update data if needed
+						meshes[mesh_draw_order[i].A].remap_vbo();
+					glBindVertexArray(meshes[mesh_draw_order[i].A].VAO_ID);//bind vao to draw
+					glDrawElements(GL_TRIANGLES, meshes[mesh_draw_order[i].A].vert_nums, GL_UNSIGNED_INT, meshes[mesh_draw_order[i].A].indices);
+				}
+			}
+
+			glCullFace(GL_BACK);
+
+			glBindBuffer(GL_UNIFORM_BUFFER, SM_mat_UBO_ID);
+			glBufferData(GL_UNIFORM_BUFFER, sizeof(_4x4matrix) * MaxShadowmapsNums, (void*)SMMats, GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			/***************************************************************/
+			/************************writing shadow maps********************/
+			/***************************************************************/
+			/***************************************************************/
+
 			/***************************************************************/
 			/***************************************************************/
 			/***********************frustum culling*************************/
@@ -1210,8 +1497,6 @@ namespace HG3D_Engine
 			texture color          RGBA	MRT 2nd texture
 			material/Mesh ID       R	MRT 3rd texture
 			*/
-			glEnable(GL_DEPTH_TEST); //enable 
-			glDepthMask(0xffffffff);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, curent_cam.GBuffer_FBO_ID);
 			CheckFBOStat();
@@ -1280,6 +1565,10 @@ namespace HG3D_Engine
 			glActiveTexture(GL_TEXTURE0 + GBuffer3_Sampler);
 			glBindTexture(GL_TEXTURE_2D, curent_cam.GBuffer_Depth);
 
+			glActiveTexture(GL_TEXTURE0 + Shadow_Map_Sampler);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, Shadow_Maps_Tex_ID[0]);
+
+
 			glDisable(GL_DEPTH_TEST); //we dont need depth test here IDIOT
 
 			glBindFramebuffer(GL_FRAMEBUFFER, curent_cam.HDRScreen_FBO_ID);//back to main buffer
@@ -1296,10 +1585,10 @@ namespace HG3D_Engine
 			glEnable(GL_BLEND);
 			glDepthMask(GL_FALSE);
 
-			for (unsigned short int j = 0; j < ShadingTechniquesNum; j++)
+			for (register unsigned short int j = 0; j < ShadingTechniquesNum; j++)
 			{
 				glUseProgram(Shaders[ShadingTechniquesND[j]]);
-				for (unsigned long int i = 0; i < number_of_lights; i++)
+				for (register unsigned long int i = 0; i < number_of_lights; i++)
 					if (!lights_in_the_scene[i].directional)
 					{
 						glUniform1i(Current_Light_Location[ShadingTechniquesND[j]], i);
@@ -1309,7 +1598,7 @@ namespace HG3D_Engine
 			for (unsigned short int j = 0; j < ShadingTechniquesNum; j++)
 			{
 				glUseProgram(Shaders[ShadingTechniquesD[j]]);
-				for (unsigned long int i = 0; i < number_of_lights; i++)
+				for (register unsigned long int i = 0; i < number_of_lights; i++)
 					if (lights_in_the_scene[i].directional)
 					{
 						glUniform1i(Current_Light_Location[ShadingTechniquesD[j]], i);

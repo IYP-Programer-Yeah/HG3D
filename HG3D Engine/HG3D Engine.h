@@ -47,6 +47,7 @@
 #define text_offsets_UBO_binding_point			2				//the binding point of the texture sampling offset
 #define camera_data_UBO_binding_point			3				//the binding point of the camera data
 #define mesh_data_UBO_binding_point				4				//the binding point of the mesh data
+#define SM_mat_data_UBO_binding_point			5				//the binding point of the sm mat
 
 #define PCF//use PCF instead of VSMs
 #define Deferred
@@ -57,6 +58,7 @@
 #define GBuffer1_Sampler			1			//texure and other stuff
 #define GBuffer2_Sampler			2			//material ID
 #define GBuffer3_Sampler			3			//depth map
+#define Shadow_Map_Sampler			4			//shadowmap
 //samplers for prepass GBuffer generator
 #define Diff_Tex_Sampler			0			//diffuse texture sampler
 //samplers for bloom mix
@@ -474,6 +476,7 @@ namespace HG3D_Engine
 		GLuint light_data_UBO_ID;				//the id of light data 
 		GLuint mat_data_UBO_ID;					//the id of material data
 		GLuint camera_data_UBO_ID;				//the id of the camera data
+		GLuint SM_mat_UBO_ID;					//the id of the camera data
 		GLuint mesh_data_UBO_ID;				//the id of the mesh data
 		GLuint Gbuffer_textIDS;                 //id of Gbuffer textures
 		GLuint Gbuffer_FBO_ID;					//id of the Gbuffer textures
@@ -486,6 +489,7 @@ namespace HG3D_Engine
 		GLuint Light_Block_Index[50];								//the index of texture sampling offset block in shader
 		GLuint Camera_Data_Block_Index[50];							//the index of camera data block in shader
 		GLuint Mesh_Data_Block_Index[50];							//the index of mesh data block in shader
+		GLuint SM_Mat_Data_Block_Index[50];							//the index of SM mat data block in shader
 		GLuint Model_Matrix_Location[50];							//the loaction of model matrix in shader
 		GLuint Normal_Matrix_Location[50];							//the loaction of normal matrix in shader
 		GLuint Projection_Matrix_Location[50];						//the loaction of projection matrix in shader
@@ -505,7 +509,7 @@ namespace HG3D_Engine
 		GLuint Texture_Sampler_Location[50];						//the location of the texture sampler in shader
 		GLuint Edge_Texture_Sampler_Location[50];					//the location of the edge texture sampler in shader
 		GLuint Aliased_Image_Texture_Sampler_Location[50];			//the location of the aliased image texture sampler in shader
-		GLuint Blur_Pass_Location[50];								//the location of the blur pass in shader
+		GLuint Blur_Pass_Location[50];								//the location of the blur pass in shader-
 #ifdef Deferred
 		Couple<unsigned long int, long double> *mesh_draw_order;	//the order in which meshs are drawn
 #endif

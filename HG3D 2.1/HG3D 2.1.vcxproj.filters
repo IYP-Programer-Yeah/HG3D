@@ -161,85 +161,83 @@
     <Media Include="Resource\Models\kernel box.obj">
       <Filter>Resource Files\Models</Filter>
     </Media>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Resource\Models\Sponza\sponza0%27.obj">
+    <Media Include="Resource\Models\Sponza\sponza10%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza1%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza11%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza2%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza12%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza4%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza13%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza5%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza14%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza7%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza15%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza11%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza16%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza14%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza17%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza17%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza18%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza15%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza19%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza3%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza20%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza6%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza21%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza8%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza22%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza9%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza23%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza10%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza24%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza12%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza25%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza13%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza0%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza16%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza1%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza18%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza2%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza20%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza3%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza19%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza4%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza21%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza5%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza22%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza6%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza23%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza7%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza24%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza8%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
-    <Object Include="Resource\Models\Sponza\sponza25%27.obj">
+    </Media>
+    <Media Include="Resource\Models\Sponza\sponza9%27.obj">
       <Filter>Resource Files\Models\Sponza Model</Filter>
-    </Object>
+    </Media>
   </ItemGroup>
 </Project>

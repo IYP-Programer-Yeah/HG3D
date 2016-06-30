@@ -1,0 +1,16 @@
+#version 450
+
+in vec3 Vertex;
+in int bone_ID;
+
+out vec4 Position;
+
+uniform mat4 ProjMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ModelMatrix;
+
+void main()
+{
+	Position=ViewMatrix*(ModelMatrix*vec4(Vertex,1));
+	gl_Position=ProjMatrix*Position;
+}

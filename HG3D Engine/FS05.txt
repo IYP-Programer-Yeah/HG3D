@@ -1,3 +1,4 @@
+//edge detection shader
 #version 450
 
 out vec3 Output1;

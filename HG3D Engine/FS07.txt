@@ -1,3 +1,5 @@
+//high pass shader
+
 #version 450
 
 #define MinLuma 0.9

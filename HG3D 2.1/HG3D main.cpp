@@ -109,8 +109,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//Engine.lights[1].cut_off_cos = cos(3.14f / 9.0f);
 	//Engine.lights[1].edge_cut_off_cos_delta = cos(3.14f / 10.0f) - cos(3.14f / 9.0f);
 	Engine.lights[2].calculate_max_radius();
-	//Engine.lights[1].shadow_map = true;
-	Engine.lights[2].directional = 1;
+	Engine.lights[2].shadow_map = true;
+	//Engine.lights[2].directional = 1;
 
 	Engine.light_data_changed = 1;
 	BYTE *data;
@@ -202,9 +202,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.meshes[temp].rotate_model_AIC(PI / 4.0f, axis);
 
 
-	//Engine.cameras[0].camera_position.build(/*0.0f*/6.0f, 100.0f, /*-80.0f*/0.0f);//put the camera to x=12
-	Engine.cameras[0].camera_position.build(1100.0f, 600.0f, 0.0f);//put the camera to x=12
-	Engine.cameras[0].forward.build(1.0f, 0.0f, 0.0f);//look int x=-1 direction 
+	Engine.cameras[0].camera_position.build(0.0f, 100.0f, -80.0f);//put the camera to x=12
+	Engine.cameras[0].camera_position.build(1100.0f, 900.0f, 0.0f);//put the camera to x=12
+	Engine.cameras[0].forward.build(0.0f, 0.0f, 1.0f);//look int x=-1 direction 
 	Engine.cameras[0].camera_viewport[2] = GetW();//update view port
 	Engine.cameras[0].camera_viewport[3] = GetH();//update view port
 	Engine.cameras[0].Right = float(GetW()) / float(GetH());//update projection
@@ -718,7 +718,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			{
 				trigered = !trigered;
 				point temp_point = Engine.cameras[0].camera_position;
-				temp_point.move(Engine.cameras[0].forward.x*200.0, Engine.cameras[0].forward.y*200.0, Engine.cameras[0].forward.z*200.0);
+				temp_point.move(Engine.cameras[0].forward.x*80.0, Engine.cameras[0].forward.y*80.0, Engine.cameras[0].forward.z*80.0);
 
 				O = temp_point;
 			}

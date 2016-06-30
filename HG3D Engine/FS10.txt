@@ -1,0 +1,13 @@
+//shadow map shader
+#version 450
+
+out float Output1;
+
+in vec4 Position;
+
+void main()
+{
+	Output1=-Position.z;//length(Position.xyz);
+	if (Output1<0)
+		discard;
+}
