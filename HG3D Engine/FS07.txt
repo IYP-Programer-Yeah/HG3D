@@ -4,24 +4,13 @@
 
 #define MinLuma 0.9
 
+in vec2 FragCoord;
+
+
 out vec3 Output1;
 
 uniform sampler2D Texture;
 
-struct CameraData
-{
-	mat4 ViewMatrix;//modelview matrix
-	mat4 ProjectionMatrix;//projection
-	vec4 veiwport_dimensions;
-
-	float Left, Right, Buttom, Top, Near, Far;//projection property
-	vec3 Position;
-	float data[19];
-};
-layout (std140) uniform camera
-{
-		CameraData CurrentCamera;
-};
 
 float luma(vec3 RGB)
 {
@@ -30,7 +19,7 @@ float luma(vec3 RGB)
 
 void main()
 {
-	Output1=texelFetch(Texture,ivec2(gl_FragCoord*2.0),0).xyz;
+	Output1=texture(Texture,FragCoord).xyz;
 
 	if (luma(Output1)<MinLuma)
 		Output1=vec3(0.0f);		

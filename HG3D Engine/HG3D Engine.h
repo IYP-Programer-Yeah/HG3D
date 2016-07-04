@@ -37,11 +37,16 @@
 
 #define MaxDepth 10e15f
 
-#define Shadowmap_Res				4096								//shadow map resolution 
+#define Shadowmap_Res				2048								//shadow map resolution 
+
+#define Temp_Texture_W				384									//temp texture width
+#define Temp_Texture_H				256									//temp texture height
 
 #define GBufferTextNums				3									//number of render targets in GBuffer
 
-#define ShadingTechniquesNum		1
+#define ShadingTechniquesNum		1									//second depth shadow map
+
+#define SilhouetteShadowMapping
 
 #define lights_UBO_binding_point				1				//the binding point of the lights
 #define text_offsets_UBO_binding_point			2				//the binding point of the texture sampling offset
@@ -351,13 +356,11 @@ namespace HG3D_Engine
 
 		GLuint GBuffer_FBO_ID;
 		GLuint Gather_FBO_ID;
-		GLuint Temp_FBO_ID;
 		GLuint Edge_FBO_ID;
 		GLuint HDRScreen_FBO_ID;
 
 		GLuint GBufferID[GBufferTextNums];//GBuffer for each camera
 		GLuint GatherTexID;
-		GLuint TempTexID;
 		GLuint EdgeTexID;
 		GLuint HDRScreenTexID;
 
@@ -482,6 +485,8 @@ namespace HG3D_Engine
 		GLuint Gbuffer_FBO_ID;					//id of the Gbuffer textures
 		GLuint Shadowmap_FBO_ID;				//id of shadowmap fbo
 		GLuint Shadowmap_RBO_ID;				//id of shadowmap rbo
+		GLuint Temp_FBO_ID;
+		GLuint Temp_RBO_ID;
 
 
 		GLuint Shaders[50];											//max 100 shaders 20 is rendered in the scene
@@ -499,6 +504,7 @@ namespace HG3D_Engine
 		GLuint Lights_Proj_View_Matrix_Location[50];				//the loaction of Lights view matrix in shader
 		GLuint Inv_Lights_Proj_View_Matrix_Location[50];			//the loaction of Lights view matrix in shader
 		GLuint Shadowmap_Sampler_Location[50];						//the loaction of Lights view matrix in shader
+		GLuint Silhouette_Shadowmap_Sampler_Location[50];						//the loaction of Lights view matrix in shader
 		GLuint CSM_Data_Location[50];								//the location of Ext's
 		GLuint GBuffer_Normal_Map_Sampler_Location[50];				//the location of the material ID in shader
 		GLuint GBuffer_Sampler_loaction[50];						//the location of the GBuffer sampler in shader
@@ -514,6 +520,9 @@ namespace HG3D_Engine
 		Couple<unsigned long int, long double> *mesh_draw_order;	//the order in which meshs are drawn
 #endif
 		GLuint Shadow_Maps_Tex_ID[MaxCascadessNums];		//the shadow map textures an array of cascades
+		GLuint Silhouette_Shadow_Maps_Tex_ID[MaxCascadessNums];		//the shadow map textures an array of cascades
+		GLuint TempPingTexID;
+		GLuint TempPongTexID;
 
 
 

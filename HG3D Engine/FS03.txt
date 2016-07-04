@@ -11,7 +11,7 @@
 #define MaxCascadessNums		1
 
 #define SampleCount				4
-#define Shadowmap_Res			4096
+#define Shadowmap_Res			2048
 
 #define Cos30					0.8660254f
 #define Sin30					0.5f
@@ -24,6 +24,10 @@
 #define PCSSMaxKernelSize 12
 #define PCSSMinKernelSize 3
 
+
+in vec2 FragCoord;
+
+
 out vec3 Output1;
 
 uniform sampler2D GBuffer[GBufferTextNums-2];
@@ -31,6 +35,7 @@ uniform isampler2D GBufferNormalMap;
 uniform usampler2D GBufferMatID;
 uniform sampler2D GBufferDepthMap;
 uniform sampler2DArray SMTex_Sampler[MaxCascadessNums];
+uniform sampler2DArray SSMTex_Sampler[MaxCascadessNums];
 
 uniform int CurrentLightIndex;
 
@@ -139,6 +144,39 @@ float BilinearShadowTest(const vec2 ShadowCoord, const float Depth, const sample
 }
 
 
+float SilhouetteShadowTest(const vec2 ShadowCoord, const float Depth, const sampler2DArray ShadowMap, const int i, const float MaxRad, const ivec2 TextureSize)
+{
+	const vec2 samples=floor(float(TextureSize)*ShadowCoord);
+
+	const vec4 samplesDepth=textureGather(ShadowMap,vec3(samples/vec2(TextureSize),i),0);
+	
+	vec4 SamplesShadowVals;
+
+	if (Depth>samplesDepth.w)	
+		SamplesShadowVals[0]=0.0f;
+	else
+		SamplesShadowVals[0]=1.0f;
+	
+	if (Depth>samplesDepth.z)	
+		SamplesShadowVals[1]=0.0f;
+	else
+		SamplesShadowVals[1]=1.0f;
+
+	if (Depth>samplesDepth.x)		
+		SamplesShadowVals[2]=0.0f;
+	else
+		SamplesShadowVals[2]=1.0f;
+
+	if (Depth>samplesDepth.y)	
+		SamplesShadowVals[3]=0.0f;
+	else
+		SamplesShadowVals[3]=1.0f;
+
+	const vec2 lerpVals=vec2(TextureSize)*ShadowCoord.xy-samples;
+
+	return mix(mix(SamplesShadowVals[0],SamplesShadowVals[1],lerpVals.x),mix(SamplesShadowVals[2],SamplesShadowVals[3],lerpVals.x),lerpVals.y);
+}
+
 float AvarageShadowCasterDepth(vec2 ShadowCoord, float Depth, sampler2DArray ShadowMap, int TextID, int R, ivec2 TextureSize)//reciever's coordinate on shadow map, reciever's depth, shadow map sampler, current layer of the shadow map array sampler, radiouse of the blocker search, size of the shadow map texture
 {
 	float RetValue=0.0f;
@@ -174,7 +212,8 @@ float rand(vec2 co)
 }
 
 void main()
-{
+{		Output1=vec3(texture(SSMTex_Sampler[0],vec3(FragCoord,0)).x,texture(SSMTex_Sampler[0],vec3(FragCoord,MaxShadowmapsNums)).x,0.0f)/3.0f;
+		return;
 	/****************************************************************************/
 	/****************************************************************************/
 	/***********************************get the light****************************/
@@ -186,16 +225,6 @@ void main()
 	/****************************************************************************/
 	const float roughness=0.6;
 	const float a=roughness*roughness;
-
-	/****************************************************************************/
-	/****************************************************************************/
-	/*******************************get the frag coord***************************/
-	/****************************************************************************/
-	const vec2 FragCoord=gl_FragCoord.xy/CurrentCamera.veiwport_dimensions.zw;
-	/****************************************************************************/
-	/*******************************get the frag coord***************************/
-	/****************************************************************************/
-	/****************************************************************************/
 
 	/****************************************************************************/
 	/****************************************************************************/
@@ -279,6 +308,8 @@ void main()
 		vec4 SMCoord = ProjMat * vec4(VSPos,1.0f);
 		SMCoord/=SMCoord.w;
 		SMCoord=(SMCoord+1.0f)/2.0f;
+		
+
 
 		if (SMCoord.x<1.0f && SMCoord.y<1.0f && SMCoord.y>=0.0f && SMCoord.x>=0.0f && SMCoord.z<1.0f && SMCoord.z>=0.0f)
 		{

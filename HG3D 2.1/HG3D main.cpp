@@ -56,7 +56,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[0].light_enabled = true;
 	Engine.lights[0].Attenuation[0] = 7.0f;
 	Engine.lights[0].Attenuation[1] = 0.01f;
-	Engine.lights[0].Attenuation[2] = 0.0008f*0;
+	Engine.lights[0].Attenuation[2] = 0.0008f;
 	Engine.lights[0].light_color[0] = 1.0f;
 	Engine.lights[0].light_color[1] = 1.0f;
 	Engine.lights[0].light_color[2] = 1.0f;
@@ -71,7 +71,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[0].calculate_max_radius();
 	Engine.lights[0].shadow_map = true;
 
-	direction.build(-1.0f, -1.0f, 0.0f);
+	direction.build(0.0f, -1.0f, 0.0f);
 	direction = normalize(direction);
 
 	Engine.lights[1].light_enabled = true;
@@ -81,8 +81,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[1].light_color[0] = 1.0f;
 	Engine.lights[1].light_color[1] = 1.0f;
 	Engine.lights[1].light_color[2] = 1.0f;
-	Engine.lights[1].light_position[0] = 200.0f;
-	Engine.lights[1].light_position[1] = 300.0f;
+	Engine.lights[1].light_position[0] = 500.0f;
+	Engine.lights[1].light_position[1] = 500.0f;
 	Engine.lights[1].light_position[2] = 0.0f;
 	Engine.lights[1].direction[0] = float(direction.x);
 	Engine.lights[1].direction[1] = float(direction.y);
@@ -110,10 +110,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//Engine.lights[1].edge_cut_off_cos_delta = cos(3.14f / 10.0f) - cos(3.14f / 9.0f);
 	Engine.lights[2].calculate_max_radius();
 	Engine.lights[2].shadow_map = true;
-	//Engine.lights[2].directional = 1;
+	//Engine.lights[1].directional = 1;
 
 	Engine.light_data_changed = 1;
-	BYTE *data;
+	/*BYTE *data;
 	data = (BYTE*)malloc(size_t(texture.Width[0] * texture.Height[0] * 3));
 	for (register int i = 0; i < texture.Width[0] * texture.Height[0]; i++)
 	{
@@ -122,7 +122,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		data[i * 3 + 2] = texture.rgb[i].b;
 	}
 	Engine.add_texture(data, unsigned (texture.Width[0]), unsigned(texture.Height[0]), 3, 0, 0, 0);
-
+	*/
 	//===========================================================/
 
 	Engine.add_mesh("..\\HG3D 2.1\\Resource\\Models\\horse.obj");

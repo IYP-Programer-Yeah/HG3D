@@ -239,7 +239,6 @@ namespace HG3D_Engine
 		/****************************************************************/
 		glGenFramebuffers(1, &GBuffer_FBO_ID);//set the fbo
 		glGenFramebuffers(1, &Gather_FBO_ID);//set the fbo
-		glGenFramebuffers(1, &Temp_FBO_ID);//set the fbo
 		glGenFramebuffers(1, &Edge_FBO_ID);//set the fbo
 		glGenFramebuffers(1, &HDRScreen_FBO_ID);//set the fbo
 		/****************************************************************/
@@ -251,7 +250,6 @@ namespace HG3D_Engine
 			glGenTextures(1, &GBufferID[i]);//generate the texture so you can free it
 
 		glGenTextures(1, &GatherTexID);//generate the texture so you can free it
-		glGenTextures(1, &TempTexID);//generate the texture so you can free it
 		glGenTextures(1, &EdgeTexID);//generate the texture so you can free it
 		glGenTextures(1, &HDRScreenTexID);//generate the texture so you can free it
 
@@ -297,12 +295,13 @@ namespace HG3D_Engine
 		if (CurrentTexWidth != camera_viewport[2] || CurrentTexHeight != camera_viewport[3])
 		{
 			//depth GBuffer
-			glBindTexture(GL_TEXTURE_2D, GBuffer_FBO_ID);//bind the texture
+			glBindTexture(GL_TEXTURE_2D, GBuffer_Depth);//bind the texture
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, camera_viewport[2], camera_viewport[3], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);//linear filter (we'll use it)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			
 			//normal GBuffer
 			glBindTexture(GL_TEXTURE_2D, GBufferID[0]);//bind the texture
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8I, camera_viewport[2], camera_viewport[3], 0, GL_RGBA_INTEGER, GL_UNSIGNED_BYTE, NULL);
@@ -310,6 +309,7 @@ namespace HG3D_Engine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			
 			//texture color GBuffer
 			glBindTexture(GL_TEXTURE_2D, GBufferID[1]);//bind the texture
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera_viewport[2], camera_viewport[3], 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -317,6 +317,7 @@ namespace HG3D_Engine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			
 			//Mat ID GBuffer
 			glBindTexture(GL_TEXTURE_2D, GBufferID[2]);//bind the texture
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, camera_viewport[2], camera_viewport[3], 0, GL_RED_INTEGER, GL_UNSIGNED_INT, NULL);
@@ -330,14 +331,6 @@ namespace HG3D_Engine
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, camera_viewport[2], camera_viewport[3], 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);//linear filter (we'll use it)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-			//texture color for gather pass
-			glBindTexture(GL_TEXTURE_2D, TempTexID);//bind the texture
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, camera_viewport[2], camera_viewport[3], 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//linear filter (we'll use it)
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -372,11 +365,6 @@ namespace HG3D_Engine
 
 			glBindFramebuffer(GL_FRAMEBUFFER, Gather_FBO_ID);
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GatherTexID, 0);//set the texture as gather render target
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ScreenDepthRBO);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-			glBindFramebuffer(GL_FRAMEBUFFER, Temp_FBO_ID);
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TempTexID, 0);//set the texture as gather render target
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ScreenDepthRBO);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -574,7 +562,17 @@ namespace HG3D_Engine
 		glCullFace(GL_BACK);//cull the back face
 		glClearDepth(1.0f);//clear the depth with 1
 
-
+		/******************************************************************/
+		/**************************test console****************************/
+		/******************************************************************/
+		/******************************************************************/
+		{
+			string Message;
+			Message = "Renderer States Initialized\n";
+			WriteConsole(myConsoleHandle, Message.string1, (DWORD)strlen(Message.string1), &cCharsWritten, NULL);
+			OutputDebugString(Message.string1);
+			CheckForGLErrors();
+		}
 
 		/******************************************************************/
 		/***************************Gen The UBO****************************/
@@ -656,6 +654,7 @@ namespace HG3D_Engine
 		GBuffer_Depth_Buffer_Sampler_loaction[3] = glGetUniformLocation(Shaders[3], "GBufferDepthMap");
 		Current_Light_Location[3] = glGetUniformLocation(Shaders[3], "CurrentLightIndex");
 		Shadowmap_Sampler_Location[3] = glGetUniformLocation(Shaders[3], "SMTex_Sampler");
+		Silhouette_Shadowmap_Sampler_Location[3] = glGetUniformLocation(Shaders[3], "SSMTex_Sampler");
 
 		Light_Block_Index[3] = glGetUniformBlockIndex(Shaders[3], "lights");//get lights index
 		glUniformBlockBinding(Shaders[3], Light_Block_Index[3], lights_UBO_binding_point);
@@ -679,6 +678,13 @@ namespace HG3D_Engine
 		{
 			glUniform1i(Shadowmap_Sampler_Location[3] + i, Shadow_Map_Sampler + i);
 		}
+#ifdef SilhouetteShadowMapping
+		for (register int i = 0; i < MaxCascadessNums; i++)
+		{
+			glUniform1i(Silhouette_Shadowmap_Sampler_Location[3] + i, Shadow_Map_Sampler + MaxCascadessNums + i);
+		}
+#endif // SilhouetteShadowMapping
+
 		glUseProgram(0);
 		/******************************************************************/
 		/**************************test console****************************/
@@ -756,6 +762,7 @@ namespace HG3D_Engine
 		/**************************test console****************************/
 		/******************************************************************/
 		/******************************************************************/
+		CheckForGLErrors();
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
 
@@ -763,11 +770,8 @@ namespace HG3D_Engine
 		Shaders[7] = LoadShaders("..\\HG3D Engine\\VS07.txt", "..\\HG3D Engine\\FS07.txt");//load shaders
 		Texture_Sampler_Location[7] = glGetUniformLocation(Shaders[7], "Texture");
 
-		Camera_Data_Block_Index[7] = glGetUniformBlockIndex(Shaders[7], "camera");//get CurrentCamera index
-		glUniformBlockBinding(Shaders[7], Camera_Data_Block_Index[7], camera_data_UBO_binding_point);
-
 		glUseProgram(Shaders[7]);
-		glUniform1i(Edge_Texture_Sampler_Location[7], High_Pass_Texture_Sampler);
+		glUniform1i(Texture_Sampler_Location[7], High_Pass_Texture_Sampler);
 		glUseProgram(0);
 		/******************************************************************/
 		/**************************test console****************************/
@@ -781,11 +785,8 @@ namespace HG3D_Engine
 		Texture_Sampler_Location[8] = glGetUniformLocation(Shaders[8], "Texture");
 		Blur_Pass_Location[8] = glGetUniformLocation(Shaders[8], "BlurPass");
 
-		Camera_Data_Block_Index[8] = glGetUniformBlockIndex(Shaders[8], "camera");//get CurrentCamera index
-		glUniformBlockBinding(Shaders[8], Camera_Data_Block_Index[8], camera_data_UBO_binding_point);
-
 		glUseProgram(Shaders[8]);
-		glUniform1i(Edge_Texture_Sampler_Location[8], High_Pass_Texture_Sampler);
+		glUniform1i(Texture_Sampler_Location[8], High_Pass_Texture_Sampler);
 		glUseProgram(0);
 		/******************************************************************/
 		/**************************test console****************************/
@@ -799,11 +800,8 @@ namespace HG3D_Engine
 		Texture_Sampler_Location[9] = glGetUniformLocation(Shaders[9], "Texture");
 		Aliased_Image_Texture_Sampler_Location[9] = glGetUniformLocation(Shaders[9], "AliasedImage");
 
-		Camera_Data_Block_Index[9] = glGetUniformBlockIndex(Shaders[9], "camera");//get CurrentCamera index
-		glUniformBlockBinding(Shaders[9], Camera_Data_Block_Index[9], camera_data_UBO_binding_point);
-
 		glUseProgram(Shaders[9]);
-		glUniform1i(Edge_Texture_Sampler_Location[9], Bloom_Texture_Sampler);
+		glUniform1i(Texture_Sampler_Location[9], Bloom_Texture_Sampler);
 		glUniform1i(Aliased_Image_Texture_Sampler_Location[9], Normal_Texture_Sampler);
 		glUseProgram(0);
 		/******************************************************************/
@@ -816,7 +814,6 @@ namespace HG3D_Engine
 		Shaders[10] = LoadShaders("..\\HG3D Engine\\VS10.txt", "..\\HG3D Engine\\FS10.txt");//load shaders
 		Projection_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ProjMatrix");
 		Model_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ModelMatrix");
-		View_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ViewMatrix");
 		/******************************************************************/
 		/**************************test console****************************/
 		/******************************************************************/
@@ -835,7 +832,7 @@ namespace HG3D_Engine
 			glGenTextures(1, &Shadow_Maps_Tex_ID[i]);//generate the texture so you can free it
 			glBindTexture(GL_TEXTURE_2D_ARRAY, Shadow_Maps_Tex_ID[i]);//bind the texture
 #ifdef PCF
-			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R32F, LayerRes, LayerRes, MaxShadowmapsNums, 0, GL_RED, GL_FLOAT, NULL);
+			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R16F, LayerRes, LayerRes, MaxShadowmapsNums, 0, GL_RED, GL_FLOAT, NULL);
 			//glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, LayerRes, LayerRes, MaxShadowmapsNums, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 #endif
 #ifdef VSM
@@ -851,6 +848,19 @@ namespace HG3D_Engine
 			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
 			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+#ifdef SilhouetteShadowMapping
+			glGenTextures(1, &Silhouette_Shadow_Maps_Tex_ID[i]);//generate the texture so you can free it
+			glBindTexture(GL_TEXTURE_2D_ARRAY, Silhouette_Shadow_Maps_Tex_ID[i]);//bind the texture
+
+			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R16F, LayerRes, LayerRes, MaxShadowmapsNums*2, 0, GL_RED, GL_FLOAT, NULL);
+
+			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//linear filter (we'll use it)
+			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
+			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#endif // SilhouetteShadowMapping
+
 			LayerRes /= 2;
 		}
 		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);//unbind the texture
@@ -859,6 +869,49 @@ namespace HG3D_Engine
 		/************************generate shadowmaps***********************/
 		/******************************************************************/
 
+		/******************************************************************/
+		/******************************************************************/
+		/***********************generate temp tex fbo**********************/
+		/******************************************************************/
+		glGenFramebuffers(1, &Temp_FBO_ID);//set the fbo
+		
+
+		//texture color for blur pass
+		glGenTextures(1, &TempPingTexID);//generate ping texture
+		glBindTexture(GL_TEXTURE_2D, TempPingTexID);//bind the texture
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Temp_Texture_W, Temp_Texture_H, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//linear filter (we'll use it)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glBindTexture(GL_TEXTURE_2D, 0);//bind the texture
+
+
+		glGenTextures(1, &TempPongTexID);//generate pong texture
+		glBindTexture(GL_TEXTURE_2D, TempPongTexID);//bind the texture
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Temp_Texture_W, Temp_Texture_H, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//linear filter (we'll use it)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); //clamping dosnt really matter since we wont read out of the range
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glBindTexture(GL_TEXTURE_2D, 0);//bind the texture
+
+
+		glGenRenderbuffers(1, &Temp_RBO_ID);
+		glBindRenderbuffer(GL_RENDERBUFFER, Temp_RBO_ID);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Temp_Texture_W, Temp_Texture_H);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, Temp_FBO_ID);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TempPingTexID, 0);//set the texture as gather render target
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, Temp_RBO_ID);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+		/******************************************************************/
+		/***********************generate temp tex fbo**********************/
+		/******************************************************************/
+		/******************************************************************/
 
 		/********************the FPS data, test console********************/
 		COORD textcoord, pos;
@@ -901,7 +954,7 @@ namespace HG3D_Engine
 		/**************************test console****************************/
 		/******************************************************************/
 		/******************************************************************/
-		//CheckForGLErrors();
+
 		/******************************************************************/
 		/******************************************************************/
 		/**************************set up SM FBO***************************/
@@ -964,7 +1017,17 @@ namespace HG3D_Engine
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 #endif
 
-
+		/******************************************************************/
+		/**************************test console****************************/
+		/******************************************************************/
+		/******************************************************************/
+		{
+			string Message;
+			Message = "Renderer Initialized\n";
+			WriteConsole(myConsoleHandle, Message.string1, (DWORD)strlen(Message.string1), &cCharsWritten, NULL);
+			OutputDebugString(Message.string1);
+			CheckForGLErrors(); 
+		}
 	}
 #endif
 	unsigned long int Renderer::add_mesh(char* path)	//add a mesh 
@@ -1031,7 +1094,36 @@ namespace HG3D_Engine
 
 		wglMakeCurrent(hdc, hrc);//make the rc current
 		cameras[cameras_nums - 1].init();//init the camera view port dependent textures
+
+		/******************************************************************/
+		/**************************test console****************************/
+		/******************************************************************/
+		/******************************************************************/
+		{
+			string Message;
+			Message = "Camera #";
+			Message = Message + inttostring(cameras_nums - 1);
+			Message = Message + " Initialized\n";
+			WriteConsole(myConsoleHandle, Message.string1, (DWORD)strlen(Message.string1), &cCharsWritten, NULL);
+			OutputDebugString(Message.string1);
+			CheckForGLErrors();
+		}
+
 		cameras[cameras_nums - 1].update_camera();//update camera
+		/******************************************************************/
+		/**************************test console****************************/
+		/******************************************************************/
+		/******************************************************************/
+		{
+			string Message;
+			Message = "Camera #";
+			Message = Message + inttostring(cameras_nums - 1);
+			Message= Message + " Updated\n";
+			WriteConsole(myConsoleHandle, Message.string1, (DWORD)strlen(Message.string1), &cCharsWritten, NULL);
+			OutputDebugString(Message.string1);
+			CheckForGLErrors();
+		}
+
 		wglMakeCurrent(hdc, 0);//make the rc current
 
 		return cameras_nums - 1;//return the added camera's ID
@@ -1084,10 +1176,25 @@ namespace HG3D_Engine
 
 		wglMakeCurrent(hdc, hrc);//make the rc current
 		textures_the_next[texture_nums - 1].build(irgba, w, h, NOC, icompressed, icompression_method, icompression_method);//build the texture
+		{
+			string Message;
+			Message = "Texure #";
+			Message = Message + inttostring(texture_nums - 1);
+			Message = Message + " Added\n";
+			WriteConsole(myConsoleHandle, Message.string1, (DWORD)strlen(Message.string1), &cCharsWritten, NULL);
+			OutputDebugString(Message.string1);
+			CheckForGLErrors();
+		}
 		wglMakeCurrent(hdc, 0);//make the rc current
 
 		free(textures);//free last data
 		textures = textures_the_next;//replace the pointer to new camera data
+
+		/******************************************************************/
+		/**************************test console****************************/
+		/******************************************************************/
+		/******************************************************************/
+
 		return texture_nums - 1;//return the added camera's ID
 
 	}
@@ -1196,6 +1303,7 @@ namespace HG3D_Engine
 			/***************************************************************/
 			/************************writing shadow maps********************/
 			/***************************************************************/
+
 			glEnable(GL_DEPTH_TEST); //enable 
 			glDepthMask(0xffffffff);
 
@@ -1205,6 +1313,12 @@ namespace HG3D_Engine
 				Shadowmap_Res);
 			glUseProgram(Shaders[10]);
 			glBindFramebuffer(GL_FRAMEBUFFER, Shadowmap_FBO_ID);//back to main buffer
+
+
+#ifdef SilhouetteShadowMapping
+			glDrawBuffers(3, buffers);//will draw to 3 color buffer
+
+#endif // SilhouetteShadowMapping
 
 			glCullFace(GL_FRONT);
 
@@ -1312,15 +1426,18 @@ namespace HG3D_Engine
 
 
 				glUniformMatrix4fv(Projection_Matrix_Location[10], 1, 1, SMProjMat.x);//set proj matrix
-				glUniformMatrix4fv(View_Matrix_Location[10], 1, 1, SMViewMat.x);//set view matrix
 
 				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Shadow_Maps_Tex_ID[0], 0, j);//set the texture as color buffer and start drawing
+#ifdef SilhouetteShadowMapping
+				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, Silhouette_Shadow_Maps_Tex_ID[0], 0, j);//set the texture as color buffer and start drawing
+				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, Silhouette_Shadow_Maps_Tex_ID[0], 0, j + MaxShadowmapsNums);//set the texture as color buffer and start drawing
+#endif
 
 				glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 				glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 				for (register unsigned long int i = 0; i < meshs_in_the_scene; i++)//go through the meshs in the scene
 				{
-					glUniformMatrix4fv(Model_Matrix_Location[10], 1, 1, meshes[mesh_draw_order[i].A].model_matrix.x);//set model matrix
+					glUniformMatrix4fv(Model_Matrix_Location[10], 1, 1, (SMViewMat * meshes[mesh_draw_order[i].A].model_matrix).x);//set model matrix
 					if (meshes[mesh_draw_order[i].A].needs_update)//update data if needed
 						meshes[mesh_draw_order[i].A].update_vbo();
 					if (meshes[mesh_draw_order[i].A].subdata_changed)//update data if needed
@@ -1568,6 +1685,8 @@ namespace HG3D_Engine
 			glActiveTexture(GL_TEXTURE0 + Shadow_Map_Sampler);
 			glBindTexture(GL_TEXTURE_2D_ARRAY, Shadow_Maps_Tex_ID[0]);
 
+			glActiveTexture(GL_TEXTURE0 + Shadow_Map_Sampler + MaxCascadessNums);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, Silhouette_Shadow_Maps_Tex_ID[0]);
 
 			glDisable(GL_DEPTH_TEST); //we dont need depth test here IDIOT
 
@@ -1615,37 +1734,41 @@ namespace HG3D_Engine
 			/***************************************************************/
 			/***********************the bloom pass**************************/
 			/***************************************************************/
-			glViewport(0,//set the view port
+			/*glViewport(0,//set the view port
 				0,
-				curent_cam.camera_viewport[2]/2,
-				curent_cam.camera_viewport[3]/2);
+				Temp_Texture_W,
+				Temp_Texture_H);
+
+
 			glUseProgram(Shaders[7]);
-			glBindFramebuffer(GL_FRAMEBUFFER, curent_cam.Temp_FBO_ID);
+			glBindFramebuffer(GL_FRAMEBUFFER, Temp_FBO_ID);
 
 			glActiveTexture(GL_TEXTURE0 + High_Pass_Texture_Sampler);
 			glBindTexture(GL_TEXTURE_2D, curent_cam.HDRScreenTexID);
 
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
-			glViewport(curent_cam.camera_viewport[2] / 2,//set the view port
-				0,
-				curent_cam.camera_viewport[2] / 2,
-				curent_cam.camera_viewport[3] / 2);
+
+
+
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TempPongTexID, 0);//set the texture as gather render target
+
 			glUseProgram(Shaders[8]);
 
 			glActiveTexture(GL_TEXTURE0 + High_Pass_Texture_Sampler);
-			glBindTexture(GL_TEXTURE_2D, curent_cam.TempTexID);
+			glBindTexture(GL_TEXTURE_2D, TempPingTexID);
 			
 			glUniform1i(Blur_Pass_Location[8], 0);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
-			glUniform1i(Blur_Pass_Location[8], 1);
-			glViewport(0,//set the view port
-				0,
-				curent_cam.camera_viewport[2] / 2,
-				curent_cam.camera_viewport[3] / 2);
 
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TempPingTexID, 0);//set the texture as gather render target
+
+			glBindTexture(GL_TEXTURE_2D, TempPongTexID);
+
+			glUniform1i(Blur_Pass_Location[8], 1);
+
+			glDrawArrays(GL_TRIANGLES, 0, 6);*/
 
 			glBindFramebuffer(GL_FRAMEBUFFER, curent_cam.Gather_FBO_ID);
 
@@ -1656,7 +1779,7 @@ namespace HG3D_Engine
 			glUseProgram(Shaders[9]);
 
 			glActiveTexture(GL_TEXTURE0 + Bloom_Texture_Sampler);
-			glBindTexture(GL_TEXTURE_2D, curent_cam.TempTexID);
+			glBindTexture(GL_TEXTURE_2D, TempPingTexID);
 			glActiveTexture(GL_TEXTURE0 + Normal_Texture_Sampler);
 			glBindTexture(GL_TEXTURE_2D, curent_cam.HDRScreenTexID);
 

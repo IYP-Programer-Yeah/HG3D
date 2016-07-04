@@ -139,5 +139,11 @@
     <Text Include="VS10.txt">
       <Filter>Resource Files\Shaders\Vertex</Filter>
     </Text>
+    <Text Include="FS11.txt">
+      <Filter>Resource Files\Shaders\Fragmet</Filter>
+    </Text>
+    <Text Include="VS11.txt">
+      <Filter>Resource Files\Shaders\Vertex</Filter>
+    </Text>
   </ItemGroup>
 </Project>
