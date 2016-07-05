@@ -127,42 +127,42 @@ void CheckForGLErrors()
 	if (something == GL_INVALID_ENUM)
 	{
 		OutputDebugString("GL_INVALID_ENUM\n");
-		exit(-1);
+		Sleep(10000);
 	}
 	if (something == GL_INVALID_VALUE)
 	{
 		OutputDebugString("GL_INVALID_VALUE\n");
-		exit(-1);
+		Sleep(10000);
 	}
 	if (something == GL_INVALID_OPERATION)
 	{
 		OutputDebugString("GL_INVALID_OPERATION\n");
-		exit(-1);
+		Sleep(10000);
 	}
 	if (something == GL_INVALID_FRAMEBUFFER_OPERATION)
 	{
 		OutputDebugString("GL_INVALID_FRAMEBUFFER_OPERATION\n");
-		exit(-1);
+		Sleep(10000);
 	}
 	if (something == GL_OUT_OF_MEMORY)
 	{
 		OutputDebugString("GL_OUT_OF_MEMORY\n");
-		exit(-1);
+		Sleep(10000);
 	}
 	if (something == GL_INVALID_ENUM)
 	{
 		OutputDebugString("GL_INVALID_ENUM\n");
-		exit(-1);
+		Sleep(10000);
 	}
 	if (something == GL_STACK_UNDERFLOW)
 	{
 		OutputDebugString("GL_STACK_UNDERFLOW\n");
-		exit(-1);
+		Sleep(10000);
 	}
 	if (something == GL_STACK_OVERFLOW)
 	{
 		OutputDebugString("GL_STACK_OVERFLOW\n");
-		exit(-1);
+		Sleep(10000);
 	}
 }
 void CheckFBOStat()
@@ -173,19 +173,19 @@ void CheckFBOStat()
 	if (something == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
 	{
 		OutputDebugString("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT\n");
-		exit(-1);
+		Sleep(10000);
 	}
 
 	if (something == GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
 	{
 		OutputDebugString("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT\n");
-		exit(-1);
+		Sleep(10000);
 	}
 
 	if (something == GL_FRAMEBUFFER_UNSUPPORTED)
 	{
 		OutputDebugString("GL_FRAMEBUFFER_UNSUPPORTED\n");
-		exit(-1);
+		Sleep(10000);
 	}
 }
 

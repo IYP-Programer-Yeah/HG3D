@@ -1,6 +1,8 @@
 //shadow map shader
 #version 450
 
+#extension GL_NV_conservative_raster : require
+
 #define Shadowmap_Res				2048								//shadow map resolution 
 
 
