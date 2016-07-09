@@ -44,7 +44,7 @@ bool init_main_window(HINSTANCE hInstance)
 #else          //if 64bit
 	Main_Windows.WndClass.hIcon = LoadIcon(hInstance, (LPCSTR)MAKEINTRESOURCEA(IDI_ICON1)); //set the icon 64bit
 #endif
-	return Main_Windows.init_window(hInstance, "HG3D", SW_SHOWMAXIMIZED, true); //make a maximized window
+	return Main_Windows.init_window(hInstance, "HG3D", SW_SHOWMAXIMIZED, false); //make a maximized window
 
 
 }

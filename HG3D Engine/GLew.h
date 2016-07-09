@@ -62,6 +62,7 @@ PFNGLBINDATTRIBLOCATIONPROC                  glBindAttribLocation;
 PFNGLENABLEVERTEXATTRIBARRAYPROC             glEnableVertexAttribArray;
 PFNGLBINDFRAGDATALOCATIONPROC                glBindFragDataLocation;
 PFNGLGETSHADERINFOLOGPROC                    glGetShaderInfoLog;
+PFNGLGETPROGRAMINFOLOGPROC                   glGetProgramInfoLog;
 PFNGLCOMPRESSEDTEXIMAGE2DPROC				 glCompressedTexImage2D;
 PFNGLGETUNIFORMBLOCKINDEXPROC				 glGetUniformBlockIndex;
 PFNGLBINDBUFFERBASEPROC						 glBindBufferBase;
@@ -132,6 +133,7 @@ void Init_glew()
 	glEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glEnableVertexAttribArray");
 	glBindFragDataLocation = (PFNGLBINDFRAGDATALOCATIONPROC)wglGetProcAddress("glBindFragDataLocation");
 	glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)wglGetProcAddress("glGetShaderInfoLog");
+	glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)wglGetProcAddress("glGetProgramInfoLog");
 	glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)wglGetProcAddress("glCompressedTexImage2D");
 	glGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)wglGetProcAddress("glGetUniformBlockIndex");
 	glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)wglGetProcAddress("glBindBufferBase");

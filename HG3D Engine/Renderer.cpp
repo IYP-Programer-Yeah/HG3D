@@ -2,13 +2,20 @@
 #include "..\File_HG_FS\File_HG_FS.h"
 #include "..\Shared Headers\hstring.h"
 #include "GLew.h"
+
+#define CONSERVATIVE_RASTERIZATION_NV                   0x9346
+
+#define SUBPIXEL_PRECISION_BIAS_X_BITS_NV               0x9347
+#define SUBPIXEL_PRECISION_BIAS_Y_BITS_NV               0x9348
+#define MAX_SUBPIXEL_PRECISION_BIAS_BITS_NV             0x9349
+
 static unsigned long int renderer_class_nums = 0;
 static unsigned long int shader_nums = 0;
 /******************************************************************/
 /**************************test console****************************/
 /******************************************************************/
 /******************************************************************/
-string Final_str[2];
+string Final_str[4];
 /******************************************************************/
 /******************************************************************/
 /**************************test console****************************/
@@ -21,12 +28,12 @@ int ShadingTechniquesND[ShadingTechniquesNum]{ 3 };
 int ShadingTechniquesD[ShadingTechniquesNum]{ 4 };
 #endif
 
-GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
+GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path, const char *G_Shader_Path = NULL)
 {
 	GLint Result = GL_FALSE;
 	GLuint ProgramID = glCreateProgram();//creat program
-	File_HG_FS::File V_Shader, F_Shader;//shader's file
-	GLuint VertexShaderID = 0, FragmentShaderID = 0;
+	File_HG_FS::File V_Shader, F_Shader, G_Shader;//shader's file
+	GLuint VertexShaderID = 0, FragmentShaderID = 0, GeometryShaderID = 0;
 	Final_str[0] = "vertex shader #";
 	Final_str[0] = Final_str[0] + inttostring(shader_nums);
 	Final_str[0] = Final_str[0] + " log: \n";
@@ -77,6 +84,35 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 	}
 	else
 		Final_str[1] = Final_str[1] + "not found. \n";//no such path idiot
+
+	Final_str[2] = "geometry shader #";
+	Final_str[2] = Final_str[2] + inttostring(shader_nums);
+	Final_str[2] = Final_str[2] + " log: \n";
+	if (G_Shader_Path != NULL)
+	{
+		G_Shader.open(G_Shader_Path); //check if the path exists
+		GeometryShaderID = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(GeometryShaderID, 1, &G_Shader.data, (int*)&G_Shader.size);
+		glCompileShader(GeometryShaderID);
+		glGetShaderiv(GeometryShaderID, GL_COMPILE_STATUS, &Result);
+		if (Result == GL_FALSE)
+		{
+			GLsizei maxLength = 0;
+			string Log;
+			Log = "";
+			glGetShaderInfoLog(GeometryShaderID, 1000, &maxLength, Log.string1); //get the log
+			Final_str[2] = Final_str[2] + Log; //add the log to the string
+			Final_str[2] = Final_str[2] + "\n\n\n"; //add triple new lines
+		}
+		else
+			Final_str[2] = Final_str[2] + "well compiled. \n"; //every thing went well
+		glAttachShader(ProgramID, GeometryShaderID);
+	}
+	else
+		Final_str[2] = Final_str[2] + " no geometry shader attached: \n";
+
+
+
 	glBindAttribLocation(ProgramID, 0, "Vertex");
 	glBindAttribLocation(ProgramID, 1, "Normal");
 	glBindAttribLocation(ProgramID, 2, "Coord");
@@ -86,10 +122,29 @@ GLuint LoadShaders(const char *V_Shader_Path, const char *F_Shader_Path)
 	glBindFragDataLocation(ProgramID, 2, "Output3");//bind the out put 
 	glLinkProgram(ProgramID);//link shaders
 	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
+	Final_str[3] = "program #";
+	Final_str[3] = Final_str[3] + inttostring(shader_nums);
+	Final_str[3] = Final_str[3] + " log: \n";
+	if (Result == GL_FALSE)
+	{
+		GLsizei maxLength = 0;
+		string Log;
+		Log = "";
+
+		glGetProgramInfoLog(ProgramID, 1000, &maxLength, Log.string1); //get the log
+
+		Final_str[3] = Final_str[3] + Log;
+
+		Final_str[3] = Final_str[3] + "\n\n\n"; //add triple new lines
+	}
+	else
+		Final_str[3] = Final_str[3] + "linked fine\n\n";
 	if (V_Shader_Path != NULL)
 		glDeleteShader(VertexShaderID);//delete if only one was created
 	if (F_Shader_Path != NULL)
 		glDeleteShader(FragmentShaderID);//delete if only one was created
+	if (G_Shader_Path != NULL)
+		glDeleteShader(GeometryShaderID);//delete if only one was created
 	shader_nums++;
 	return ProgramID;
 }
@@ -619,7 +674,7 @@ namespace HG3D_Engine
 		/******************************************************************/
 
 		//load the GBuffer mapping shader
-		Shaders[2] = LoadShaders("..\\HG3D Engine\\VS02.txt", "..\\HG3D Engine\\FS02.txt");//load shaders
+		Shaders[2] = LoadShaders("..\\HG3D Engine\\VS02.vert", "..\\HG3D Engine\\FS02.frag");//load shaders
 		Diffuse_Texture_Sampler_Location[2] = glGetUniformLocation(Shaders[2], "Diffuse_Texture");
 
 		Camera_Data_Block_Index[2] = glGetUniformBlockIndex(Shaders[2], "camera");//get CurrentCamera index
@@ -645,9 +700,11 @@ namespace HG3D_Engine
 		WriteConsole(myConsoleHandle, tempstring.string1, (DWORD)strlen(tempstring.string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[2].string1, (DWORD)strlen(Final_str[2].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
 
 		//load the gather shader
-		Shaders[3] = LoadShaders("..\\HG3D Engine\\VS03.txt", "..\\HG3D Engine\\FS03.txt");//load shaders
+		Shaders[3] = LoadShaders("..\\HG3D Engine\\VS03.vert", "..\\HG3D Engine\\FS03.frag");//load shaders
 		GBuffer_Sampler_loaction[3] = glGetUniformLocation(Shaders[3], "GBuffer");
 		GBuffer_Normal_Map_Sampler_Location[3] = glGetUniformLocation(Shaders[3], "GBufferNormalMap");
 		GBuffer_Mat_ID_Sampler_loaction[3] = glGetUniformLocation(Shaders[3], "GBufferMatID");
@@ -692,9 +749,11 @@ namespace HG3D_Engine
 		/******************************************************************/
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[2].string1, (DWORD)strlen(Final_str[2].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
 
 		//load the gather shader for directional lights
-		Shaders[4] = LoadShaders("..\\HG3D Engine\\VS04.txt", "..\\HG3D Engine\\FS04.txt");//load shaders
+		Shaders[4] = LoadShaders("..\\HG3D Engine\\VS04.vert", "..\\HG3D Engine\\FS04.frag");//load shaders
 		GBuffer_Sampler_loaction[4] = glGetUniformLocation(Shaders[4], "GBuffer");
 		GBuffer_Normal_Map_Sampler_Location[4] = glGetUniformLocation(Shaders[4], "GBufferNormalMap");
 		GBuffer_Mat_ID_Sampler_loaction[4] = glGetUniformLocation(Shaders[4], "GBufferMatID");
@@ -727,10 +786,11 @@ namespace HG3D_Engine
 		/******************************************************************/
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
-
+		WriteConsole(myConsoleHandle, Final_str[2].string1, (DWORD)strlen(Final_str[2].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
 
 		//load the AA edge detection shader
-		Shaders[5] = LoadShaders("..\\HG3D Engine\\VS05.txt", "..\\HG3D Engine\\FS05.txt");//load shaders
+		Shaders[5] = LoadShaders("..\\HG3D Engine\\VS05.vert", "..\\HG3D Engine\\FS05.frag");//load shaders
 		Aliased_Image_Texture_Sampler_Location[5] = glGetUniformLocation(Shaders[5], "AliasedImage");
 
 		Camera_Data_Block_Index[5] = glGetUniformBlockIndex(Shaders[5], "camera");//get CurrentCamera index
@@ -745,9 +805,11 @@ namespace HG3D_Engine
 		/******************************************************************/
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[2].string1, (DWORD)strlen(Final_str[2].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
 
 		//load the AA main shader
-		Shaders[6] = LoadShaders("..\\HG3D Engine\\VS06.txt", "..\\HG3D Engine\\FS06.txt");//load shaders
+		Shaders[6] = LoadShaders("..\\HG3D Engine\\VS06.vert", "..\\HG3D Engine\\FS06.frag");//load shaders
 		Edge_Texture_Sampler_Location[6] = glGetUniformLocation(Shaders[6], "EdgeTexture");
 		Aliased_Image_Texture_Sampler_Location[6] = glGetUniformLocation(Shaders[6], "AliasedImage");
 
@@ -765,9 +827,11 @@ namespace HG3D_Engine
 		CheckForGLErrors();
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[2].string1, (DWORD)strlen(Final_str[2].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
 
 		//load the high pass shader
-		Shaders[7] = LoadShaders("..\\HG3D Engine\\VS07.txt", "..\\HG3D Engine\\FS07.txt");//load shaders
+		Shaders[7] = LoadShaders("..\\HG3D Engine\\VS07.vert", "..\\HG3D Engine\\FS07.frag");//load shaders
 		Texture_Sampler_Location[7] = glGetUniformLocation(Shaders[7], "Texture");
 
 		glUseProgram(Shaders[7]);
@@ -779,9 +843,11 @@ namespace HG3D_Engine
 		/******************************************************************/
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
-		
+		WriteConsole(myConsoleHandle, Final_str[2].string1, (DWORD)strlen(Final_str[2].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
+
 		//load the blur shader
-		Shaders[8] = LoadShaders("..\\HG3D Engine\\VS08.txt", "..\\HG3D Engine\\FS08.txt");//load shaders
+		Shaders[8] = LoadShaders("..\\HG3D Engine\\VS08.vert", "..\\HG3D Engine\\FS08.frag");//load shaders
 		Texture_Sampler_Location[8] = glGetUniformLocation(Shaders[8], "Texture");
 		Blur_Pass_Location[8] = glGetUniformLocation(Shaders[8], "BlurPass");
 
@@ -794,9 +860,11 @@ namespace HG3D_Engine
 		/******************************************************************/
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[2].string1, (DWORD)strlen(Final_str[2].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
 
 		//load the high pass shader
-		Shaders[9] = LoadShaders("..\\HG3D Engine\\VS09.txt", "..\\HG3D Engine\\FS09.txt");//load shaders
+		Shaders[9] = LoadShaders("..\\HG3D Engine\\VS09.vert", "..\\HG3D Engine\\FS09.frag");//load shaders
 		Texture_Sampler_Location[9] = glGetUniformLocation(Shaders[9], "Texture");
 		Aliased_Image_Texture_Sampler_Location[9] = glGetUniformLocation(Shaders[9], "AliasedImage");
 
@@ -810,8 +878,11 @@ namespace HG3D_Engine
 		/******************************************************************/
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[2].string1, (DWORD)strlen(Final_str[2].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
+
 		//load the shadow map shader
-		Shaders[10] = LoadShaders("..\\HG3D Engine\\VS10.txt", "..\\HG3D Engine\\FS10.txt");//load shaders
+		Shaders[10] = LoadShaders("..\\HG3D Engine\\VS10.vert", "..\\HG3D Engine\\FS10.frag", "..\\HG3D Engine\\GS10.geom");//load shaders
 		Projection_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ProjMatrix");
 		Model_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ModelMatrix");
 		/******************************************************************/
@@ -820,6 +891,8 @@ namespace HG3D_Engine
 		/******************************************************************/
 		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
 		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[2].string1, (DWORD)strlen(Final_str[2].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
 
 
 		/******************************************************************/
@@ -1317,7 +1390,17 @@ namespace HG3D_Engine
 
 #ifdef SilhouetteShadowMapping
 			glDrawBuffers(3, buffers);//will draw to 3 color buffer
+			/*glEnable(CONSERVATIVE_RASTERIZATION_NV);
+			{
+				GLuint error = glGetError();
+				if (GL_NO_ERROR != error)
+				{
+					string Message;
+					Message = "Conservative rendering not supported\n";
+					WriteConsole(myConsoleHandle, Message.string1, (DWORD)strlen(Message.string1), &cCharsWritten, NULL);
+				}
 
+			}*/
 #endif // SilhouetteShadowMapping
 
 			glCullFace(GL_FRONT);
@@ -1446,6 +1529,19 @@ namespace HG3D_Engine
 					glDrawElements(GL_TRIANGLES, meshes[mesh_draw_order[i].A].vert_nums, GL_UNSIGNED_INT, meshes[mesh_draw_order[i].A].indices);
 				}
 			}
+#ifdef SilhouetteShadowMapping
+			/*glDisable(CONSERVATIVE_RASTERIZATION_NV);
+			{
+				GLuint error = glGetError();
+				if (GL_NO_ERROR != error)
+				{
+					string Message;
+					Message = "Conservative rendering not supported\n";
+					WriteConsole(myConsoleHandle, Message.string1, (DWORD)strlen(Message.string1), &cCharsWritten, NULL);
+				}
+
+			}*/
+#endif // SilhouetteShadowMapping
 
 			glCullFace(GL_BACK);
 
@@ -1734,7 +1830,7 @@ namespace HG3D_Engine
 			/***************************************************************/
 			/***********************the bloom pass**************************/
 			/***************************************************************/
-			/*glViewport(0,//set the view port
+			glViewport(0,//set the view port
 				0,
 				Temp_Texture_W,
 				Temp_Texture_H);
@@ -1768,7 +1864,7 @@ namespace HG3D_Engine
 
 			glUniform1i(Blur_Pass_Location[8], 1);
 
-			glDrawArrays(GL_TRIANGLES, 0, 6);*/
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, curent_cam.Gather_FBO_ID);
 
@@ -1865,7 +1961,7 @@ namespace HG3D_Engine
 		glGenBuffers(1, &text_offset_UBO_ID);//generate the UBO
 		glBindBufferBase(GL_UNIFORM_BUFFER, text_offsets_UBO_binding_point, text_offset_UBO_ID);
 
-		Shaders[0] = LoadShaders("..\\HG3D Engine\\VS00.txt", "..\\HG3D Engine\\FS00.txt");//load shaders
+		Shaders[0] = LoadShaders("..\\HG3D Engine\\VS00.vert", "..\\HG3D Engine\\FS00.frag");//load shaders
 		Light_Block_Index[0] = glGetUniformBlockIndex(Shaders[0], "lights");//get lights index
 		glUniformBlockBinding(Shaders[0], Light_Block_Index[0], lights_UBO_binding_point);
 
@@ -1951,7 +2047,7 @@ namespace HG3D_Engine
 		/**************************test console****************************/
 		/******************************************************************/
 		//load the shadow mapping shader
-		Shaders[1] = LoadShaders("..\\HG3D Engine\\VS01.txt", "..\\HG3D Engine\\FS01.txt");//load shaders
+		Shaders[1] = LoadShaders("..\\HG3D Engine\\VS01.vert", "..\\HG3D Engine\\FS01.frag");//load shaders
 		Model_Matrix_Location[1] = glGetUniformLocation(Shaders[1], "ModelMatrix");
 		View_Matrix_Location[1] = glGetUniformLocation(Shaders[1], "ProjViewMatrix");
 		/******************************************************************/

@@ -150,35 +150,38 @@
     <ClInclude Include="string_extra.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="FS00.txt" />
-    <Text Include="FS01.txt" />
-    <Text Include="FS02.txt" />
-    <Text Include="FS03.txt" />
-    <Text Include="FS04.txt" />
-    <Text Include="FS05.txt" />
-    <Text Include="FS06.txt" />
-    <Text Include="FS07.txt" />
-    <Text Include="FS08.txt" />
-    <Text Include="FS09.txt" />
-    <Text Include="FS10.txt" />
-    <Text Include="FS11.txt" />
-    <Text Include="VS00.txt" />
-    <Text Include="VS01.txt" />
-    <Text Include="VS02.txt" />
-    <Text Include="VS03.txt" />
-    <Text Include="VS04.txt" />
-    <Text Include="VS05.txt" />
-    <Text Include="VS06.txt" />
-    <Text Include="VS07.txt" />
-    <Text Include="VS08.txt" />
-    <Text Include="VS09.txt" />
-    <Text Include="VS10.txt" />
-    <Text Include="VS11.txt" />
+    <Text Include="FS00.frag" />
+    <Text Include="FS01.frag" />
+    <Text Include="FS02.frag" />
+    <Text Include="FS03.frag" />
+    <Text Include="FS04.frag" />
+    <Text Include="FS05.frag" />
+    <Text Include="FS06.frag" />
+    <Text Include="FS07.frag" />
+    <Text Include="FS08.frag" />
+    <Text Include="FS09.frag" />
+    <Text Include="FS10.frag" />
+    <Text Include="FS11.frag" />
+    <Text Include="VS00.vert" />
+    <Text Include="VS01.vert" />
+    <Text Include="VS02.vert" />
+    <Text Include="VS03.vert" />
+    <Text Include="VS04.vert" />
+    <Text Include="VS05.vert" />
+    <Text Include="VS06.vert" />
+    <Text Include="VS07.vert" />
+    <Text Include="VS08.vert" />
+    <Text Include="VS09.vert" />
+    <Text Include="VS10.vert" />
+    <Text Include="VS11.vert" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\File_HG_FS\File_HG_FS.vcxproj">
       <Project>{1bc64213-e9a2-47c5-b9cf-8fd3ba721c0a}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GS10.geom" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
