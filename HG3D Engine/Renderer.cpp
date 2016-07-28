@@ -603,6 +603,8 @@ namespace HG3D_Engine
 		textures = (texture*)malloc(0);
 		current_cameras = (unsigned long int*)malloc(0);
 		mesh_draw_order = (Couple<unsigned long int, long double>*)malloc(0);
+		for (int i = 0; i < MaxShadowmapsNums; i++)
+			mesh_draw_order_lv[i] = (Couple<unsigned long int, long double>*)malloc(0);
 		for (register int i = 0; i < 100; i++)
 			lights[i].build();
 		renderer_ID = renderer_class_nums;//give it an ID
@@ -882,9 +884,22 @@ namespace HG3D_Engine
 		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
 
 		//load the shadow map shader
-		Shaders[10] = LoadShaders("..\\HG3D Engine\\VS10.vert", "..\\HG3D Engine\\FS10.frag", "..\\HG3D Engine\\GS10.geom");//load shaders
+		Shaders[10] = LoadShaders("..\\HG3D Engine\\VS10.vert", "..\\HG3D Engine\\FS10.frag");//load shaders
 		Projection_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ProjMatrix");
 		Model_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ModelMatrix");
+		/******************************************************************/
+		/**************************test console****************************/
+		/******************************************************************/
+		/******************************************************************/
+		WriteConsole(myConsoleHandle, Final_str[0].string1, (DWORD)strlen(Final_str[0].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[1].string1, (DWORD)strlen(Final_str[1].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[2].string1, (DWORD)strlen(Final_str[2].string1), &cCharsWritten, NULL);
+		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
+
+		//load the shadow map shader
+		Shaders[11] = LoadShaders("..\\HG3D Engine\\VS11.vert", "..\\HG3D Engine\\FS11.frag", "..\\HG3D Engine\\GS11.geom");//load shaders
+		Projection_Matrix_Location[11] = glGetUniformLocation(Shaders[11], "ProjMatrix");
+		Model_Matrix_Location[11] = glGetUniformLocation(Shaders[11], "ModelMatrix");
 		/******************************************************************/
 		/**************************test console****************************/
 		/******************************************************************/
@@ -926,7 +941,7 @@ namespace HG3D_Engine
 			glGenTextures(1, &Silhouette_Shadow_Maps_Tex_ID[i]);//generate the texture so you can free it
 			glBindTexture(GL_TEXTURE_2D_ARRAY, Silhouette_Shadow_Maps_Tex_ID[i]);//bind the texture
 
-			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R16F, LayerRes, LayerRes, MaxShadowmapsNums*2, 0, GL_RED, GL_FLOAT, NULL);
+			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG16F, LayerRes, LayerRes, MaxShadowmapsNums, 0, GL_RG, GL_FLOAT, NULL);
 
 			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//linear filter (we'll use it)
 			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1130,6 +1145,11 @@ namespace HG3D_Engine
 #ifdef Deferred
 		free(mesh_draw_order);//it'll ve re allocated
 		mesh_draw_order = (Couple<unsigned long int, long double>*)malloc(sizeof(Couple<unsigned long int, long double>)*mesh_nums);
+		for (int i = 0; i < MaxShadowmapsNums; i++)
+		{
+			free(mesh_draw_order_lv[i]);//it'll ve re allocated
+			mesh_draw_order_lv[i] = (Couple<unsigned long int, long double>*)malloc(sizeof(Couple<unsigned long int, long double>)*mesh_nums);
+		}
 #endif
 
 		free(meshes);//free last data
@@ -1389,7 +1409,6 @@ namespace HG3D_Engine
 
 
 #ifdef SilhouetteShadowMapping
-			glDrawBuffers(3, buffers);//will draw to 3 color buffer
 			/*glEnable(CONSERVATIVE_RASTERIZATION_NV);
 			{
 				GLuint error = glGetError();
@@ -1404,6 +1423,7 @@ namespace HG3D_Engine
 #endif // SilhouetteShadowMapping
 
 			glCullFace(GL_FRONT);
+			unsigned long int meshs_in_the_scene_lv[MaxShadowmapsNums];
 
 			for (register unsigned long int j = 0; j < shadowmapped_lights_num; j++)
 			{
@@ -1431,7 +1451,7 @@ namespace HG3D_Engine
 				/***************************************************************/
 				/***********************frustum culling*************************/
 				/***************************************************************/
-				unsigned long int meshs_in_the_scene = 0;//number of objects in the scene
+				meshs_in_the_scene_lv[j] = 0;//number of objects in the scene
 
 				point temp_point, ftemp_points[2];
 				float AABB[2][3];
@@ -1466,11 +1486,11 @@ namespace HG3D_Engine
 							temp_point = SMProjMat*temp_point;
 						if (Z_value <= -Near&& temp_point.y <= 1.0 && temp_point.x <= 1.0 &&temp_point.y >= -1.0 && temp_point.x >= -1.0)//mesh is in the scene
 						{
-							mesh_draw_order[meshs_in_the_scene].A = i;//put the mesh to the draw order
+							mesh_draw_order_lv[j][meshs_in_the_scene_lv[j]].A = i;//put the mesh to the draw order
 							vector TempVector;
 							TempVector.build(pos, meshes[i].model_matrix*meshes[i].mesh_center);
-							mesh_draw_order[meshs_in_the_scene].B = TempVector.getsizeSq();
-							meshs_in_the_scene++;//a mesh is added
+							mesh_draw_order_lv[j][meshs_in_the_scene_lv[j]].B = TempVector.getsizeSq();
+							meshs_in_the_scene_lv[j]++;//a mesh is added
 							break;
 						}
 						else if (k == 7 && AABB[0][2] <= -Near&&AABB[1][2] >= -Far)//frustum in mesh
@@ -1481,11 +1501,11 @@ namespace HG3D_Engine
 							ftemp_points[1] = SMProjMat*ftemp_points[1];
 							if (((ftemp_points[0].x <= 1.0 && ftemp_points[1].x >= 1.0) || (ftemp_points[0].x <= -1.0 && ftemp_points[1].x >= -1.0) || (ftemp_points[0].x >= -1.0 && ftemp_points[1].x <= 1.0)) && ((ftemp_points[0].y <= 1.0 && ftemp_points[1].y >= 1.0) || (ftemp_points[0].y <= -1.0 && ftemp_points[1].y >= -1.0) || (ftemp_points[0].y >= -1.0 && ftemp_points[1].y <= 1.0)))//the frustum is in mesh
 							{
-								mesh_draw_order[meshs_in_the_scene].A = i;//put the mesh to the draw order
+								mesh_draw_order_lv[j][meshs_in_the_scene_lv[j]].A = i;//put the mesh to the draw order
 								vector TempVector;
 								TempVector.build(pos, meshes[i].model_matrix*meshes[i].mesh_center);
-								mesh_draw_order[meshs_in_the_scene].B = TempVector.getsizeSq();
-								meshs_in_the_scene++;//a mesh is added
+								mesh_draw_order_lv[j][meshs_in_the_scene_lv[j]].B = TempVector.getsizeSq();
+								meshs_in_the_scene_lv[j]++;//a mesh is added
 							}
 						}
 					}
@@ -1501,7 +1521,7 @@ namespace HG3D_Engine
 				/***************************************************************/
 				/********************front to back sorting**********************/
 				/***************************************************************/
-				std::sort(mesh_draw_order, mesh_draw_order + meshs_in_the_scene);
+				std::sort(mesh_draw_order_lv[j], mesh_draw_order_lv[j] + meshs_in_the_scene_lv[j]);
 				/***************************************************************/
 				/********************front to back sorting**********************/
 				/***************************************************************/
@@ -1511,25 +1531,66 @@ namespace HG3D_Engine
 				glUniformMatrix4fv(Projection_Matrix_Location[10], 1, 1, SMProjMat.x);//set proj matrix
 
 				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Shadow_Maps_Tex_ID[0], 0, j);//set the texture as color buffer and start drawing
-#ifdef SilhouetteShadowMapping
-				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, Silhouette_Shadow_Maps_Tex_ID[0], 0, j);//set the texture as color buffer and start drawing
-				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, Silhouette_Shadow_Maps_Tex_ID[0], 0, j + MaxShadowmapsNums);//set the texture as color buffer and start drawing
-#endif
 
 				glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 				glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-				for (register unsigned long int i = 0; i < meshs_in_the_scene; i++)//go through the meshs in the scene
+				for (register unsigned long int i = 0; i < meshs_in_the_scene_lv[j]; i++)//go through the meshs in the scene
 				{
-					glUniformMatrix4fv(Model_Matrix_Location[10], 1, 1, (SMViewMat * meshes[mesh_draw_order[i].A].model_matrix).x);//set model matrix
-					if (meshes[mesh_draw_order[i].A].needs_update)//update data if needed
-						meshes[mesh_draw_order[i].A].update_vbo();
-					if (meshes[mesh_draw_order[i].A].subdata_changed)//update data if needed
-						meshes[mesh_draw_order[i].A].remap_vbo();
-					glBindVertexArray(meshes[mesh_draw_order[i].A].VAO_ID);//bind vao to draw
-					glDrawElements(GL_TRIANGLES, meshes[mesh_draw_order[i].A].vert_nums, GL_UNSIGNED_INT, meshes[mesh_draw_order[i].A].indices);
+					glUniformMatrix4fv(Model_Matrix_Location[10], 1, 1, (SMViewMat * meshes[mesh_draw_order_lv[j][i].A].model_matrix).x);//set model matrix
+					if (meshes[mesh_draw_order_lv[j][i].A].needs_update)//update data if needed
+						meshes[mesh_draw_order_lv[j][i].A].update_vbo();
+					if (meshes[mesh_draw_order_lv[j][i].A].subdata_changed)//update data if needed
+						meshes[mesh_draw_order_lv[j][i].A].remap_vbo();
+					glBindVertexArray(meshes[mesh_draw_order_lv[j][i].A].VAO_ID);//bind vao to draw
+					glDrawElements(GL_TRIANGLES, meshes[mesh_draw_order_lv[j][i].A].vert_nums, GL_UNSIGNED_INT, meshes[mesh_draw_order_lv[j][i].A].indices);
 				}
 			}
+
+			glCullFace(GL_BACK);
+
 #ifdef SilhouetteShadowMapping
+			glUseProgram(Shaders[11]);
+
+			for (register unsigned long int j = 0; j < shadowmapped_lights_num; j++)
+			{
+				light CurrentLight = lights[lights_in_the_scene_index[j]];
+				point pos;
+				pos.build(CurrentLight.light_position[0], CurrentLight.light_position[1], CurrentLight.light_position[2]);
+				vector dir;
+				dir.build(CurrentLight.direction[0], CurrentLight.direction[1], CurrentLight.direction[2]);
+				vector up;
+				vector left;
+				left.build(1.0f, 0.0f, 0.0f);
+				if (abs(dot(dir, left)) > 0.9)
+					left.build(0.0f, 1.0f, 0.0f);
+				up = cross(dir, left);
+
+				float Near = 1.0f;
+				float Far = CurrentLight.max_radius;
+
+				_4x4matrix SMViewMat = LookAt(pos, dir, up);
+				_4x4matrix SMProjMat = Projection(-Near, Near, -Near, Near, Near, Far);
+
+				SMMats[j] = Transpose(SMProjMat * SMViewMat * Inverse(curent_cam.ViewMatrix));
+
+
+				glUniformMatrix4fv(Projection_Matrix_Location[11], 1, 1, SMProjMat.x);//set proj matrix
+
+				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Silhouette_Shadow_Maps_Tex_ID[0], 0, j);//set the texture as color buffer and start drawing
+
+				glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+				glClear(GL_COLOR_BUFFER_BIT);
+				for (register unsigned long int i = 0; i < meshs_in_the_scene_lv[j]; i++)//go through the meshs in the scene
+				{
+					glUniformMatrix4fv(Model_Matrix_Location[11], 1, 1, (SMViewMat * meshes[mesh_draw_order_lv[j][i].A].model_matrix).x);//set model matrix
+					if (meshes[mesh_draw_order_lv[j][i].A].needs_update)//update data if needed
+						meshes[mesh_draw_order_lv[j][i].A].update_vbo();
+					if (meshes[mesh_draw_order_lv[j][i].A].subdata_changed)//update data if needed
+						meshes[mesh_draw_order_lv[j][i].A].remap_vbo();
+					glBindVertexArray(meshes[mesh_draw_order_lv[j][i].A].VAO_ID);//bind vao to draw
+					glDrawElements(GL_TRIANGLES, meshes[mesh_draw_order_lv[j][i].A].vert_nums, GL_UNSIGNED_INT, meshes[mesh_draw_order_lv[j][i].A].indices);
+				}
+			}
 			/*glDisable(CONSERVATIVE_RASTERIZATION_NV);
 			{
 				GLuint error = glGetError();
@@ -1542,8 +1603,6 @@ namespace HG3D_Engine
 
 			}*/
 #endif // SilhouetteShadowMapping
-
-			glCullFace(GL_BACK);
 
 			glBindBuffer(GL_UNIFORM_BUFFER, SM_mat_UBO_ID);
 			glBufferData(GL_UNIFORM_BUFFER, sizeof(_4x4matrix) * MaxShadowmapsNums, (void*)SMMats, GL_DYNAMIC_DRAW);

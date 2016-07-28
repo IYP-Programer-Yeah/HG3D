@@ -203,8 +203,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	Engine.cameras[0].camera_position.build(0.0f, 100.0f, -80.0f);//put the camera to x=12
-	//Engine.cameras[0].camera_position.build(1100.0f, 900.0f, 0.0f);//put the camera to x=12
-	Engine.cameras[0].forward.build(0.0f, 0.0f, 1.0f);//look int x=-1 direction 
+	Engine.cameras[0].camera_position.build(1100.0f, 900.0f, 0.0f);//put the camera to x=12
+	//Engine.cameras[0].forward.build(0.0f, 0.0f, 1.0f);//look int x=-1 direction 
 	Engine.cameras[0].camera_viewport[2] = GetW();//update view port
 	Engine.cameras[0].camera_viewport[3] = GetH();//update view port
 	Engine.cameras[0].Right = float(GetW()) / float(GetH());//update projection

@@ -37,7 +37,7 @@
 
 #define MaxDepth 10e15f
 
-#define Shadowmap_Res				2048								//shadow map resolution 
+#define Shadowmap_Res				4096								//shadow map resolution 
 
 #define Temp_Texture_W				384									//temp texture width
 #define Temp_Texture_H				256									//temp texture height
@@ -502,9 +502,9 @@ namespace HG3D_Engine
 		GLuint Camera_Position_Location[50];						//the loaction of camera position in shader
 		GLuint Lights_Nums_Location[50];							//the loaction of Lights Nums in shader
 		GLuint Lights_Proj_View_Matrix_Location[50];				//the loaction of Lights view matrix in shader
-		GLuint Inv_Lights_Proj_View_Matrix_Location[50];			//the loaction of Lights view matrix in shader
-		GLuint Shadowmap_Sampler_Location[50];						//the loaction of Lights view matrix in shader
-		GLuint Silhouette_Shadowmap_Sampler_Location[50];						//the loaction of Lights view matrix in shader
+		GLuint Inv_Lights_Proj_View_Matrix_Location[50];			//the loaction of inverse light MVP matix in shader
+		GLuint Shadowmap_Sampler_Location[50];						//the loaction of shadow map sampler in shader
+		GLuint Silhouette_Shadowmap_Sampler_Location[50];			//the loaction of silhouette shadow map sampler in shader
 		GLuint CSM_Data_Location[50];								//the location of Ext's
 		GLuint GBuffer_Normal_Map_Sampler_Location[50];				//the location of the material ID in shader
 		GLuint GBuffer_Sampler_loaction[50];						//the location of the GBuffer sampler in shader
@@ -518,6 +518,8 @@ namespace HG3D_Engine
 		GLuint Blur_Pass_Location[50];								//the location of the blur pass in shader-
 #ifdef Deferred
 		Couple<unsigned long int, long double> *mesh_draw_order;	//the order in which meshs are drawn
+		Couple<unsigned long int, long double> *mesh_draw_order_lv[	//the order in which meshs are drawn in light view for shadowmaps
+			MaxShadowmapsNums];										//the order in which meshs are drawn in light view for shadowmaps
 #endif
 		GLuint Shadow_Maps_Tex_ID[MaxCascadessNums];		//the shadow map textures an array of cascades
 		GLuint Silhouette_Shadow_Maps_Tex_ID[MaxCascadessNums];		//the shadow map textures an array of cascades

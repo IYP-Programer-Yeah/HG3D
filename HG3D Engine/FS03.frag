@@ -11,7 +11,7 @@
 #define MaxCascadessNums		1
 
 #define SampleCount				4
-#define Shadowmap_Res			2048
+#define Shadowmap_Res			4096
 
 #define Cos30					0.8660254f
 #define Sin30					0.5f
@@ -144,37 +144,39 @@ float BilinearShadowTest(const vec2 ShadowCoord, const float Depth, const sample
 }
 
 
-float SilhouetteShadowTest(const vec2 ShadowCoord, const float Depth, const sampler2DArray ShadowMap, const int i, const float MaxRad, const ivec2 TextureSize)
+float SilhouetteShadowTest(const vec2 ShadowCoord, const float Depth, const sampler2DArray ShadowMap, const sampler2DArray SilhouetteMap, const int i, const ivec2 TextureSize)
 {
-	const vec2 samples=floor(float(TextureSize)*ShadowCoord);
+	ivec2 TexelCoords=ivec2(floor(ShadowCoord.xy*TextureSize));
 
-	const vec4 samplesDepth=textureGather(ShadowMap,vec3(samples/vec2(TextureSize),i),0);
-	
-	vec4 SamplesShadowVals;
+	if (Depth>texelFetch(ShadowMap,ivec3(TexelCoords.xy,CurrentLightIndex),0).x)
+	{
+		vec2 TexelCenter=(vec2(TexelCoords)+0.5)/float(Shadowmap_Res);
 
-	if (Depth>samplesDepth.w)	
-		SamplesShadowVals[0]=0.0f;
-	else
-		SamplesShadowVals[0]=1.0f;
-	
-	if (Depth>samplesDepth.z)	
-		SamplesShadowVals[1]=0.0f;
-	else
-		SamplesShadowVals[1]=1.0f;
+		float slope=texelFetch(SilhouetteMap,ivec3(TexelCoords,i),0).x;
+		float offset=texelFetch(SilhouetteMap,ivec3(TexelCoords,i+MaxShadowmapsNums),0).x;
 
-	if (Depth>samplesDepth.x)		
-		SamplesShadowVals[2]=0.0f;
-	else
-		SamplesShadowVals[2]=1.0f;
+		float CurrentState=ShadowCoord.x*slope+offset-ShadowCoord.y;
 
-	if (Depth>samplesDepth.y)	
-		SamplesShadowVals[3]=0.0f;
-	else
-		SamplesShadowVals[3]=1.0f;
+		ivec2 step;
+		if (slope>1.0f||slope<-1.0f)
+		{
+			step=ivec2(1,0);
+		}
+		else
+		{
+			step=ivec2(0,1);
+		}
+		float NextState=(ShadowCoord.x+float(step.x))*slope+offset-ShadowCoord.y-float(step.y);
+		if (NextState*CurrentState<0.0f)
+			step=-step;
 
-	const vec2 lerpVals=vec2(TextureSize)*ShadowCoord.xy-samples;
 
-	return mix(mix(SamplesShadowVals[0],SamplesShadowVals[1],lerpVals.x),mix(SamplesShadowVals[2],SamplesShadowVals[3],lerpVals.x),lerpVals.y);
+		if (Depth>texelFetch(ShadowMap,ivec3(TexelCoords.xy+step,CurrentLightIndex),0).x)
+			return 0.0f;
+		else
+			return 1.0f;
+	}
+	return 1.0f;
 }
 
 float AvarageShadowCasterDepth(vec2 ShadowCoord, float Depth, sampler2DArray ShadowMap, int TextID, int R, ivec2 TextureSize)//reciever's coordinate on shadow map, reciever's depth, shadow map sampler, current layer of the shadow map array sampler, radiouse of the blocker search, size of the shadow map texture
@@ -312,7 +314,7 @@ void main()
 
 
 
-		if (SMCoord.x<1.0f && SMCoord.y<1.0f && SMCoord.y>=0.0f && SMCoord.x>=0.0f && SMCoord.z<1.0f && SMCoord.z>=0.0f)
+		/*if (SMCoord.x<1.0f && SMCoord.y<1.0f && SMCoord.y>=0.0f && SMCoord.x>=0.0f && SMCoord.z<1.0f && SMCoord.z>=0.0f)
 		{
 			ShadowEffect=1.0f;
 			ivec2 TexelCoords=ivec2(floor(SMCoord.xy*float(Shadowmap_Res)));
@@ -351,10 +353,10 @@ void main()
 			}
 		}
 		else
-			discard;
+			discard;*/
 
 
-		/*if (SMCoord.x<1.0f && SMCoord.y<1.0f && SMCoord.y>=0.0f && SMCoord.x>=0.0f && SMCoord.z<1.0f && SMCoord.z>=0.0f)
+		if (SMCoord.x<1.0f && SMCoord.y<1.0f && SMCoord.y>=0.0f && SMCoord.x>=0.0f && SMCoord.z<1.0f && SMCoord.z>=0.0f)
 		{
 			
 			const ivec2 TextureSize=ivec2(Shadowmap_Res);
@@ -374,6 +376,7 @@ void main()
 			for (int i=start;i<end;i++)
 				for (int j=start;j<end;j++)
 					ShadowEffect+=BilinearShadowTest(SMCoord.xy+vec2(i,j)*2.0f/float(Shadowmap_Res)*StepSize,ActualDepth,SMTex_Sampler[0],CurrentLightIndex,CurrentLight.max_radius,TextureSize)/NewSampleCount;
+					//ShadowEffect+=SilhouetteShadowTest(SMCoord.xy+vec2(i,j)*2.0f/float(Shadowmap_Res)*StepSize,ActualDepth,SMTex_Sampler[0],SSMTex_Sampler[0],CurrentLightIndex,TextureSize)/NewSampleCount;
 			
 
 			if (ShadowEffect!=0.0f&&ShadowEffect!=1.0f)
@@ -388,7 +391,7 @@ void main()
 			
 		}
 		else
-			discard;*/
+			discard;
 	}
 	/****************************************************************************/
 	/*********************************Shadow mapping*****************************/

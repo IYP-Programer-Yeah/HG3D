@@ -1,11 +1,12 @@
 #version 450
 
-in vec2 Vertex;
+in vec3 Vertex;
+in int bone_ID;
 
-out vec2 FragCoord;
+uniform mat4 ProjMatrix;
+uniform mat4 ModelMatrix;
 
 void main()
 {
-	FragCoord=(Vertex+1.0f)/2;
-	gl_Position=vec4(Vertex,0.0f,1.0f);
+	gl_Position=ProjMatrix*(ModelMatrix*vec4(Vertex,1));
 }

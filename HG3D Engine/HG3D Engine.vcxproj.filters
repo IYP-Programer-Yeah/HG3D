@@ -150,7 +150,10 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GS10.geom">
+    <None Include="GS10Test.geom">
+      <Filter>Resource Files\Shaders\Geometry</Filter>
+    </None>
+    <None Include="GS11.geom">
       <Filter>Resource Files\Shaders\Geometry</Filter>
     </None>
   </ItemGroup>
