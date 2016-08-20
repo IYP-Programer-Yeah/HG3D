@@ -182,7 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GS11.geom" />
-    <None Include="GS10Test.geom" />
+    <None Include="GS10.geom" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

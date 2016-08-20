@@ -4,23 +4,23 @@
 layout(early_fragment_tests) in; //later will be added if it was availble
 
 out float Output1;
-/*out float Output2;
-out float Output3;*/
+out float Output2;
+out float Output3;
 
-in float Z;
+//in float Z;
 
-//in vec4 VAttribs;
-/*in vec3 slope;
-in vec3 offset;*/
+in vec4 FAttribs;
+in vec3 slope;
+in vec3 offset;
 
 void main()
 {
-	if (Z<0)
+	if (FAttribs.w<0)
 		discard;
-	Output1=Z;
+	Output1=FAttribs.w;
 
 
-	/*int vertices[2];
+	int vertices[2];
 	if (FAttribs.x<FAttribs.y&&FAttribs.x<FAttribs.z)
 	{
 		Output2=slope.x/FAttribs.x;
@@ -35,5 +35,5 @@ void main()
 	{
 		Output2=slope.z/FAttribs.z;
 		Output3=offset.z/FAttribs.z;
-	}*/
+	}
 }

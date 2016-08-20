@@ -884,7 +884,7 @@ namespace HG3D_Engine
 		WriteConsole(myConsoleHandle, Final_str[3].string1, (DWORD)strlen(Final_str[3].string1), &cCharsWritten, NULL);
 
 		//load the shadow map shader
-		Shaders[10] = LoadShaders("..\\HG3D Engine\\VS10.vert", "..\\HG3D Engine\\FS10.frag");//load shaders
+		Shaders[10] = LoadShaders("..\\HG3D Engine\\VS10.vert", "..\\HG3D Engine\\FS10.frag", "..\\HG3D Engine\\GS10.geom");//load shaders
 		Projection_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ProjMatrix");
 		Model_Matrix_Location[10] = glGetUniformLocation(Shaders[10], "ModelMatrix");
 		/******************************************************************/
@@ -941,7 +941,7 @@ namespace HG3D_Engine
 			glGenTextures(1, &Silhouette_Shadow_Maps_Tex_ID[i]);//generate the texture so you can free it
 			glBindTexture(GL_TEXTURE_2D_ARRAY, Silhouette_Shadow_Maps_Tex_ID[i]);//bind the texture
 
-			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG16F, LayerRes, LayerRes, MaxShadowmapsNums, 0, GL_RG, GL_FLOAT, NULL);
+			glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R16F, LayerRes, LayerRes, MaxShadowmapsNums * 2, 0, GL_RED, GL_FLOAT, NULL);
 
 			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//linear filter (we'll use it)
 			glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1409,7 +1409,8 @@ namespace HG3D_Engine
 
 
 #ifdef SilhouetteShadowMapping
-			/*glEnable(CONSERVATIVE_RASTERIZATION_NV);
+			glDrawBuffers(3, buffers);//will draw to 3 color buffer
+			glEnable(CONSERVATIVE_RASTERIZATION_NV);
 			{
 				GLuint error = glGetError();
 				if (GL_NO_ERROR != error)
@@ -1419,7 +1420,7 @@ namespace HG3D_Engine
 					WriteConsole(myConsoleHandle, Message.string1, (DWORD)strlen(Message.string1), &cCharsWritten, NULL);
 				}
 
-			}*/
+			}
 #endif // SilhouetteShadowMapping
 
 			glCullFace(GL_FRONT);
@@ -1531,6 +1532,8 @@ namespace HG3D_Engine
 				glUniformMatrix4fv(Projection_Matrix_Location[10], 1, 1, SMProjMat.x);//set proj matrix
 
 				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Shadow_Maps_Tex_ID[0], 0, j);//set the texture as color buffer and start drawing
+				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, Silhouette_Shadow_Maps_Tex_ID[0], 0, j);//set the texture as color buffer and start drawing
+				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, Silhouette_Shadow_Maps_Tex_ID[0], 0, j + MaxShadowmapsNums);//set the texture as color buffer and start drawing
 
 				glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 				glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -1549,6 +1552,8 @@ namespace HG3D_Engine
 			glCullFace(GL_BACK);
 
 #ifdef SilhouetteShadowMapping
+			/*glDisable(GL_CULL_FACE);
+
 			glUseProgram(Shaders[11]);
 
 			for (register unsigned long int j = 0; j < shadowmapped_lights_num; j++)
@@ -1579,7 +1584,7 @@ namespace HG3D_Engine
 				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Silhouette_Shadow_Maps_Tex_ID[0], 0, j);//set the texture as color buffer and start drawing
 
 				glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-				glClear(GL_COLOR_BUFFER_BIT);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				for (register unsigned long int i = 0; i < meshs_in_the_scene_lv[j]; i++)//go through the meshs in the scene
 				{
 					glUniformMatrix4fv(Model_Matrix_Location[11], 1, 1, (SMViewMat * meshes[mesh_draw_order_lv[j][i].A].model_matrix).x);//set model matrix
@@ -1590,8 +1595,8 @@ namespace HG3D_Engine
 					glBindVertexArray(meshes[mesh_draw_order_lv[j][i].A].VAO_ID);//bind vao to draw
 					glDrawElements(GL_TRIANGLES, meshes[mesh_draw_order_lv[j][i].A].vert_nums, GL_UNSIGNED_INT, meshes[mesh_draw_order_lv[j][i].A].indices);
 				}
-			}
-			/*glDisable(CONSERVATIVE_RASTERIZATION_NV);
+			}*/
+			glDisable(CONSERVATIVE_RASTERIZATION_NV);
 			{
 				GLuint error = glGetError();
 				if (GL_NO_ERROR != error)
@@ -1601,7 +1606,9 @@ namespace HG3D_Engine
 					WriteConsole(myConsoleHandle, Message.string1, (DWORD)strlen(Message.string1), &cCharsWritten, NULL);
 				}
 
-			}*/
+			}
+			//glEnable(GL_CULL_FACE);
+			glDrawBuffers(1, buffers);//will draw to 3 color buffer
 #endif // SilhouetteShadowMapping
 
 			glBindBuffer(GL_UNIFORM_BUFFER, SM_mat_UBO_ID);

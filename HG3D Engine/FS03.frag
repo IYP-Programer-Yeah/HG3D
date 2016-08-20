@@ -21,7 +21,7 @@
 #define GN(x)				(pow(e,-x*x/(2.0f*Sigma*Sigma))/pow(2.0f*PI*Sigma*Sigma,0.5f))
 
 
-#define PCSSMaxKernelSize 12
+#define PCSSMaxKernelSize 15
 #define PCSSMinKernelSize 3
 
 
@@ -146,16 +146,16 @@ float BilinearShadowTest(const vec2 ShadowCoord, const float Depth, const sample
 
 float SilhouetteShadowTest(const vec2 ShadowCoord, const float Depth, const sampler2DArray ShadowMap, const sampler2DArray SilhouetteMap, const int i, const ivec2 TextureSize)
 {
-	ivec2 TexelCoords=ivec2(floor(ShadowCoord.xy*TextureSize));
+	const ivec2 TexelCoords=ivec2(floor(ShadowCoord.xy*TextureSize));
 
 	if (Depth>texelFetch(ShadowMap,ivec3(TexelCoords.xy,CurrentLightIndex),0).x)
 	{
-		vec2 TexelCenter=(vec2(TexelCoords)+0.5)/float(Shadowmap_Res);
+		const vec2 TexelCenter=(vec2(TexelCoords)+0.5)/float(Shadowmap_Res);
 
-		float slope=texelFetch(SilhouetteMap,ivec3(TexelCoords,i),0).x;
-		float offset=texelFetch(SilhouetteMap,ivec3(TexelCoords,i+MaxShadowmapsNums),0).x;
+		const float slope=texelFetch(SilhouetteMap,ivec3(TexelCoords,i),0).x;
+		const float offset=texelFetch(SilhouetteMap,ivec3(TexelCoords,i+MaxShadowmapsNums),0).x;
 
-		float CurrentState=ShadowCoord.x*slope+offset-ShadowCoord.y;
+		const float CurrentState=ShadowCoord.x*slope+offset-ShadowCoord.y;
 
 		ivec2 step;
 		if (slope>1.0f||slope<-1.0f)
@@ -166,7 +166,7 @@ float SilhouetteShadowTest(const vec2 ShadowCoord, const float Depth, const samp
 		{
 			step=ivec2(0,1);
 		}
-		float NextState=(ShadowCoord.x+float(step.x))*slope+offset-ShadowCoord.y-float(step.y);
+		const float NextState=(ShadowCoord.x+float(step.x))*slope+offset-ShadowCoord.y-float(step.y);
 		if (NextState*CurrentState<0.0f)
 			step=-step;
 

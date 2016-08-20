@@ -41,7 +41,7 @@ namespace GLSL_Math
 		}
 		vec2 operator -(const vec2 &inp)const
 		{
-			return vec2(inp.x - x, inp.y - y);
+			return vec2(x - inp.x, y - inp.y);
 		}
 		vec2 operator *(const vec2 &inp)const
 		{
@@ -58,7 +58,7 @@ namespace GLSL_Math
 		}
 		vec2 operator -(const float inp)const
 		{
-			return vec2(inp - x, inp - y);
+			return vec2(x - inp, y - inp);
 		}
 		vec2 operator *(const float inp)const
 		{
@@ -133,7 +133,7 @@ namespace GLSL_Math
 		}
 		vec3 operator -(const vec3 &inp)const
 		{
-			return vec3(inp.x - x, inp.y - y, inp.z - z);
+			return vec3(x - inp.x, y - inp.y, z - inp.z);
 		}
 		vec3 operator *(const vec3 &inp)const
 		{
@@ -150,7 +150,7 @@ namespace GLSL_Math
 		}
 		vec3 operator -(const float inp)const
 		{
-			return vec3(inp - x, inp - y, inp - z);
+			return vec3(x - inp, y - inp, z - inp);
 		}
 		vec3 operator *(const float inp)const
 		{
@@ -210,7 +210,7 @@ namespace GLSL_Math
 		}
 		ivec2 operator -(const ivec2 &inp)const
 		{
-			return ivec2(inp.x - x, inp.y - y);
+			return ivec2(x - inp.x, y - inp.y);
 		}
 		ivec2 operator *(const ivec2 &inp)const
 		{
@@ -227,7 +227,7 @@ namespace GLSL_Math
 		}
 		ivec2 operator -(const int inp)const
 		{
-			return ivec2(inp - x, inp - y);
+			return ivec2(x - inp, y - inp);
 		}
 		ivec2 operator *(const int inp)const
 		{
@@ -311,7 +311,7 @@ namespace GLSL_Math
 		}
 		ivec3 operator -(const ivec3 &inp)const
 		{
-			return ivec3(inp.x - x, inp.y - y, inp.z - z);
+			return ivec3(x - inp.x, y - inp.y, z - inp.z);
 		}
 		ivec3 operator *(const ivec3 &inp)const
 		{
@@ -328,7 +328,7 @@ namespace GLSL_Math
 		}
 		ivec3 operator -(const int inp)const
 		{
-			return ivec3(inp - x, inp - y, inp - z);
+			return ivec3(x - inp, y - inp, z - inp);
 		}
 		ivec3 operator *(const int inp)const
 		{
