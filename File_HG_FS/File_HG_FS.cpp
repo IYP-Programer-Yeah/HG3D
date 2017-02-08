@@ -45,14 +45,25 @@ namespace File_HG_FS
 	}
 	void File::new_file(const char *ipath, unsigned long int isize)//open a file from path
 	{
-		path = ipath;
+		uint64_t length = strlen(ipath);
+		free(path);
+		path = (char*) malloc(length + 1);
+		memcpy(path, ipath, length);
+		path[length] = '\0';
+
 		size = isize;
 		data = (char*)malloc(size);//allocate memory
 	}
 	void File::open(const char *ipath)//save the file on the current path
 	{
 		size = 0;
-		path = ipath;
+
+		uint64_t length = strlen(ipath);
+		free(path);
+		path = (char*)malloc(length + 1);
+		memcpy(path, ipath, length);
+		path[length] = '\0';
+
 		fopen_s(&mainfile, ipath, "rb");//open the file for read
 		if (!mainfile)//if the file exists continue
 			return;
@@ -67,14 +78,20 @@ namespace File_HG_FS
 	}
 	void File::save()//save the file
 	{
-		fopen_s(&mainfile, path.string1, "wb");//open the file for write
+		fopen_s(&mainfile, path, "wb");//open the file for write
 		fwrite(data, 1, size, mainfile);
 		fclose(mainfile);//cloase the file
 	}
 	void File::save_as(const char *ipath)//save as the file on new path
 	{
-		path = ipath;//current path will be replaced
-		fopen_s(&mainfile, path.string1, "wb");//open the file for write
+		
+		uint64_t length = strlen(ipath);
+		free(path);
+		path = (char*)malloc(length + 1);
+		memcpy(path, ipath, length);
+		path[length] = '\0';
+
+		fopen_s(&mainfile, path, "wb");//open the file for write
 		fwrite(data, 1, size, mainfile);//write data
 		fclose(mainfile);//cloase the file
 	}
@@ -108,7 +125,7 @@ namespace File_HG_FS
 				fileparts2 = (unsigned short int *)data;
 				for (register unsigned long int i = 0; i<caltest; i++)
 					dfileparts2[i] = code - fileparts2[i] - (((((((i % 8 + 1) % 7 + 2) % 6 + 3) % 5 + 4) % 4 + 5) % 3 + 6) % 2);
-				new_file(path.string1, caltest*sizeof(unsigned int));
+				new_file(path, caltest*sizeof(unsigned int));
 				free(data);
 				data = (char*)dfileparts2;
 				for (register short int i = 0; i<msousi; i++)
@@ -133,7 +150,7 @@ namespace File_HG_FS
 				fileparts1 = (unsigned int *)data;
 				for (register unsigned long int i = 0; i<caltest; i++)
 					dfileparts1[i] = code - fileparts1[i] - (((((((((i % 10 + 1) % 9 + 2) % 8 + 3) % 7 + 4) % 6 + 5) % 5 + 6) % 4 + 7) % 3 + 8) % 2);
-				new_file(path.string1, caltest*sizeof(unsigned long int));
+				new_file(path, caltest*sizeof(unsigned long int));
 				free(data);
 				data = (char*)dfileparts1;
 				for (register short int i = 0; i<msousi; i++)
@@ -177,7 +194,7 @@ namespace File_HG_FS
 				fileparts2 = (unsigned int *)data;
 				for (register unsigned long int i = 0; i<caltest; i++)
 					dfileparts2[i] = (unsigned short)(code - fileparts2[i] - (((((((i % 8 + 1) % 7 + 2) % 6 + 3) % 5 + 4) % 4 + 5) % 3 + 6) % 2));
-				new_file(path.string1, caltest*sizeof(unsigned short int));
+				new_file(path, caltest*sizeof(unsigned short int));
 				free(data);
 				data = (char*)dfileparts2;
 				for (register short int i = 0; i<msousi; i++)
@@ -202,7 +219,7 @@ namespace File_HG_FS
 				fileparts1 = (unsigned long int *)data;
 				for (register unsigned long int i = 0; i<caltest; i++)
 					dfileparts1[i] = code - fileparts1[i] - (((((((((i % 10 + 1) % 9 + 2) % 8 + 3) % 7 + 4) % 6 + 5) % 5 + 6) % 4 + 7) % 3 + 8) % 2);
-				new_file(path.string1, caltest*sizeof(unsigned int));
+				new_file(path, caltest*sizeof(unsigned int));
 				free(data);
 				data = (char*)dfileparts1;
 				for (register short int i = 0; i<msousi; i++)

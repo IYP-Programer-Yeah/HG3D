@@ -411,4 +411,13 @@ namespace GLSL_Math
 	{
 		return ivec3(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z));
 	}
+
+	float dot(const vec3 &a, const vec3 &b)
+	{
+		return a.x*b.x + a.y*b.y + a.z*b.z;
+	}
+	float length(const vec3 a)
+	{
+		return sqrt(dot(a, a));
+	}
 };

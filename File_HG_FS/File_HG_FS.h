@@ -1,7 +1,6 @@
 #ifndef _file_HG_fs_h
 #define _file_HG_fs_h
 #include <math.h>
-#include "..\Shared Headers\hstring.h"
 #include <stdio.h>
 namespace File_HG_FS
 {
@@ -13,13 +12,15 @@ namespace File_HG_FS
 		{
 			compressed = 0;//not yet compressed
 			data = (char*)malloc(0);//allocate 0 so it can be freeable
+			path = (char*)malloc(0);//allocate 0 so it can be freeable
 		}
 		~File()
 		{
 			free(data);//free the memmory
+			free(path);//free the memmory
 		}
 		bool compressed;//is file compressed?
-		string path;//path
+		char* path;//path
 		unsigned long int size;
 		char *data;
 		void __declspec(dllexport) MND(unsigned long int x, unsigned long int l);//mske new data at x with length of l
