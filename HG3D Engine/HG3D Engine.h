@@ -55,7 +55,7 @@
 #define SM_mat_data_UBO_binding_point			5				//the binding point of the sm mat
 
 #define PCF//use PCF instead of VSMs
-#define Deferred
+//#define Deferred
 
 #ifdef Deferred
 //sampler for GBuffer textures

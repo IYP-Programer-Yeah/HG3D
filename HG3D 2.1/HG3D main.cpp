@@ -16,8 +16,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Physics::PhysicsWorld World;
 
 	Engine.hdc = hdc[0];
-	//Engine.test_init();
-	Engine.init();
+	Engine.test_init();
+	//Engine.init();
 
 	MSG *msg = GetMSG();
 	Engine.add_camera();
@@ -27,7 +27,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	point horse_pos,light_pos;
 	horse_pos.build(0.0f, 0.0f, -50.0f);
 	vector light_dir;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 0; i++)
 	{
 		Engine.lights[i].light_enabled = true;
 		Engine.last_light_ID++;
@@ -57,9 +57,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine.lights[0].Attenuation[0] = 7.0f;
 	Engine.lights[0].Attenuation[1] = 0.01f;
 	Engine.lights[0].Attenuation[2] = 0.0008f;
-	Engine.lights[0].light_color[0] = 1.0f;
-	Engine.lights[0].light_color[1] = 1.0f;
-	Engine.lights[0].light_color[2] = 1.0f;
+	Engine.lights[0].light_color[0] = 70.0f / 255.0f;
+	Engine.lights[0].light_color[1] = 100.0f / 255.0f;
+	Engine.lights[0].light_color[2] = 130.0f / 255.0f;
 	Engine.lights[0].light_position[0] = 0.0f;
 	Engine.lights[0].light_position[1] = 100.0f;
 	Engine.lights[0].light_position[2] = 50.0f;
@@ -74,13 +74,13 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	direction.build(0.0f, -1.0f, 0.0f);
 	direction = normalize(direction);
 
-	Engine.lights[1].light_enabled = true;
+	//Engine.lights[1].light_enabled = true;
 	Engine.lights[1].Attenuation[0] = 5.0f;
 	Engine.lights[1].Attenuation[1] = 0.0f;
 	Engine.lights[1].Attenuation[2] = 0.0f;
-	Engine.lights[1].light_color[0] = 1.0f;
-	Engine.lights[1].light_color[1] = 1.0f;
-	Engine.lights[1].light_color[2] = 1.0f;
+	Engine.lights[1].light_color[0] = 70.0f/255.0f;
+	Engine.lights[1].light_color[1] = 100.0f/255.0f;
+	Engine.lights[1].light_color[2] = 130.0f/255.0f;
 	Engine.lights[1].light_position[0] = 500.0f;
 	Engine.lights[1].light_position[1] = 500.0f;
 	Engine.lights[1].light_position[2] = 0.0f;
@@ -93,7 +93,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//Engine.lights[1].shadow_map = true;
 
 	direction.build(0.0f, -1.0f, 0.0f);
-	Engine.lights[2].light_enabled = true;
+	//Engine.lights[2].light_enabled = true;
 	Engine.lights[2].Attenuation[0] = 1.0f;
 	Engine.lights[2].Attenuation[1] = 0.0f;
 	Engine.lights[2].Attenuation[2] = 0.0f;
@@ -203,7 +203,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	Engine.cameras[0].camera_position.build(0.0f, 100.0f, -80.0f);//put the camera to x=12
-	Engine.cameras[0].camera_position.build(1100.0f, 900.0f, 0.0f);//put the camera to x=12
+	//Engine.cameras[0].camera_position.build(1100.0f, 900.0f, 0.0f);//put the camera to x=12
 	//Engine.cameras[0].forward.build(0.0f, 0.0f, 1.0f);//look int x=-1 direction 
 	Engine.cameras[0].camera_viewport[2] = GetW();//update view port
 	Engine.cameras[0].camera_viewport[3] = GetH();//update view port
@@ -794,7 +794,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			}
 
-			//Engine.test_render(); //render scene
+			Engine.test_render(); //render scene
 
 			if (trigered)
 			{
@@ -803,7 +803,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				Engine.cameras[0].forward = normalize(Engine.cameras[0].forward);
 				Engine.cameras[0].needs_update = true;
 			}
-			Engine.render();
+			//Engine.render();
 
 		}
 
